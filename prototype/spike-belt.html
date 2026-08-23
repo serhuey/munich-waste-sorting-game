@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<title>Спайк — дом и магазин</title>
+<style>
+  :root{
+    --restmuell:#4a4a4a; --papier:#2f6fb0; --bio:#7a5230;
+    --automat:#c8a012; --battery:#8e44ad; --electro:#1f7a6f;
+    --bg:#eef1f4; --card:#fff; --ink:#1c1f23; --muted:#6b7280;
+    --ok:#1f8a4c; --bad:#c0392b;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{margin:0;height:100%;overflow:hidden;background:var(--bg);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;color:var(--ink)}
+  #app{position:relative;height:100%;display:flex;flex-direction:column;touch-action:none}
+
+  header{display:flex;justify-content:space-between;align-items:center;
+    padding:9px 14px;font-size:13px;color:var(--muted);flex:0 0 auto}
+  header b{color:var(--ink);font-weight:600}
+
+  #field{position:relative;flex:1 1 auto;overflow:hidden}
+  .item{position:absolute;left:50%;transform:translateX(-50%);
+    width:96px;padding:10px 8px;border-radius:12px;background:var(--card);
+    border:1.5px solid #d3d9e0;text-align:center;box-shadow:0 2px 6px rgba(0,0,0,.07)}
+  .item .glyph{font-size:30px;line-height:1.1}
+  .item .name{font-size:11px;color:var(--muted);margin-top:3px}
+  .item.slow{border-color:#e0b84c;box-shadow:0 0 0 3px rgba(224,184,76,.25)}
+  .item .hint{position:absolute;top:-19px;left:50%;transform:translateX(-50%);
+    font-size:10px;color:#a07c12;white-space:nowrap}
+
+  #hud{flex:0 0 auto;text-align:center;font-size:11px;color:var(--muted);
+    padding-bottom:4px;pointer-events:none}
+  .key-hint{display:none}
+  @media (hover:hover) and (pointer:fine){ .touch-hint{display:none} .key-hint{display:inline} }
+
+  /* Вкладки мест — прямо над лентой, в нижней трети экрана. */
+  #tabs{flex:0 0 auto;display:flex;gap:6px;padding:0 10px 6px;justify-content:center}
+  .tab{padding:5px 12px;border-radius:8px;font-size:12px;background:#dfe4ea;
+    color:var(--muted);border:1.5px solid transparent;user-select:none;white-space:nowrap}
+  .tab.active{background:var(--card);color:var(--ink);border-color:#c3cad4;font-weight:600}
+  .tab .num{opacity:.5;margin-right:4px;display:none}
+  @media (hover:hover) and (pointer:fine){ .tab .num{display:inline} }
+
+  /* Лента — один непрерывный ряд, сгруппированный по местам. */
+  #belt{flex:0 0 auto;height:104px;position:relative;overflow:hidden;touch-action:none}
+  #track{position:absolute;bottom:8px;display:flex;align-items:flex-end;will-change:transform}
+  .group{display:flex;flex-direction:column;align-items:flex-start}
+  .group + .group{margin-left:26px;padding-left:26px;border-left:2px dashed #c3cad4}
+  .group-label{font-size:10px;letter-spacing:.6px;text-transform:uppercase;
+    color:var(--muted);margin:0 0 4px 2px;white-space:nowrap}
+  .bins{display:flex;gap:10px}
+  .bin{width:88px;height:72px;border-radius:12px 12px 6px 6px;color:#fff;
+    display:flex;flex-direction:column;justify-content:flex-end;align-items:center;
+    padding-bottom:7px;font-size:10.5px;font-weight:600;text-align:center;line-height:1.15;
+    box-shadow:inset 0 -4px 0 rgba(0,0,0,.18)}
+  .bin .sym{font-size:19px;margin-bottom:2px;font-weight:400}
+  .bin.restmuell{background:var(--restmuell)} .bin.papier{background:var(--papier)}
+  .bin.bio{background:var(--bio)} .bin.automat{background:var(--automat)}
+  .bin.battery{background:var(--battery)} .bin.electro{background:var(--electro)}
+
+  #aim{position:absolute;left:50%;bottom:0;width:96px;height:92px;margin-left:-48px;
+    border:2px dashed #9aa4b1;border-radius:14px;pointer-events:none}
+
+  #overlay{position:absolute;inset:0;background:rgba(20,24,28,.55);
+    display:none;align-items:center;justify-content:center;padding:22px;z-index:5}
+  #overlay.show{display:flex}
+  .card{background:var(--card);border-radius:16px;padding:18px;max-width:340px;width:100%}
+  .card h2{margin:0 0 6px;font-size:16px}
+  .card p{margin:0 0 12px;font-size:13.5px;line-height:1.5;color:#3d444d}
+  .card .verdict{font-weight:700;font-size:13px;margin-bottom:6px}
+  .card .verdict.ok{color:var(--ok)} .card .verdict.bad{color:var(--bad)}
+  .card button{width:100%;padding:11px;border:0;border-radius:10px;background:var(--ink);
+    color:#fff;font-size:14px;font-weight:600}
+  .zoom{text-align:center;margin:2px 0 12px}
+  .zoom .big{font-size:56px;line-height:1}
+  .zoom .label{display:inline-block;margin-top:8px;padding:6px 10px;border:1.5px solid #cfd6de;
+    border-radius:8px;font-size:15px;letter-spacing:.4px;background:#fafbfc}
+  .zoom .cap{font-size:11px;color:var(--muted);margin-top:6px}
+</style>
+</head>
+<body>
+<div id="app">
+  <header>
+    <span>Спайк — дом и магазин</span>
+    <span><b id="points">0</b> очк · <span id="score">0</span>/<span id="total">0</span></span>
+  </header>
+
+  <div id="field"></div>
+
+  <div id="hud">
+    <span class="touch-hint">свайп — вести ленту · вкладка — прыгнуть к месту · тап по предмету — рассмотреть</span>
+    <span class="key-hint">← → контейнер · Tab место · 1–2 сразу к месту · пробел рассмотреть · ↓ сбросить</span>
+  </div>
+
+  <div id="tabs"></div>
+
+  <div id="belt">
+    <div id="track"></div>
+    <div id="aim"></div>
+  </div>
+
+  <div id="overlay"><div class="card" id="card"></div></div>
+</div>
+
+<script>
+/* Места и контейнеры. Порядок мест — от частого и близкого к редкому и далёкому.
+   В спайке два места из пяти; этого достаточно, чтобы проверить непрерывную ленту. */
+const PLACES = [
+  {id:'home', label:'Дом', bins:[
+    {id:'restmuell', cls:'restmuell', sym:'▮', label:'Restmüll'},
+    {id:'papier',    cls:'papier',    sym:'▤', label:'Papier'},
+    {id:'bio',       cls:'bio',       sym:'❦', label:'Bio'},
+  ]},
+  {id:'shop', label:'Магазин', bins:[
+    {id:'automat',  cls:'automat',  sym:'↩', label:'Автомат<br>для тары'},
+    {id:'battery',  cls:'battery',  sym:'⌁', label:'Батарейки'},
+    {id:'electro',  cls:'electro',  sym:'⏻', label:'Лампы и<br>электроника'},
+  ]},
+];
+
+/* Плоский список контейнеров: по нему и ходит прицел. */
+const BINS = [];
+PLACES.forEach((p, pi) => p.bins.forEach(b => BINS.push({...b, place:p.id, placeLabel:p.label, pi})));
+const binIndex = id => BINS.findIndex(b => b.id === id);
+const firstBinOfPlace = pi => BINS.findIndex(b => b.pi === pi);
+
+const ITEMS = [
+  {g:'📰', n:'газета', bin:'papier', fall:4200,
+   why:'Чистая бумага — в Papiertonne.'},
+  {g:'🍌', n:'кожура банана', bin:'bio', fall:4200,
+   why:'Органика — в Biotonne. Пластиковых пакетов там быть не должно, даже «компостируемых».'},
+  {g:'🪥', n:'зубная щётка', bin:'restmuell', fall:4200,
+   why:'Смешанный пластик без переработки — Restmüll.'},
+  {g:'🥚', n:'лоток от яиц', bin:'papier', fall:5200, slow:true,
+   why:'Прессованная бумажная масса — это бумага, а не Restmüll.'},
+  {g:'🧾', n:'чек из магазина', bin:'restmuell', fall:5200, slow:true,
+   why:'Термобумага в Restmüll. Осмотр не поможет: чек без фенола внешне неотличим от остальных, поэтому Umweltbundesamt советует считать худшим случаем все.'},
+  {g:'🍕', n:'коробка от пиццы', bin:'papier', fall:6000, slow:true, split:true,
+   parts:[{g:'📦', n:'чистый картон', bin:'papier'},{g:'🧀', n:'остатки еды', bin:'bio'}],
+   why:'Целиком — ошибка. Чистый картон в Papier, остатки еды в Bio: коробку надо разобрать.'},
+  {g:'🫖', n:'обёртка от чайного пакетика', bin:'restmuell', fall:6000, slow:true, inspect:true,
+   labelText:'фольгированная изнутри',
+   why:'Речь про обёртку, а не про сам пакетик. Фольгированная — композит, значит Restmüll. Бумажная без покрытия пошла бы в Papier: смотреть надо на изнанку.'},
+  {g:'🍾', n:'бутылка', bin:'automat', fall:7000, slow:true, inspect:true,
+   labelText:'Mehrweg · Pfand 0,15 €',
+   why:'На этикетке Pfand — бутылку возвращают в автомат, это не мусор, а залог.'},
+  {g:'🍾', n:'бутылка', bin:'restmuell', fall:7000, slow:true, inspect:true,
+   labelText:'Pfandfrei',
+   why:'Pfandfrei — залога нет, и слово ловит тех, кто читает по шаблону. Стеклянная такая пошла бы на Wertstoffinsel, но острова в спайке ещё нет — пока Restmüll.'},
+  {g:'🔋', n:'батарейка', bin:'battery', fall:6000, slow:true,
+   why:'Ни в один домашний бак нельзя. Любой магазин, торгующий батарейками, обязан принять их назад бесплатно — коробка обычно у кассы.'},
+  {g:'🔌', n:'старая зарядка', bin:'electro', fall:7000, slow:true,
+   why:'Мелкую электронику до 25 см магазины сверх порога по площади принимают без покупки нового. Wertstoffhof тоже верен, но ехать туда не обязательно.'},
+];
+
+const field = document.getElementById('field');
+const belt  = document.getElementById('belt');
+const track = document.getElementById('track');
+const tabsEl = document.getElementById('tabs');
+const overlay = document.getElementById('overlay');
+const card = document.getElementById('card');
+const scoreEl = document.getElementById('score');
+const totalEl = document.getElementById('total');
+const pointsEl = document.getElementById('points');
+
+// Очки взяты наугад — это первое, что надо крутить.
+const PTS = {ok:10, okHard:25, bad:0, badHard:-15};
+
+let centers = [];              // центр каждого контейнера относительно track
+let offset = 0, animOffset = null;
+let dragging = false, startX = 0, startOffset = 0;
+let queue = [], current = null, anim = null, paused = false;
+let score = 0, answered = 0, points = 0;
+
+/* ---------- отрисовка ленты ---------- */
+
+PLACES.forEach((p, pi) => {
+  const g = document.createElement('div');
+  g.className = 'group';
+  const bins = p.bins.map(b =>
+    '<div class="bin '+b.cls+'"><span class="sym">'+b.sym+'</span>'+b.label+'</div>').join('');
+  g.innerHTML = '<div class="group-label">'+p.label+'</div><div class="bins">'+bins+'</div>';
+  track.appendChild(g);
+
+  const t = document.createElement('div');
+  t.className = 'tab';
+  t.innerHTML = '<span class="num">'+(pi+1)+'</span>'+p.label;
+  t.addEventListener('click', ()=> jumpToPlace(pi));
+  tabsEl.appendChild(t);
+});
+
+function measure(){
+  const tr = track.getBoundingClientRect();
+  centers = [...track.querySelectorAll('.bin')].map(el=>{
+    const r = el.getBoundingClientRect();
+    return r.left - tr.left + r.width/2;
+  });
+}
+function centerX(){ return belt.clientWidth / 2; }
+function offsetFor(i){ return centerX() - centers[i]; }
+function render(){ track.style.transform = 'translateX('+offset+'px)'; syncTabs(); }
+
+function activeIndex(){
+  const x = centerX() - offset;
+  let best = 0, dist = Infinity;
+  centers.forEach((c,i)=>{ const d = Math.abs(c - x); if(d < dist){ dist = d; best = i; } });
+  return best;
+}
+function syncTabs(){
+  const pi = BINS[activeIndex()].pi;
+  [...tabsEl.children].forEach((t,i)=> t.classList.toggle('active', i === pi));
+}
+function snap(){ glideTo(offsetFor(activeIndex()), 120); }
+
+/* Прокрутка анимирована: ряд едет, а не подменяется — иначе игрок теряет ориентир. */
+function glideTo(target, ms){
+  cancelAnimationFrame(animOffset);
+  const from = offset, t0 = performance.now();
+  (function tick(){
+    const k = Math.min(1, (performance.now() - t0) / ms);
+    offset = from + (target - from) * (1 - Math.pow(1 - k, 3));
+    render();
+    if(k < 1) animOffset = requestAnimationFrame(tick);
+  })();
+}
+function jumpToPlace(pi){
+  if(paused || !current) return;
+  glideTo(offsetFor(firstBinOfPlace(pi)), 260);
+}
+function step(dir){
+  if(paused || !current) return;
+  const i = Math.max(0, Math.min(BINS.length-1, activeIndex() + dir));
+  glideTo(offsetFor(i), 110);
+}
+
+/* ---------- ввод ---------- */
+
+belt.addEventListener('pointerdown', e=>{
+  if(paused) return;
+  cancelAnimationFrame(animOffset);
+  dragging = true; startX = e.clientX; startOffset = offset; belt.setPointerCapture(e.pointerId);
+});
+belt.addEventListener('pointermove', e=>{
+  if(!dragging) return;
+  offset = startOffset + (e.clientX - startX); render();
+});
+belt.addEventListener('pointerup', ()=>{ if(dragging){ dragging = false; snap(); } });
+belt.addEventListener('pointercancel', ()=>{ if(dragging){ dragging = false; snap(); } });
+
+document.addEventListener('keydown', e=>{
+  if(overlay.classList.contains('show')){
+    if(e.key === ' ' || e.key === 'Enter'){ e.preventDefault(); card.querySelector('button')?.click(); }
+    return;
+  }
+  if(e.key === 'Tab'){
+    e.preventDefault();
+    const pi = BINS[activeIndex()].pi + (e.shiftKey ? -1 : 1);
+    if(pi >= 0 && pi < PLACES.length) jumpToPlace(pi);
+    return;
+  }
+  if(/^[1-9]$/.test(e.key)){
+    const pi = +e.key - 1;
+    if(pi < PLACES.length){ e.preventDefault(); jumpToPlace(pi); }
+    return;
+  }
+  switch(e.key){
+    // Видимого курсора нет — прицел неподвижен, движется лента. Поэтому стрелка
+    // двигает саму ленту в названную сторону, как и свайп: ← уводит ленту влево,
+    // и под прицел приходит контейнер, который был правее. Индекс при этом растёт.
+    case 'ArrowLeft':  e.preventDefault(); step(1);  break;
+    case 'ArrowRight': e.preventDefault(); step(-1); break;
+    case 'ArrowDown':  e.preventDefault(); hardDrop(); break;
+    case ' ':          e.preventDefault(); inspect(); break;
+  }
+});
+
+/* ---------- цикл ---------- */
+
+function shuffle(a){ return a.map(v=>[Math.random(),v]).sort((x,y)=>x[0]-y[0]).map(v=>v[1]); }
+
+function spawn(){
+  if(!queue.length){ finish(); return; }
+  const data = queue.shift();
+  const el = document.createElement('div');
+  el.className = 'item' + (data.slow ? ' slow' : '');
+  el.innerHTML = (data.inspect || data.split ? '<div class="hint">тап — рассмотреть</div>' : '')
+    + '<div class="glyph">'+data.g+'</div><div class="name">'+data.n+'</div>';
+  field.appendChild(el);
+  current = {data, el, started:performance.now(), dur:data.fall, hard:false};
+  el.addEventListener('pointerup', ev=>{ ev.stopPropagation(); inspect(); });
+  loop();
+}
+
+function loop(){
+  anim = requestAnimationFrame(loop);
+  if(!current || paused) return;
+  const p = (performance.now() - current.started) / current.dur;
+  current.el.style.top = (-90 + p * (field.clientHeight + 90)) + 'px';
+  if(p >= 1){ cancelAnimationFrame(anim); land(); }
+}
+
+function hardDrop(){
+  if(paused || !current) return;
+  current.hard = true;
+  cancelAnimationFrame(anim);
+  land();
+}
+
+function inspect(){
+  if(!current || paused) return;
+  const d = current.data;
+  if(!d.inspect && !d.split) return;
+  paused = true;
+  current.pausedAt = performance.now();
+  if(d.inspect){
+    show('Рассматриваешь',
+      '<div class="zoom"><div class="big">'+d.g+'</div>'
+      +'<div class="label">'+d.labelText+'</div>'
+      +'<div class="cap">то, что на лету не прочитать</div></div>'
+      +'<p>Куда это?</p>', 'Понятно', resume);
+  } else {
+    const list = d.parts.map(p=>'<li>'+p.g+' '+p.n+'</li>').join('');
+    show('Предмет разбирается',
+      '<p>Внутри две разные части:</p><ul style="margin:0 0 12px 18px;font-size:13.5px">'+list+'</ul>'
+      +'<p>В полной игре части сортируются по отдельности. В спайке засчитаем по главной части.</p>',
+      'Понятно', resume);
+  }
+}
+
+function resume(){
+  overlay.classList.remove('show');
+  // Цикл rAF не останавливался — он выходил рано, пока paused. Повторный
+  // вызов loop() здесь запустил бы вторую цепочку и удвоил скорость падения.
+  current.started += performance.now() - current.pausedAt;
+  paused = false;
+}
+
+function land(){
+  const chosen = BINS[activeIndex()];
+  const d = current.data;
+  const correct = BINS[binIndex(d.bin)];
+  const ok = chosen.id === correct.id;
+  const wrongPlace = !ok && chosen.place !== correct.place;
+  const hard = !!current.hard;
+
+  answered++;
+  if(ok) score++;
+  const gained = ok ? (hard ? PTS.okHard : PTS.ok) : (hard ? PTS.badHard : PTS.bad);
+  points += gained;
+  scoreEl.textContent = score;
+  pointsEl.textContent = points;
+
+  const binName = correct.label.replace('<br>',' ');
+  let verdict;
+  if(ok){
+    verdict = hard ? 'Верно, и сразу — '+gained+' очков' : 'Верно — '+gained+' очков';
+  } else if(wrongPlace){
+    // Ошибка места важнее ошибки контейнера: сначала говорим про место.
+    verdict = 'Не то место — это не «'+chosen.placeLabel+'», а «'+correct.placeLabel+'»'
+            + (hard ? ' · досрочно, '+gained : '');
+  } else {
+    verdict = 'Место верное, контейнер нет — нужен «'+binName+'»'
+            + (hard ? ' · досрочно, '+gained : '');
+  }
+
+  show(d.n,
+    '<div class="verdict '+(ok?'ok':'bad')+'">'+verdict+'</div>'
+    + (wrongPlace ? '<p><b>'+binName+'</b> находится в месте «'+correct.placeLabel+'».</p>' : '')
+    + '<p>'+d.why+'</p>', 'Дальше', next);
+}
+
+function show(title, body, btn, cb){
+  card.innerHTML = '<h2>'+title+'</h2>'+body+'<button>'+btn+'</button>';
+  card.querySelector('button').onclick = cb;
+  overlay.classList.add('show');
+}
+
+function next(){
+  overlay.classList.remove('show');
+  if(current){ current.el.remove(); current = null; }
+  spawn();
+}
+
+function finish(){
+  overlay.classList.remove('show');
+  show('Готово',
+    '<p>Результат: <b>'+score+'</b> из '+answered+', <b>'+points+'</b> очков.</p>'
+    +'<p>Очки растут, когда сбрасываешь досрочно и не ошибаешься. Если знаешь — не жди.</p>'
+    +'<p>В полной игре мест пять, и лента становится длиннее — но управление то же самое.</p>',
+    'Ещё раз', start);
+}
+
+function start(){
+  overlay.classList.remove('show');
+  score = 0; answered = 0; points = 0;
+  scoreEl.textContent = '0'; pointsEl.textContent = '0';
+  queue = shuffle(ITEMS.slice());
+  totalEl.textContent = queue.length;
+  if(current){ current.el.remove(); current = null; }
+  measure();
+  offset = offsetFor(0); render();
+  spawn();
+}
+
+window.addEventListener('resize', ()=>{ measure(); offset = offsetFor(activeIndex()); render(); });
+measure(); offset = offsetFor(0); render();
+start();
+</script>
+</body>
+</html>

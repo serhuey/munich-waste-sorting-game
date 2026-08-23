@@ -1,0 +1,7 @@
+# Snapshots of the Abfalllexikon are versioned as JSON — the diff needs history.
+# The raw HTML is a debugging aid only, and it is large.
+tools/data/raw-*.html
+
+__pycache__/
+*.py[cod]
+.DS_Store
