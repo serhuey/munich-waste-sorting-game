@@ -14,7 +14,9 @@ data/ + game/  --build-->  dist/  --publish.py-->  muell/  --git pull-->  muell.
 Two properties of the target decide everything else:
 
 - **There is no build step on the server.** A webhook runs a bare `git pull`. Whatever
-  is committed is what is served, so `dist/` is committed rather than built remotely.
+  is committed is what is served, so the built copy is committed — in the *site*
+  repository, which is private. `dist/` is git-ignored here, because it holds the legal
+  pages with the operator's address substituted in and this repository is public.
 - **A push to `main` publishes to the live domain.** There is no staging, no CI, no
   review. `tools/publish.py` deliberately stops before committing.
 

@@ -9,8 +9,8 @@
     python3 awm_lexikon.py diff old.json new.json
     python3 awm_lexikon.py diff --latest         # два последних снимка в data/
 
-Снимки: data/lexikon-YYYY-MM-DD.json
-Сырой HTML первого запуска: data/raw-YYYY-MM-DD.html — посмотреть глазами,
+Снимки: data/verified/lexikon-YYYY-MM-DD.json
+Сырой HTML первого запуска: data/verified/raw-YYYY-MM-DD.html — посмотреть глазами,
 если разбор выглядит странно.
 
 ВАЖНО. Это вспомогательный инструмент, а не источник истины для игры.
@@ -32,7 +32,8 @@ from html.parser import HTMLParser
 
 BASE = "https://www.awm-muenchen.de"
 INDEX = BASE + "/abfall-entsorgen/abfalllexikon"
-DATA = os.path.join(os.path.dirname(os.path.abspath(__file__)), "data")
+DATA = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
+                    "data", "verified")
 UA = "awm-sorting-game/0.1 (educational, non-commercial; contact: sergei.grieg@gmail.com)"
 DELAY = 1.0  # секунд между запросами к страницам деталей
 

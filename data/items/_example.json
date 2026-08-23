@@ -1,0 +1,33 @@
+{
+  "_comment": "Образец формы. Файлы, чьё имя начинается с подчёркивания, в сборку не попадают. Настоящий предмет заводится только после того, как человек открыл и прочитал источник — см. docs/VERIFYING.md.",
+  "id": "_example",
+  "tier": 1,
+  "attrs": ["examine"],
+  "labels": { "de": "Beispiel", "en": "Example" },
+  "source": {
+    "authority": "awm",
+    "key": "kassenzettel-kassenbon",
+    "url": "https://www.awm-muenchen.de/abfall-entsorgen/abfalllexikon",
+    "destinations_at_verification": ["wertstoffhof", "restmuell", "papier"],
+    "verified_by": "sergei",
+    "verified_on": "2026-08-23"
+  },
+  "variants": [
+    {
+      "id": "thermo",
+      "kind": "simple",
+      "labels": { "de": "weiß, Thermopapier", "en": "white, thermal paper" },
+      "destinations": ["restmuell"]
+    },
+    {
+      "id": "blau",
+      "kind": "simple",
+      "labels": { "de": "blau bedruckt", "en": "printed blue" },
+      "destinations": ["papier"]
+    }
+  ],
+  "explanation": {
+    "de": "Beispieltext.",
+    "en": "Example text."
+  }
+}

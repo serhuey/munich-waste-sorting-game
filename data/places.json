@@ -1,0 +1,59 @@
+{
+  "_comment": "Места и контейнеры. Одна редакция на все времена: контейнер живёт между from и until. until не включается — контейнер с until 2027-01-01 работает по 31 декабря 2026. Так переход 1 января 2027 не требует ни выкладки, ни правки кода (KTD5).",
+  "places": [
+    {
+      "id": "home",
+      "tier": 1,
+      "labels": { "de": "Zuhause", "en": "At home" },
+      "containers": [
+        { "id": "restmuell", "glyph": "▬", "pattern": "solid",  "labels": { "de": "Restmülltonne", "en": "Residual waste" } },
+        { "id": "papier",    "glyph": "▤", "pattern": "lines",  "labels": { "de": "Papiertonne",   "en": "Paper" } },
+        { "id": "bio",       "glyph": "❦", "pattern": "dots",   "labels": { "de": "Biotonne",      "en": "Organic waste" } },
+        { "id": "gelbe_tonne", "glyph": "◈", "pattern": "grid", "from": "2027-01-01",
+          "labels": { "de": "Gelbe Tonne", "en": "Yellow bin" } }
+      ]
+    },
+    {
+      "id": "shop",
+      "tier": 2,
+      "labels": { "de": "Im Laden", "en": "At the shop" },
+      "containers": [
+        { "id": "pfandautomat",     "glyph": "⭗", "pattern": "rings",  "labels": { "de": "Pfandautomat",        "en": "Deposit machine" } },
+        { "id": "batteriebox",      "glyph": "⊞", "pattern": "checks", "labels": { "de": "Batteriebox",         "en": "Battery box" } },
+        { "id": "elektro_ruecknahme", "glyph": "⌁", "pattern": "zigzag", "labels": { "de": "Rücknahme Elektro", "en": "Electronics take-back" } }
+      ]
+    },
+    {
+      "id": "wertstoffinsel",
+      "tier": 3,
+      "labels": { "de": "Wertstoffinsel", "en": "Recycling island" },
+      "containers": [
+        { "id": "glas_weiss", "glyph": "○", "pattern": "none",   "labels": { "de": "Weißglas",  "en": "Clear glass" } },
+        { "id": "glas_gruen", "glyph": "△", "pattern": "hatch",  "labels": { "de": "Grünglas",  "en": "Green glass" } },
+        { "id": "glas_braun", "glyph": "□", "pattern": "cross",  "labels": { "de": "Braunglas", "en": "Brown glass" } },
+        { "id": "altkleider", "glyph": "✂", "pattern": "weave",  "labels": { "de": "Altkleidercontainer", "en": "Textiles" } },
+        { "id": "lvp", "glyph": "◇", "pattern": "grid", "until": "2027-01-01",
+          "labels": { "de": "Leichtverpackungen", "en": "Light packaging" } }
+      ]
+    },
+    {
+      "id": "wertstoffhof",
+      "tier": 4,
+      "labels": { "de": "Wertstoffhof", "en": "Recycling centre" },
+      "containers": [
+        { "id": "elektroschrott", "glyph": "⌘", "pattern": "grid",   "labels": { "de": "Elektroschrott", "en": "Electronic waste" } },
+        { "id": "batterien",      "glyph": "⊟", "pattern": "checks", "labels": { "de": "Batterien",      "en": "Batteries" } },
+        { "id": "sperrmuell",     "glyph": "▣", "pattern": "solid",  "labels": { "de": "Sperrmüll",      "en": "Bulky waste" } }
+      ]
+    },
+    {
+      "id": "problemabfall",
+      "tier": 5,
+      "labels": { "de": "Problemabfall", "en": "Hazardous drop-off" },
+      "containers": [
+        { "id": "giftmobil",           "glyph": "☣", "pattern": "hatch", "labels": { "de": "Giftmobil",              "en": "Hazardous waste van" } },
+        { "id": "problemstoffannahme", "glyph": "⚗", "pattern": "cross", "labels": { "de": "Problemstoffannahme",    "en": "Hazardous waste desk" } }
+      ]
+    }
+  ]
+}

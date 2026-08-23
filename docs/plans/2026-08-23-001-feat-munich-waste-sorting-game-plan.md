@@ -127,7 +127,7 @@ flowchart LR
 data/
   verified/lexikon-2026-08-23.json     snapshot, produced by tools/
   items/<id>.json                      authored items, one file each
-  places/2026.json  places/2027.json   places, containers, validity windows
+  places.json                          places and containers with validity windows
   finale/christbaum-2026.json          routes, windows, preparation rules
   i18n/de.json  i18n/en.json           interface strings
 game/
@@ -157,12 +157,14 @@ dist/                                  build output, committed
 - **Goal.** The shape of the authored layer, and a build that refuses to ship anything unverified.
 - **Requirements.** R13, R14, R15, AE9.
 - **Dependencies.** None.
-- **Files.** `data/schema/item.schema.json`, `data/schema/places.schema.json`, `tools/build_data.py`, `tools/test_build_data.py`.
+- **Files.** `data/places.json`, `data/items/_example.json`, `tools/build_data.py`, `tools/test_build_data.py`.
+- **Built. Deviations from this unit as first written, each deliberate.** The shape is enforced by `tools/build_data.py` rather than by JSON Schema documents: the toolchain is standard library only, so a schema file would need a hand-written interpreter beside it and the two would drift. `data/items/_example.json` carries the shape by example. Places live in a single `data/places.json` with per-container validity windows rather than one file per edition — a file per edition would need a deploy on 1 January 2027, which contradicts KTD5.
 - **Approach.**
   1. Item shape: `id`, `tier`, `attrs` (`borderline`, `examine`, `separable`), `variants[]`, `source` (`key`, `url`, `verified_by`, `verified_on`), `explanation` per language.
   2. A variant is either `simple` with `destinations[]` or `composite` with `parts[]`; a part carries `destinations[]` and nothing else. Nesting is rejected by the validator, not by convention (R14).
-  3. Destinations are never literals — each resolves to a container id declared in `data/places/`, and each item's `source.key` must exist in the newest snapshot in `data/verified/`.
-  4. The gate: no `verified_on`, or a `source.key` missing from the snapshot, or destinations that disagree with the snapshot entry, excludes the item and prints why.
+  3. Destinations are never literals — each resolves to a container id declared in `data/places.json`, and a destination may carry its own `from` / `until`, which is how one item survives the 2027 switch without a second copy of itself.
+  4. Drift is detected by comparing snapshots, not by comparing the game to AWM: the item records `source.destinations_at_verification`, what the snapshot said when the human read it, and the build excludes the item when the current snapshot disagrees. This leaves the game's own destination vocabulary free, which matters because the shop rests on the Batteriegesetz and the ElektroG rather than on AWM — those items carry `authority: law` with the norm instead of a lexicon key.
+  5. The gate: no `verified_on`, no `verified_by`, a verification dated in the future, a `source.key` missing from the snapshot, or drifted destinations excludes the item and prints why.
 - **Patterns to follow.** `tools/awm_lexikon.py` — standard library only, Russian operator-facing messages, exit code carries meaning.
 - **Test scenarios.**
   - Covers AE9. An item without `verified_on` is excluded and the report names it and the reason.
@@ -171,6 +173,8 @@ dist/                                  build output, committed
   - A composite variant whose part itself carries `variants` fails validation with a message naming the nesting rule.
   - A destination id absent from `data/places/` fails validation.
   - A valid item survives the build and appears in `dist/content.json`.
+  - An item whose only destination retires on 1 January 2027 builds today with a warning naming that date, and is excluded when the build date is after it.
+  - An item whose destinations carry windows on both sides of the switch builds clean on both dates.
 - **Verification.** `python3 tools/build_data.py` on a fixture directory containing one valid and five broken items emits exactly one item and five named exclusions.
 
 ### U2. Verification workflow and the first tier of content
