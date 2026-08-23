@@ -1,0 +1,47 @@
+{
+  "_todo": [
+    "открыть source.url и прочитать запись целиком",
+    "вписать destinations в каждом варианте — это адресаты игры, а не AWM",
+    "написать explanation: почему так, на de и en",
+    "заполнить labels.en",
+    "поставить source.verified_by и source.verified_on",
+    "перенести: python3 tools/drafts.py promote <id>"
+  ],
+  "_awm_term": "Coffee-to-go-Becher, Pappbecher, Einwegbecher, Pappteller",
+  "_awm_tip": null,
+  "_awm_notes": {
+    "restmuell": "Alle Abfälle, die Sie in der Restmülltonne entsorgen, landen in der Müllverbrennungsanlage. Entsorgen Sie deshalb in der Restmülltonne bitte nur die Abfälle, die nicht mehr recycelt werden können."
+  },
+  "id": "coffeebecher",
+  "tier": 1,
+  "attrs": [],
+  "labels": {
+    "de": "Coffee-to-go-Becher, Pappbecher, Einwegbecher, Pappteller",
+    "en": ""
+  },
+  "source": {
+    "authority": "awm",
+    "key": "coffee-to-go-becher-pappbecher-einwegbecher-pappteller",
+    "url": "https://www.awm-muenchen.de/abfall-entsorgen/abfalllexikon/detailansicht-lexikoneintrag/coffee-to-go-becher-pappbecher-einwegbecher",
+    "destinations_at_verification": [
+      "restmuell"
+    ],
+    "verified_by": "",
+    "verified_on": ""
+  },
+  "variants": [
+    {
+      "id": "standard",
+      "kind": "simple",
+      "labels": {
+        "de": "",
+        "en": ""
+      },
+      "destinations": []
+    }
+  ],
+  "explanation": {
+    "de": "",
+    "en": ""
+  }
+}

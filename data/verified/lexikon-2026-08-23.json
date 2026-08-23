@@ -53,8 +53,8 @@
       "tip": "Tipp: Waschbare Pads verwenden, um Abfälle zu vermeiden.",
       "notes": {},
       "detail_url": null,
-      "key": "abschminkt-cher",
-      "fingerprint": "ee034c40cd76"
+      "key": "abschminktuecher",
+      "fingerprint": "7ec7a0d4e8f2"
     },
     {
       "term": "Abwaschlappen",
@@ -120,6 +120,24 @@
       "detail_url": null,
       "key": "acrylglas-plexiglas",
       "fingerprint": "0718f3f404d6"
+    },
+    {
+      "term": "Äste",
+      "destinations": [
+        "wertstoffhof",
+        "bio",
+        "containerdienst"
+      ],
+      "labels": [
+        "Wertstoffhof",
+        "Biotonne",
+        "Containerdienst"
+      ],
+      "tip": "nicht zu dick",
+      "notes": {},
+      "detail_url": null,
+      "key": "aeste",
+      "fingerprint": "cf5b930beb3c"
     },
     {
       "term": "Airpop, Styropor",
@@ -266,22 +284,6 @@
       "fingerprint": "8b03d0c3db78"
     },
     {
-      "term": "Altöl/Schmieröl/Motoröl",
-      "destinations": [
-        "wertstoffhof"
-      ],
-      "labels": [
-        "Wertstoffhöfe"
-      ],
-      "tip": null,
-      "notes": {
-        "wertstoffhof": "Bitte beachten Sie die Annahmezeiten für Problemstoffe!"
-      },
-      "detail_url": "https://www.awm-muenchen.de/abfall-entsorgen/abfalllexikon/detailansicht-lexikoneintrag/altoel-schmieroel",
-      "key": "alt-l-schmier-l-motor-l",
-      "fingerprint": "686453f15ce9"
-    },
-    {
       "term": "Altkleider, Schuhe, Textilien",
       "destinations": [
         "weiternutzen",
@@ -304,6 +306,22 @@
       "detail_url": "https://www.awm-muenchen.de/abfall-entsorgen/abfalllexikon/detailansicht-lexikoneintrag/altkleider-schuhe-textilien",
       "key": "altkleider-schuhe-textilien",
       "fingerprint": "e68d36f4ebc0"
+    },
+    {
+      "term": "Altöl/Schmieröl/Motoröl",
+      "destinations": [
+        "wertstoffhof"
+      ],
+      "labels": [
+        "Wertstoffhöfe"
+      ],
+      "tip": null,
+      "notes": {
+        "wertstoffhof": "Bitte beachten Sie die Annahmezeiten für Problemstoffe!"
+      },
+      "detail_url": "https://www.awm-muenchen.de/abfall-entsorgen/abfalllexikon/detailansicht-lexikoneintrag/altoel-schmieroel",
+      "key": "altoel-schmieroel-motoroel",
+      "fingerprint": "cad7b805061f"
     },
     {
       "term": "Aludose",
@@ -552,125 +570,8 @@
       "tip": null,
       "notes": {},
       "detail_url": "https://www.awm-muenchen.de/abfall-entsorgen/abfalllexikon/detailansicht-lexikoneintrag/autoteile-felgen",
-      "key": "autoteile-felgen-sto-d-mpfer",
-      "fingerprint": "ba7c34dca80f"
-    },
-    {
-      "term": "Bücher",
-      "destinations": [
-        "weiternutzen",
-        "wertstoffhof",
-        "papier",
-        "halle2"
-      ],
-      "labels": [
-        "Weiternutzen",
-        "Wertstoffhöfe",
-        "Papiertonne",
-        "Halle 2 (gut erhaltenes)"
-      ],
-      "tip": null,
-      "notes": {
-        "weiternutzen": "Verschenken, tauschen, kaufen, finden, reparieren... zu schade zum Wegwerfen!",
-        "papier": "In die gebührenfreien Papiertonnen gehört Papier und Pappe.",
-        "halle2": "Gut erhaltenes für die Halle 2"
-      },
-      "detail_url": "https://www.awm-muenchen.de/abfall-entsorgen/abfalllexikon/detailansicht-lexikoneintrag/buecher",
-      "key": "b-cher",
-      "fingerprint": "f5c3e5e00fd7"
-    },
-    {
-      "term": "Bügelbrett",
-      "destinations": [
-        "wertstoffhof",
-        "sperrmuell"
-      ],
-      "labels": [
-        "Wertstoffhof",
-        "Sperrmüllabholung"
-      ],
-      "tip": null,
-      "notes": {},
-      "detail_url": null,
-      "key": "b-gelbrett",
-      "fingerprint": "d4fe89976bd8"
-    },
-    {
-      "term": "Bügeleisen",
-      "destinations": [
-        "weiternutzen",
-        "wertstoffhof",
-        "wertstoffmobil",
-        "halle2"
-      ],
-      "labels": [
-        "Weiternutzen",
-        "Wertstoffhöfe",
-        "Wertstoffmobil",
-        "Halle 2 (gut erhaltenes)"
-      ],
-      "tip": null,
-      "notes": {
-        "weiternutzen": "Verschenken, tauschen, kaufen, finden, reparieren... zu schade zum Wegwerfen!",
-        "wertstoffmobil": "Sie wollen Haushaltsgegenstände, Batterien, Energiesparlampen oder Elektrokleingeräte entsorgen?Das Wertstoffmobil hält ganz in Ihrer Nähe …",
-        "halle2": "Gut erhaltenes für die Halle 2"
-      },
-      "detail_url": "https://www.awm-muenchen.de/abfall-entsorgen/abfalllexikon/detailansicht-lexikoneintrag/buegeleisen",
-      "key": "b-geleisen",
-      "fingerprint": "b7a4c93d7405"
-    },
-    {
-      "term": "Bügelmaschine, Bügelpresse, Mangel",
-      "destinations": [
-        "wertstoffhof",
-        "sperrmuell"
-      ],
-      "labels": [
-        "Wertstoffhof",
-        "Sperrmüllabholung"
-      ],
-      "tip": null,
-      "notes": {},
-      "detail_url": null,
-      "key": "b-gelmaschine-b-gelpresse-mangel",
-      "fingerprint": "68eaa4072dc0"
-    },
-    {
-      "term": "Böller, Feuerwerkskörper",
-      "destinations": [
-        "restmuell"
-      ],
-      "labels": [
-        "Restmülltonne"
-      ],
-      "tip": null,
-      "notes": {
-        "restmuell": "Alle Abfälle, die Sie in der Restmülltonne entsorgen, landen in der Müllverbrennungsanlage. Entsorgen Sie deshalb in der Restmülltonne bitte nur die Abfälle, die nicht mehr recycelt werden können."
-      },
-      "detail_url": "https://www.awm-muenchen.de/abfall-entsorgen/abfalllexikon/detailansicht-lexikoneintrag/boeller-feuerwerkskoerper",
-      "key": "b-ller-feuerwerksk-rper",
-      "fingerprint": "5e5bdef48d79"
-    },
-    {
-      "term": "Bürostuhl, Büromöbel",
-      "destinations": [
-        "weiternutzen",
-        "wertstoffhof",
-        "sperrmuell"
-      ],
-      "labels": [
-        "Weiternutzen",
-        "Wertstoffhöfe",
-        "Sperrmüllabholung"
-      ],
-      "tip": null,
-      "notes": {
-        "weiternutzen": "Verschenken, tauschen, kaufen, finden, reparieren... zu schade zum Wegwerfen!",
-        "sperrmuell": "Haben Sie sperrige Gegenstände, die Sie schon lange loswerden wollten? Dann sind Sie beim Sperrmüllabholdienst des AWM richtig.Die Sperrmüllabfuhr des Abfallwirtschaftsbetriebes entsorgt auch den Sperrmüll von Vereinen, Institutionen und Gewerbebetrieben."
-      },
-      "detail_url": "https://www.awm-muenchen.de/abfall-entsorgen/abfalllexikon/detailansicht-lexikoneintrag/buerostuhl-bueromoebel",
-      "key": "b-rostuhl-b-rom-bel",
-      "fingerprint": "6e2d96fd2c21"
+      "key": "autoteile-felgen-stossdaempfer",
+      "fingerprint": "ef51bc4e7857"
     },
     {
       "term": "Babyflaschen",
@@ -812,8 +713,8 @@
         "wertstoffmobil": "Sie wollen Haushaltsgegenstände, Batterien, Energiesparlampen oder Elektrokleingeräte entsorgen?Das Wertstoffmobil hält ganz in Ihrer Nähe …"
       },
       "detail_url": "https://www.awm-muenchen.de/abfall-entsorgen/abfalllexikon/detailansicht-lexikoneintrag/batterieladegeraet",
-      "key": "batterieladeger-t",
-      "fingerprint": "d6ed53921d0e"
+      "key": "batterieladegeraet",
+      "fingerprint": "5088d5d4aa46"
     },
     {
       "term": "Batterien, Knopfzellen",
@@ -1000,8 +901,8 @@
         "altkleider": "Die Altkleidercontainer des AWM stehen im ganzen Stadtgebiet. Die Erlöse aus der Verwertung stabilisieren die Müllgebühren und kommen somit den Gebührenzahlern zugute."
       },
       "detail_url": "https://www.awm-muenchen.de/abfall-entsorgen/abfalllexikon/detailansicht-lexikoneintrag/bettwaesche",
-      "key": "bettw-sche",
-      "fingerprint": "f17992abe8dc"
+      "key": "bettwaesche",
+      "fingerprint": "e51dbac95f1d"
     },
     {
       "term": "Biertisch, Bierbank",
@@ -1073,8 +974,8 @@
       "tip": "Nicht in die Biotonne: Braucht viel zu lange zum Verrotten!",
       "notes": {},
       "detail_url": null,
-      "key": "biot-te-bioplastik",
-      "fingerprint": "c6f4d64d5379"
+      "key": "biotuete-bioplastik",
+      "fingerprint": "226dc598a5bd"
     },
     {
       "term": "Bitumen",
@@ -1190,8 +1091,8 @@
       "tip": null,
       "notes": {},
       "detail_url": null,
-      "key": "blumenk-sten",
-      "fingerprint": "022cbd411c54"
+      "key": "blumenkaesten",
+      "fingerprint": "7e2792772498"
     },
     {
       "term": "Blumentöpfe",
@@ -1204,8 +1105,8 @@
       "tip": null,
       "notes": {},
       "detail_url": null,
-      "key": "blument-pfe",
-      "fingerprint": "58caf9ab6c3d"
+      "key": "blumentoepfe",
+      "fingerprint": "3e001c081872"
     },
     {
       "term": "Blutdruckmessgerät",
@@ -1222,8 +1123,8 @@
         "wertstoffmobil": "Sie wollen Haushaltsgegenstände, Batterien, Energiesparlampen oder Elektrokleingeräte entsorgen?Das Wertstoffmobil hält ganz in Ihrer Nähe …"
       },
       "detail_url": "https://www.awm-muenchen.de/abfall-entsorgen/abfalllexikon/detailansicht-lexikoneintrag/blutdruckmessgeraet",
-      "key": "blutdruckmessger-t",
-      "fingerprint": "66ebab923766"
+      "key": "blutdruckmessgeraet",
+      "fingerprint": "052d4f802f19"
     },
     {
       "term": "Bodenaushub",
@@ -1238,6 +1139,22 @@
       "detail_url": "https://www.awm-muenchen.de/abfall-entsorgen/abfalllexikon/detailansicht-lexikoneintrag/bodenaushub",
       "key": "bodenaushub",
       "fingerprint": "2571b8d754a9"
+    },
+    {
+      "term": "Böller, Feuerwerkskörper",
+      "destinations": [
+        "restmuell"
+      ],
+      "labels": [
+        "Restmülltonne"
+      ],
+      "tip": null,
+      "notes": {
+        "restmuell": "Alle Abfälle, die Sie in der Restmülltonne entsorgen, landen in der Müllverbrennungsanlage. Entsorgen Sie deshalb in der Restmülltonne bitte nur die Abfälle, die nicht mehr recycelt werden können."
+      },
+      "detail_url": "https://www.awm-muenchen.de/abfall-entsorgen/abfalllexikon/detailansicht-lexikoneintrag/boeller-feuerwerkskoerper",
+      "key": "boeller-feuerwerkskoerper",
+      "fingerprint": "4cc8badbb60e"
     },
     {
       "term": "Bohrmaschine",
@@ -1311,8 +1228,8 @@
         "problemabfall": "Sie können beim Giftmobil Abfälle mit problematischen Inhaltsstoffen kostenlos abgeben."
       },
       "detail_url": "https://www.awm-muenchen.de/abfall-entsorgen/abfalllexikon/detailansicht-lexikoneintrag/bremsfluessigkeit",
-      "key": "bremsfl-ssigkeit",
-      "fingerprint": "84b8f9c035cc"
+      "key": "bremsfluessigkeit",
+      "fingerprint": "c6a837f6be43"
     },
     {
       "term": "Brennholz, Bretter",
@@ -1355,8 +1272,8 @@
       "tip": "Das Sichtfenster muss nicht entfernt werden",
       "notes": {},
       "detail_url": null,
-      "key": "briefumschl-ge-kuverts",
-      "fingerprint": "0dfe4c5dbd96"
+      "key": "briefumschlaege-kuverts",
+      "fingerprint": "f8838d64edce"
     },
     {
       "term": "Briketts, Grillkohle",
@@ -1401,8 +1318,8 @@
       "tip": "Aufkleber bitte \"Bitte keine Werbung\" reduziert die Papierflut",
       "notes": {},
       "detail_url": null,
-      "key": "brosch-ren-flyer",
-      "fingerprint": "01909cf507cd"
+      "key": "broschueren-flyer",
+      "fingerprint": "04a6003f797a"
     },
     {
       "term": "Brot, Backwaren",
@@ -1433,8 +1350,109 @@
         "restmuell": "Alle Abfälle, die Sie in der Restmülltonne entsorgen, landen in der Müllverbrennungsanlage. Entsorgen Sie deshalb in der Restmülltonne bitte nur die Abfälle, die nicht mehr recycelt werden können."
       },
       "detail_url": "https://www.awm-muenchen.de/abfall-entsorgen/abfalllexikon/detailansicht-lexikoneintrag/buchsbaumzuensler-gartenabfaelle",
-      "key": "buchsbaumz-nsler-gartenabf-lle",
-      "fingerprint": "402979a2a2b2"
+      "key": "buchsbaumzuensler-gartenabfaelle",
+      "fingerprint": "561ba80b28d1"
+    },
+    {
+      "term": "Bücher",
+      "destinations": [
+        "weiternutzen",
+        "wertstoffhof",
+        "papier",
+        "halle2"
+      ],
+      "labels": [
+        "Weiternutzen",
+        "Wertstoffhöfe",
+        "Papiertonne",
+        "Halle 2 (gut erhaltenes)"
+      ],
+      "tip": null,
+      "notes": {
+        "weiternutzen": "Verschenken, tauschen, kaufen, finden, reparieren... zu schade zum Wegwerfen!",
+        "papier": "In die gebührenfreien Papiertonnen gehört Papier und Pappe.",
+        "halle2": "Gut erhaltenes für die Halle 2"
+      },
+      "detail_url": "https://www.awm-muenchen.de/abfall-entsorgen/abfalllexikon/detailansicht-lexikoneintrag/buecher",
+      "key": "buecher",
+      "fingerprint": "4d7e924cc6f4"
+    },
+    {
+      "term": "Bügelbrett",
+      "destinations": [
+        "wertstoffhof",
+        "sperrmuell"
+      ],
+      "labels": [
+        "Wertstoffhof",
+        "Sperrmüllabholung"
+      ],
+      "tip": null,
+      "notes": {},
+      "detail_url": null,
+      "key": "buegelbrett",
+      "fingerprint": "cd2124960fea"
+    },
+    {
+      "term": "Bügeleisen",
+      "destinations": [
+        "weiternutzen",
+        "wertstoffhof",
+        "wertstoffmobil",
+        "halle2"
+      ],
+      "labels": [
+        "Weiternutzen",
+        "Wertstoffhöfe",
+        "Wertstoffmobil",
+        "Halle 2 (gut erhaltenes)"
+      ],
+      "tip": null,
+      "notes": {
+        "weiternutzen": "Verschenken, tauschen, kaufen, finden, reparieren... zu schade zum Wegwerfen!",
+        "wertstoffmobil": "Sie wollen Haushaltsgegenstände, Batterien, Energiesparlampen oder Elektrokleingeräte entsorgen?Das Wertstoffmobil hält ganz in Ihrer Nähe …",
+        "halle2": "Gut erhaltenes für die Halle 2"
+      },
+      "detail_url": "https://www.awm-muenchen.de/abfall-entsorgen/abfalllexikon/detailansicht-lexikoneintrag/buegeleisen",
+      "key": "buegeleisen",
+      "fingerprint": "bb829a238182"
+    },
+    {
+      "term": "Bügelmaschine, Bügelpresse, Mangel",
+      "destinations": [
+        "wertstoffhof",
+        "sperrmuell"
+      ],
+      "labels": [
+        "Wertstoffhof",
+        "Sperrmüllabholung"
+      ],
+      "tip": null,
+      "notes": {},
+      "detail_url": null,
+      "key": "buegelmaschine-buegelpresse-mangel",
+      "fingerprint": "2b3869e42c6a"
+    },
+    {
+      "term": "Bürostuhl, Büromöbel",
+      "destinations": [
+        "weiternutzen",
+        "wertstoffhof",
+        "sperrmuell"
+      ],
+      "labels": [
+        "Weiternutzen",
+        "Wertstoffhöfe",
+        "Sperrmüllabholung"
+      ],
+      "tip": null,
+      "notes": {
+        "weiternutzen": "Verschenken, tauschen, kaufen, finden, reparieren... zu schade zum Wegwerfen!",
+        "sperrmuell": "Haben Sie sperrige Gegenstände, die Sie schon lange loswerden wollten? Dann sind Sie beim Sperrmüllabholdienst des AWM richtig.Die Sperrmüllabfuhr des Abfallwirtschaftsbetriebes entsorgt auch den Sperrmüll von Vereinen, Institutionen und Gewerbebetrieben."
+      },
+      "detail_url": "https://www.awm-muenchen.de/abfall-entsorgen/abfalllexikon/detailansicht-lexikoneintrag/buerostuhl-bueromoebel",
+      "key": "buerostuhl-bueromoebel",
+      "fingerprint": "6f0de0484ebe"
     },
     {
       "term": "Buntmetalle, Bronze, Messing, Kupfer",
@@ -1489,8 +1507,8 @@
       "tip": "CD-Hüllen können bei Büchereien abgegeben werden",
       "notes": {},
       "detail_url": null,
-      "key": "cd-h-llen",
-      "fingerprint": "c80052e405be"
+      "key": "cd-huellen",
+      "fingerprint": "a6e1f5fa046a"
     },
     {
       "term": "CD-Player",
@@ -1737,8 +1755,8 @@
       "tip": null,
       "notes": {},
       "detail_url": null,
-      "key": "dachgep-cktr-ger",
-      "fingerprint": "539d3971be9f"
+      "key": "dachgepaecktraeger",
+      "fingerprint": "27856fb38c95"
     },
     {
       "term": "Dachpappe",
@@ -2051,8 +2069,8 @@
         "sperrmuell": "Haben Sie sperrige Gegenstände, die Sie schon lange loswerden wollten? Dann sind Sie beim Sperrmüllabholdienst des AWM richtig.Die Sperrmüllabfuhr des Abfallwirtschaftsbetriebes entsorgt auch den Sperrmüll von Vereinen, Institutionen und Gewerbebetrieben."
       },
       "detail_url": "https://www.awm-muenchen.de/abfall-entsorgen/abfalllexikon/detailansicht-lexikoneintrag/eckbaenke",
-      "key": "eckb-nke",
-      "fingerprint": "d5501d55d9de"
+      "key": "eckbaenke",
+      "fingerprint": "739dfb0b174f"
     },
     {
       "term": "Eierkartons, Eierschachteln",
@@ -2133,8 +2151,8 @@
       "tip": null,
       "notes": {},
       "detail_url": null,
-      "key": "einweckgl-ser",
-      "fingerprint": "3a7d773f8f38"
+      "key": "einweckglaeser",
+      "fingerprint": "318772de9a02"
     },
     {
       "term": "Einweckgummi",
@@ -2263,8 +2281,8 @@
         "wertstoffmobil": "Sie wollen Haushaltsgegenstände, Batterien, Energiesparlampen oder Elektrokleingeräte entsorgen?Das Wertstoffmobil hält ganz in Ihrer Nähe …"
       },
       "detail_url": "https://www.awm-muenchen.de/abfall-entsorgen/abfalllexikon/detailansicht-lexikoneintrag/elektrische-zahnbuerste",
-      "key": "elektrische-zahnb-rste",
-      "fingerprint": "182ddfee47a1"
+      "key": "elektrische-zahnbuerste",
+      "fingerprint": "4f96c163a415"
     },
     {
       "term": "Elektro-/Elektronikschrott",
@@ -2584,30 +2602,6 @@
       "fingerprint": "e0f50b0f42eb"
     },
     {
-      "term": "Föhn",
-      "destinations": [
-        "weiternutzen",
-        "wertstoffhof",
-        "wertstoffmobil",
-        "halle2"
-      ],
-      "labels": [
-        "Weiternutzen",
-        "Wertstoffhöfe",
-        "Wertstoffmobil",
-        "Halle 2 (gut erhaltenes)"
-      ],
-      "tip": null,
-      "notes": {
-        "weiternutzen": "Verschenken, tauschen, kaufen, finden, reparieren... zu schade zum Wegwerfen!",
-        "wertstoffmobil": "Sie wollen Haushaltsgegenstände, Batterien, Energiesparlampen oder Elektrokleingeräte entsorgen?Das Wertstoffmobil hält ganz in Ihrer Nähe …",
-        "halle2": "Gut erhaltenes für die Halle 2"
-      },
-      "detail_url": "https://www.awm-muenchen.de/abfall-entsorgen/abfalllexikon/detailansicht-lexikoneintrag/foehn",
-      "key": "f-hn",
-      "fingerprint": "58b5c6d13f93"
-    },
-    {
       "term": "Fahrrad, E-Bike",
       "destinations": [
         "weiternutzen",
@@ -2721,8 +2715,8 @@
         "wertstoffmobil": "Sie wollen Haushaltsgegenstände, Batterien, Energiesparlampen oder Elektrokleingeräte entsorgen?Das Wertstoffmobil hält ganz in Ihrer Nähe …"
       },
       "detail_url": "https://www.awm-muenchen.de/abfall-entsorgen/abfalllexikon/detailansicht-lexikoneintrag/faxgeraete",
-      "key": "faxger-te",
-      "fingerprint": "16d941976102"
+      "key": "faxgeraete",
+      "fingerprint": "921b5a123445"
     },
     {
       "term": "Federbetten",
@@ -2879,8 +2873,8 @@
       "tip": null,
       "notes": {},
       "detail_url": null,
-      "key": "feuchtt-cher-kosmetikt-cher-papierhandt-cher",
-      "fingerprint": "0e0c93f3d506"
+      "key": "feuchttuecher-kosmetiktuecher-papierhandtuecher",
+      "fingerprint": "b76030056dbb"
     },
     {
       "term": "Feuerlöscher",
@@ -2895,8 +2889,8 @@
         "wertstoffhof": "Bitte beachten Sie die Annahmezeiten für Problemstoffe!"
       },
       "detail_url": "https://www.awm-muenchen.de/abfall-entsorgen/abfalllexikon/detailansicht-lexikoneintrag/feuerloescher",
-      "key": "feuerl-scher",
-      "fingerprint": "7267ff0e6aa2"
+      "key": "feuerloescher",
+      "fingerprint": "9edfecdfd451"
     },
     {
       "term": "Feuerzeuge",
@@ -2956,8 +2950,8 @@
         "wertstoffmobil": "Sie wollen Haushaltsgegenstände, Batterien, Energiesparlampen oder Elektrokleingeräte entsorgen?Das Wertstoffmobil hält ganz in Ihrer Nähe …"
       },
       "detail_url": "https://www.awm-muenchen.de/abfall-entsorgen/abfalllexikon/detailansicht-lexikoneintrag/fixierfluessigkeit",
-      "key": "fixierfl-ssigkeit",
-      "fingerprint": "5cc8cfa9c4ca"
+      "key": "fixierfluessigkeit",
+      "fingerprint": "9ee2f0b8fb40"
     },
     {
       "term": "Flachglas",
@@ -3004,6 +2998,30 @@
       "detail_url": null,
       "key": "fleisch-wurst-fisch",
       "fingerprint": "cdbc33a53a1c"
+    },
+    {
+      "term": "Föhn",
+      "destinations": [
+        "weiternutzen",
+        "wertstoffhof",
+        "wertstoffmobil",
+        "halle2"
+      ],
+      "labels": [
+        "Weiternutzen",
+        "Wertstoffhöfe",
+        "Wertstoffmobil",
+        "Halle 2 (gut erhaltenes)"
+      ],
+      "tip": null,
+      "notes": {
+        "weiternutzen": "Verschenken, tauschen, kaufen, finden, reparieren... zu schade zum Wegwerfen!",
+        "wertstoffmobil": "Sie wollen Haushaltsgegenstände, Batterien, Energiesparlampen oder Elektrokleingeräte entsorgen?Das Wertstoffmobil hält ganz in Ihrer Nähe …",
+        "halle2": "Gut erhaltenes für die Halle 2"
+      },
+      "detail_url": "https://www.awm-muenchen.de/abfall-entsorgen/abfalllexikon/detailansicht-lexikoneintrag/foehn",
+      "key": "foehn",
+      "fingerprint": "4767573918d4"
     },
     {
       "term": "Fotoalbum",
@@ -3124,39 +3142,6 @@
       "fingerprint": "35e16cf6de28"
     },
     {
-      "term": "Fußball",
-      "destinations": [
-        "restmuell"
-      ],
-      "labels": [
-        "Restmülltonne"
-      ],
-      "tip": null,
-      "notes": {},
-      "detail_url": null,
-      "key": "fu-ball",
-      "fingerprint": "e6d0ad01aa2d"
-    },
-    {
-      "term": "Fußbodenreiniger",
-      "destinations": [
-        "wertstoffhof",
-        "problemabfall"
-      ],
-      "labels": [
-        "Wertstoffhöfe",
-        "Giftmobil"
-      ],
-      "tip": null,
-      "notes": {
-        "wertstoffhof": "Bitte beachten Sie die Annahmezeiten für Problemstoffe!",
-        "problemabfall": "Sie können beim Giftmobil Abfälle mit problematischen Inhaltsstoffen kostenlos abgeben."
-      },
-      "detail_url": "https://www.awm-muenchen.de/abfall-entsorgen/abfalllexikon/detailansicht-lexikoneintrag/fussbodenreiniger",
-      "key": "fu-bodenreiniger",
-      "fingerprint": "1fae788558c0"
-    },
-    {
       "term": "Fungizide",
       "destinations": [
         "wertstoffhof",
@@ -3176,7 +3161,7 @@
       "fingerprint": "45bab7367ce8"
     },
     {
-      "term": "Gürtel (Leder, Kunststoff)",
+      "term": "Fußball",
       "destinations": [
         "restmuell"
       ],
@@ -3186,8 +3171,27 @@
       "tip": null,
       "notes": {},
       "detail_url": null,
-      "key": "g-rtel-leder-kunststoff",
-      "fingerprint": "6df5eb49ca40"
+      "key": "fussball",
+      "fingerprint": "0b26fc7f27dd"
+    },
+    {
+      "term": "Fußbodenreiniger",
+      "destinations": [
+        "wertstoffhof",
+        "problemabfall"
+      ],
+      "labels": [
+        "Wertstoffhöfe",
+        "Giftmobil"
+      ],
+      "tip": null,
+      "notes": {
+        "wertstoffhof": "Bitte beachten Sie die Annahmezeiten für Problemstoffe!",
+        "problemabfall": "Sie können beim Giftmobil Abfälle mit problematischen Inhaltsstoffen kostenlos abgeben."
+      },
+      "detail_url": "https://www.awm-muenchen.de/abfall-entsorgen/abfalllexikon/detailansicht-lexikoneintrag/fussbodenreiniger",
+      "key": "fussbodenreiniger",
+      "fingerprint": "875304efb5db"
     },
     {
       "term": "Gardinen",
@@ -3242,8 +3246,8 @@
         "containerdienst": "Für die Abholung größerer Abfallmengen können Sie unseren Containerdienst beauftragen. Die Abfälle werden dann in kundeneigenen (Press-)Containern oder in Containern des Abfallwirtschaftsbetriebes transportiert und entsorgt – auf Abruf oder nach einem festen Turnus."
       },
       "detail_url": "https://www.awm-muenchen.de/abfall-entsorgen/abfalllexikon/detailansicht-lexikoneintrag/gartenabfaelle",
-      "key": "gartenabf-lle",
-      "fingerprint": "63624a020e54"
+      "key": "gartenabfaelle",
+      "fingerprint": "4e0edfe26f0c"
     },
     {
       "term": "Gartenfolien",
@@ -3270,8 +3274,8 @@
       "tip": "Vor der Abgabe des Gerätes sämtliche Flüssigkeiten, wie Öl, Benzin oder Diesel ablassen.",
       "notes": {},
       "detail_url": null,
-      "key": "gartenh-cksler",
-      "fingerprint": "29fe88de810f"
+      "key": "gartenhaecksler",
+      "fingerprint": "4b6d833c3398"
     },
     {
       "term": "Gartenschlauch",
@@ -3298,8 +3302,8 @@
       "tip": null,
       "notes": {},
       "detail_url": null,
-      "key": "gartenz-une",
-      "fingerprint": "e9151f08a0af"
+      "key": "gartenzaeune",
+      "fingerprint": "d080dd7d2588"
     },
     {
       "term": "Gasflaschen",
@@ -3332,8 +3336,8 @@
         "sperrmuell": "Haben Sie sperrige Gegenstände, die Sie schon lange loswerden wollten? Dann sind Sie beim Sperrmüllabholdienst des AWM richtig.Die Sperrmüllabfuhr des Abfallwirtschaftsbetriebes entsorgt auch den Sperrmüll von Vereinen, Institutionen und Gewerbebetrieben."
       },
       "detail_url": "https://www.awm-muenchen.de/abfall-entsorgen/abfalllexikon/detailansicht-lexikoneintrag/gasheizoefen-gasherde",
-      "key": "gasheiz-fen-gasherde",
-      "fingerprint": "db6cf6efbec4"
+      "key": "gasheizoefen-gasherde",
+      "fingerprint": "260ec6085dd6"
     },
     {
       "term": "Gaskartuschen (Camping, Helium, Lachgas)",
@@ -3395,8 +3399,8 @@
       "tip": null,
       "notes": {},
       "detail_url": null,
-      "key": "gem-se-roh-gekocht",
-      "fingerprint": "1dd88a38be3b"
+      "key": "gemuese-roh-gekocht",
+      "fingerprint": "fc2b31fbc35a"
     },
     {
       "term": "Geschirr, Porzellan",
@@ -3429,8 +3433,8 @@
       "tip": null,
       "notes": {},
       "detail_url": null,
-      "key": "geschirrsp-ler",
-      "fingerprint": "9fa7583a6591"
+      "key": "geschirrspueler",
+      "fingerprint": "5be9e2d1ab4e"
     },
     {
       "term": "Getränkekarton, Tetrapack",
@@ -3443,8 +3447,8 @@
       "tip": null,
       "notes": {},
       "detail_url": null,
-      "key": "getr-nkekarton-tetrapack",
-      "fingerprint": "700b0d67eaef"
+      "key": "getraenkekarton-tetrapack",
+      "fingerprint": "a1dd8b6ac830"
     },
     {
       "term": "Gießkannen",
@@ -3457,8 +3461,8 @@
       "tip": null,
       "notes": {},
       "detail_url": null,
-      "key": "gie-kannen",
-      "fingerprint": "e8dc13090492"
+      "key": "giesskannen",
+      "fingerprint": "3d2f4db959c4"
     },
     {
       "term": "Gips/Gasbeton/Ytong",
@@ -3507,36 +3511,6 @@
       "fingerprint": "f48bafcf57a1"
     },
     {
-      "term": "Glückwunschtelegramm",
-      "destinations": [
-        "wertstoffhof",
-        "wertstoffmobil"
-      ],
-      "labels": [
-        "Wertstoffhof",
-        "Wertstoffmobil"
-      ],
-      "tip": null,
-      "notes": {},
-      "detail_url": null,
-      "key": "gl-ckwunschtelegramm",
-      "fingerprint": "db807e19fb81"
-    },
-    {
-      "term": "Glühlampen, Glühbirnen",
-      "destinations": [
-        "restmuell"
-      ],
-      "labels": [
-        "Restmülltonne"
-      ],
-      "tip": null,
-      "notes": {},
-      "detail_url": null,
-      "key": "gl-hlampen-gl-hbirnen",
-      "fingerprint": "31b029063d73"
-    },
-    {
       "term": "Glasflaschen",
       "destinations": [
         "wertstoffinsel"
@@ -3565,6 +3539,36 @@
       "fingerprint": "f72cb22344cf"
     },
     {
+      "term": "Glückwunschtelegramm",
+      "destinations": [
+        "wertstoffhof",
+        "wertstoffmobil"
+      ],
+      "labels": [
+        "Wertstoffhof",
+        "Wertstoffmobil"
+      ],
+      "tip": null,
+      "notes": {},
+      "detail_url": null,
+      "key": "glueckwunschtelegramm",
+      "fingerprint": "82ed3e864493"
+    },
+    {
+      "term": "Glühlampen, Glühbirnen",
+      "destinations": [
+        "restmuell"
+      ],
+      "labels": [
+        "Restmülltonne"
+      ],
+      "tip": null,
+      "notes": {},
+      "detail_url": null,
+      "key": "gluehlampen-gluehbirnen",
+      "fingerprint": "72f60c0d8983"
+    },
+    {
       "term": "Glykol",
       "destinations": [],
       "labels": [],
@@ -3585,8 +3589,8 @@
       "tip": null,
       "notes": {},
       "detail_url": null,
-      "key": "gr-ten-knochen",
-      "fingerprint": "0c381d091efe"
+      "key": "graeten-knochen",
+      "fingerprint": "ad64d2719f52"
     },
     {
       "term": "Grasschnitt",
@@ -3627,6 +3631,20 @@
       "detail_url": "https://www.awm-muenchen.de/abfall-entsorgen/abfalllexikon/detailansicht-lexikoneintrag/grillreiniger",
       "key": "grillreiniger",
       "fingerprint": "e0a5f0e5415a"
+    },
+    {
+      "term": "Gürtel (Leder, Kunststoff)",
+      "destinations": [
+        "restmuell"
+      ],
+      "labels": [
+        "Restmülltonne"
+      ],
+      "tip": null,
+      "notes": {},
+      "detail_url": null,
+      "key": "guertel-leder-kunststoff",
+      "fingerprint": "586159396744"
     },
     {
       "term": "Gummi",
@@ -3685,22 +3703,6 @@
       "fingerprint": "56e9bff31fb7"
     },
     {
-      "term": "Hörgeräte",
-      "destinations": [
-        "wertstoffhof",
-        "wertstoffmobil"
-      ],
-      "labels": [
-        "Wertstoffhof",
-        "Wertstoffmobil"
-      ],
-      "tip": null,
-      "notes": {},
-      "detail_url": null,
-      "key": "h-rger-te",
-      "fingerprint": "4eb53e47f490"
-    },
-    {
       "term": "Haarbürste",
       "destinations": [
         "restmuell"
@@ -3711,8 +3713,8 @@
       "tip": null,
       "notes": {},
       "detail_url": null,
-      "key": "haarb-rste",
-      "fingerprint": "4f18ac83f015"
+      "key": "haarbuerste",
+      "fingerprint": "ddedde9a5276"
     },
     {
       "term": "Haare",
@@ -3841,8 +3843,8 @@
       "tip": null,
       "notes": {},
       "detail_url": "https://www.awm-muenchen.de/abfall-entsorgen/abfalllexikon/detailansicht-lexikoneintrag/hbcdd-haltige-abfaelle",
-      "key": "hbcdd-haltige-abf-lle",
-      "fingerprint": "8293f19ec2ce"
+      "key": "hbcdd-haltige-abfaelle",
+      "fingerprint": "f2a45d046047"
     },
     {
       "term": "Heckenschnitt, Strauchschnitt, Baumschnitt",
@@ -3877,6 +3879,16 @@
       "fingerprint": "d5ba7283059d"
     },
     {
+      "term": "Heizkessel",
+      "destinations": [],
+      "labels": [],
+      "tip": null,
+      "notes": {},
+      "detail_url": "https://www.awm-muenchen.de/abfall-entsorgen/abfalllexikon/detailansicht-lexikoneintrag/heizkessel",
+      "key": "heizkessel",
+      "fingerprint": "20fcdb509694"
+    },
+    {
       "term": "Heizkörper",
       "destinations": [
         "wertstoffhof",
@@ -3891,18 +3903,8 @@
         "sperrmuell": "Haben Sie sperrige Gegenstände, die Sie schon lange loswerden wollten? Dann sind Sie beim Sperrmüllabholdienst des AWM richtig.Die Sperrmüllabfuhr des Abfallwirtschaftsbetriebes entsorgt auch den Sperrmüll von Vereinen, Institutionen und Gewerbebetrieben."
       },
       "detail_url": "https://www.awm-muenchen.de/abfall-entsorgen/abfalllexikon/detailansicht-lexikoneintrag/heizkoerper",
-      "key": "heizk-rper",
-      "fingerprint": "1330e2c964e8"
-    },
-    {
-      "term": "Heizkessel",
-      "destinations": [],
-      "labels": [],
-      "tip": null,
-      "notes": {},
-      "detail_url": "https://www.awm-muenchen.de/abfall-entsorgen/abfalllexikon/detailansicht-lexikoneintrag/heizkessel",
-      "key": "heizkessel",
-      "fingerprint": "20fcdb509694"
+      "key": "heizkoerper",
+      "fingerprint": "1a5e3502d1ed"
     },
     {
       "term": "Heizwesten, Heizjacken, beheizbare Kleidung",
@@ -3988,8 +3990,24 @@
         "halle2": "Gut erhaltenes für die Halle 2"
       },
       "detail_url": "https://www.awm-muenchen.de/abfall-entsorgen/abfalllexikon/detailansicht-lexikoneintrag/hi-fi-geraete-hi-fi-anlagen",
-      "key": "hi-fi-ger-te-hi-fi-anlagen",
-      "fingerprint": "221a99ecd4bb"
+      "key": "hi-fi-geraete-hi-fi-anlagen",
+      "fingerprint": "485a5e4f38c0"
+    },
+    {
+      "term": "Hörgeräte",
+      "destinations": [
+        "wertstoffhof",
+        "wertstoffmobil"
+      ],
+      "labels": [
+        "Wertstoffhof",
+        "Wertstoffmobil"
+      ],
+      "tip": null,
+      "notes": {},
+      "detail_url": null,
+      "key": "hoergeraete",
+      "fingerprint": "b85cc4229179"
     },
     {
       "term": "Hollywoodschaukel",
@@ -4111,8 +4129,8 @@
       "tip": null,
       "notes": {},
       "detail_url": null,
-      "key": "hydrokultur-bl-hton",
-      "fingerprint": "fd195c329f8b"
+      "key": "hydrokultur-blaehton",
+      "fingerprint": "921e5f45aedc"
     },
     {
       "term": "Imprägniermittel",
@@ -4130,8 +4148,8 @@
         "problemabfall": "Sie können beim Giftmobil Abfälle mit problematischen Inhaltsstoffen kostenlos abgeben."
       },
       "detail_url": "https://www.awm-muenchen.de/abfall-entsorgen/abfalllexikon/detailansicht-lexikoneintrag/impraegniermittel",
-      "key": "impr-gniermittel",
-      "fingerprint": "bb29db85496c"
+      "key": "impraegniermittel",
+      "fingerprint": "f89728ce4658"
     },
     {
       "term": "Insektenschutzmittel",
@@ -4217,43 +4235,6 @@
       "fingerprint": "873f18c83d72"
     },
     {
-      "term": "Kühlschrank, Tiefkühltruhe",
-      "destinations": [
-        "wertstoffhof",
-        "sperrmuell"
-      ],
-      "labels": [
-        "Wertstoffhöfe",
-        "Sperrmüllabholung"
-      ],
-      "tip": null,
-      "notes": {
-        "sperrmuell": "Haben Sie sperrige Gegenstände, die Sie schon lange loswerden wollten? Dann sind Sie beim Sperrmüllabholdienst des AWM richtig.Die Sperrmüllabfuhr des Abfallwirtschaftsbetriebes entsorgt auch den Sperrmüll von Vereinen, Institutionen und Gewerbebetrieben."
-      },
-      "detail_url": "https://www.awm-muenchen.de/abfall-entsorgen/abfalllexikon/detailansicht-lexikoneintrag/kuehlschrank-tiefkuehltruhe",
-      "key": "k-hlschrank-tiefk-hltruhe",
-      "fingerprint": "2612fcd2caa4"
-    },
-    {
-      "term": "Kühlwasser, Kühlflüssigkeit",
-      "destinations": [
-        "wertstoffhof",
-        "problemabfall"
-      ],
-      "labels": [
-        "Wertstoffhöfe",
-        "Giftmobil"
-      ],
-      "tip": null,
-      "notes": {
-        "wertstoffhof": "Bitte beachten Sie die Annahmezeiten für Problemstoffe!",
-        "problemabfall": "Sie können beim Giftmobil Abfälle mit problematischen Inhaltsstoffen kostenlos abgeben."
-      },
-      "detail_url": "https://www.awm-muenchen.de/abfall-entsorgen/abfalllexikon/detailansicht-lexikoneintrag/kuehlwasser-kuehlfluessigkeit",
-      "key": "k-hlwasser-k-hlfl-ssigkeit",
-      "fingerprint": "3f4664dae05f"
-    },
-    {
       "term": "Kachelofen",
       "destinations": [
         "wertstoffhof"
@@ -4298,6 +4279,27 @@
       "fingerprint": "4e6ed95e5a4b"
     },
     {
+      "term": "Kaffeemaschine",
+      "destinations": [
+        "weiternutzen",
+        "wertstoffhof",
+        "halle2"
+      ],
+      "labels": [
+        "Weiternutzen",
+        "Wertstoffhöfe",
+        "Halle 2 (gut erhaltenes)"
+      ],
+      "tip": null,
+      "notes": {
+        "weiternutzen": "Verschenken, tauschen, kaufen, finden, reparieren... zu schade zum Wegwerfen!",
+        "halle2": "Gut erhaltenes für die Halle 2"
+      },
+      "detail_url": "https://www.awm-muenchen.de/abfall-entsorgen/abfalllexikon/detailansicht-lexikoneintrag/kaffeemaschine",
+      "key": "kaffeemaschine",
+      "fingerprint": "c7ae872a4509"
+    },
+    {
       "term": "Kaffeemühle (elektrisch)",
       "destinations": [
         "weiternutzen",
@@ -4318,29 +4320,8 @@
         "halle2": "Gut erhaltenes für die Halle 2"
       },
       "detail_url": "https://www.awm-muenchen.de/abfall-entsorgen/abfalllexikon/detailansicht-lexikoneintrag/kaffeemuehle-elektrisch",
-      "key": "kaffeem-hle-elektrisch",
-      "fingerprint": "4aff0c4c4224"
-    },
-    {
-      "term": "Kaffeemaschine",
-      "destinations": [
-        "weiternutzen",
-        "wertstoffhof",
-        "halle2"
-      ],
-      "labels": [
-        "Weiternutzen",
-        "Wertstoffhöfe",
-        "Halle 2 (gut erhaltenes)"
-      ],
-      "tip": null,
-      "notes": {
-        "weiternutzen": "Verschenken, tauschen, kaufen, finden, reparieren... zu schade zum Wegwerfen!",
-        "halle2": "Gut erhaltenes für die Halle 2"
-      },
-      "detail_url": "https://www.awm-muenchen.de/abfall-entsorgen/abfalllexikon/detailansicht-lexikoneintrag/kaffeemaschine",
-      "key": "kaffeemaschine",
-      "fingerprint": "c7ae872a4509"
+      "key": "kaffeemuehle-elektrisch",
+      "fingerprint": "7a3b15236884"
     },
     {
       "term": "Kaffeesatz, Teesatz",
@@ -4487,8 +4468,8 @@
         "weiternutzen": "Verschenken, tauschen, kaufen, finden, reparieren... zu schade zum Wegwerfen!"
       },
       "detail_url": "https://www.awm-muenchen.de/abfall-entsorgen/abfalllexikon/detailansicht-lexikoneintrag/kettensaegen",
-      "key": "kettens-gen",
-      "fingerprint": "afccdf9b47bb"
+      "key": "kettensaegen",
+      "fingerprint": "c513f389232a"
     },
     {
       "term": "Keyboard",
@@ -4591,8 +4572,8 @@
       "tip": null,
       "notes": {},
       "detail_url": null,
-      "key": "klarsichth-llen",
-      "fingerprint": "df7e9c2e3369"
+      "key": "klarsichthuellen",
+      "fingerprint": "e99440fd1342"
     },
     {
       "term": "Klavier, Flügel, Piano",
@@ -4609,8 +4590,8 @@
         "weiternutzen": "Verschenken, tauschen, kaufen, finden, reparieren... zu schade zum Wegwerfen!"
       },
       "detail_url": "https://www.awm-muenchen.de/abfall-entsorgen/abfalllexikon/detailansicht-lexikoneintrag/klavier-fluegel-piano",
-      "key": "klavier-fl-gel-piano",
-      "fingerprint": "0cc2ea7dd3ac"
+      "key": "klavier-fluegel-piano",
+      "fingerprint": "122ef80ab554"
     },
     {
       "term": "Klebeband",
@@ -4673,8 +4654,8 @@
       "tip": "reine Metallkleiderbügel kann man auch am Wertstoffhof abgeben",
       "notes": {},
       "detail_url": null,
-      "key": "kleiderb-gel",
-      "fingerprint": "701faa428fb2"
+      "key": "kleiderbuegel",
+      "fingerprint": "9222a38afbdb"
     },
     {
       "term": "(Klein-)Tierstreu",
@@ -4701,8 +4682,8 @@
       "tip": null,
       "notes": {},
       "detail_url": null,
-      "key": "klob-rste",
-      "fingerprint": "1008f18da06a"
+      "key": "klobuerste",
+      "fingerprint": "f5346d7a7916"
     },
     {
       "term": "Knetmasse",
@@ -4758,8 +4739,8 @@
         "halle2": "Gut erhaltenes für die Halle 2"
       },
       "detail_url": "https://www.awm-muenchen.de/abfall-entsorgen/abfalllexikon/detailansicht-lexikoneintrag/koffer-rucksaecke",
-      "key": "koffer-rucks-cke",
-      "fingerprint": "cf3464bfdfbc"
+      "key": "koffer-rucksaecke",
+      "fingerprint": "8a5f488dd344"
     },
     {
       "term": "Kohle",
@@ -4857,8 +4838,8 @@
       "tip": null,
       "notes": {},
       "detail_url": null,
-      "key": "kondome-pr-servative",
-      "fingerprint": "49f2e8b78940"
+      "key": "kondome-praeservative",
+      "fingerprint": "9cb169d2fdbf"
     },
     {
       "term": "Konservendosen, Blechdosen",
@@ -4903,8 +4884,8 @@
         "weiternutzen": "Verschenken, tauschen, kaufen, finden, reparieren... zu schade zum Wegwerfen!"
       },
       "detail_url": "https://www.awm-muenchen.de/abfall-entsorgen/abfalllexikon/detailansicht-lexikoneintrag/kopiergeraet",
-      "key": "kopierger-t",
-      "fingerprint": "0e144a11416a"
+      "key": "kopiergeraet",
+      "fingerprint": "6e234a31daa9"
     },
     {
       "term": "Korkboden",
@@ -4974,6 +4955,43 @@
       "fingerprint": "8ca653ebf411"
     },
     {
+      "term": "Kühlschrank, Tiefkühltruhe",
+      "destinations": [
+        "wertstoffhof",
+        "sperrmuell"
+      ],
+      "labels": [
+        "Wertstoffhöfe",
+        "Sperrmüllabholung"
+      ],
+      "tip": null,
+      "notes": {
+        "sperrmuell": "Haben Sie sperrige Gegenstände, die Sie schon lange loswerden wollten? Dann sind Sie beim Sperrmüllabholdienst des AWM richtig.Die Sperrmüllabfuhr des Abfallwirtschaftsbetriebes entsorgt auch den Sperrmüll von Vereinen, Institutionen und Gewerbebetrieben."
+      },
+      "detail_url": "https://www.awm-muenchen.de/abfall-entsorgen/abfalllexikon/detailansicht-lexikoneintrag/kuehlschrank-tiefkuehltruhe",
+      "key": "kuehlschrank-tiefkuehltruhe",
+      "fingerprint": "4986915fb06c"
+    },
+    {
+      "term": "Kühlwasser, Kühlflüssigkeit",
+      "destinations": [
+        "wertstoffhof",
+        "problemabfall"
+      ],
+      "labels": [
+        "Wertstoffhöfe",
+        "Giftmobil"
+      ],
+      "tip": null,
+      "notes": {
+        "wertstoffhof": "Bitte beachten Sie die Annahmezeiten für Problemstoffe!",
+        "problemabfall": "Sie können beim Giftmobil Abfälle mit problematischen Inhaltsstoffen kostenlos abgeben."
+      },
+      "detail_url": "https://www.awm-muenchen.de/abfall-entsorgen/abfalllexikon/detailansicht-lexikoneintrag/kuehlwasser-kuehlfluessigkeit",
+      "key": "kuehlwasser-kuehlfluessigkeit",
+      "fingerprint": "f4d1004c7d9c"
+    },
+    {
       "term": "Kugelschreiber, -minen",
       "destinations": [
         "restmuell"
@@ -5024,8 +5042,8 @@
         "problemabfall": "Sie können beim Giftmobil Abfälle mit problematischen Inhaltsstoffen kostenlos abgeben."
       },
       "detail_url": "https://www.awm-muenchen.de/abfall-entsorgen/abfalllexikon/detailansicht-lexikoneintrag/kunstharze-fluessig",
-      "key": "kunstharze-fl-ssig",
-      "fingerprint": "13fc3a258512"
+      "key": "kunstharze-fluessig",
+      "fingerprint": "becdf78e1242"
     },
     {
       "term": "Kunstrasen",
@@ -5072,25 +5090,6 @@
       "detail_url": null,
       "key": "kunststoffplane",
       "fingerprint": "bbd894904808"
-    },
-    {
-      "term": "Lösungsmittel",
-      "destinations": [
-        "wertstoffhof",
-        "problemabfall"
-      ],
-      "labels": [
-        "Wertstoffhöfe",
-        "Giftmobil"
-      ],
-      "tip": null,
-      "notes": {
-        "wertstoffhof": "Bitte beachten Sie die Annahmezeiten für Problemstoffe!",
-        "problemabfall": "Sie können beim Giftmobil Abfälle mit problematischen Inhaltsstoffen kostenlos abgeben."
-      },
-      "detail_url": "https://www.awm-muenchen.de/abfall-entsorgen/abfalllexikon/detailansicht-lexikoneintrag/loesungsmittel",
-      "key": "l-sungsmittel",
-      "fingerprint": "132e1a329a0d"
     },
     {
       "term": "Laborglas, Rauchglas, Bleiglas, Kristallglas",
@@ -5186,8 +5185,8 @@
         "halle2": "Gut erhaltenes für die Halle 2"
       },
       "detail_url": "https://www.awm-muenchen.de/abfall-entsorgen/abfalllexikon/detailansicht-lexikoneintrag/laminiergeraet",
-      "key": "laminierger-t",
-      "fingerprint": "fc72e367b14c"
+      "key": "laminiergeraet",
+      "fingerprint": "969be476dcdd"
     },
     {
       "term": "Lasur",
@@ -5281,25 +5280,6 @@
       "detail_url": "https://www.awm-muenchen.de/abfall-entsorgen/abfalllexikon/detailansicht-lexikoneintrag/lautsprecher",
       "key": "lautsprecher",
       "fingerprint": "6ac63c56ac0f"
-    },
-    {
-      "term": "Ölbinder",
-      "destinations": [
-        "wertstoffhof",
-        "problemabfall"
-      ],
-      "labels": [
-        "Wertstoffhöfe",
-        "Giftmobil"
-      ],
-      "tip": null,
-      "notes": {
-        "wertstoffhof": "Bitte beachten Sie die Annahmezeiten für Problemstoffe!",
-        "problemabfall": "Sie können beim Giftmobil Abfälle mit problematischen Inhaltsstoffen kostenlos abgeben."
-      },
-      "detail_url": "https://www.awm-muenchen.de/abfall-entsorgen/abfalllexikon/detailansicht-lexikoneintrag/oelbinder",
-      "key": "lbinder",
-      "fingerprint": "ce74e552d8a0"
     },
     {
       "term": "Lebensmittel (verdorben)",
@@ -5427,46 +5407,8 @@
         "wertstoffmobil": "Sie wollen Haushaltsgegenstände, Batterien, Energiesparlampen oder Elektrokleingeräte entsorgen?Das Wertstoffmobil hält ganz in Ihrer Nähe …"
       },
       "detail_url": "https://www.awm-muenchen.de/abfall-entsorgen/abfalllexikon/detailansicht-lexikoneintrag/leuchtstoffroehren-neonroehren-uv-roehren",
-      "key": "leuchtstoffr-hren-neonr-hren-uv-r-hren",
-      "fingerprint": "fe9bc5130710"
-    },
-    {
-      "term": "Ölfilter",
-      "destinations": [
-        "wertstoffhof",
-        "problemabfall"
-      ],
-      "labels": [
-        "Wertstoffhöfe",
-        "Giftmobil"
-      ],
-      "tip": null,
-      "notes": {
-        "wertstoffhof": "Bitte beachten Sie die Annahmezeiten für Problemstoffe!",
-        "problemabfall": "Sie können beim Giftmobil Abfälle mit problematischen Inhaltsstoffen kostenlos abgeben."
-      },
-      "detail_url": "https://www.awm-muenchen.de/abfall-entsorgen/abfalllexikon/detailansicht-lexikoneintrag/oelfilter",
-      "key": "lfilter",
-      "fingerprint": "7ae04d402c09"
-    },
-    {
-      "term": "ölhaltiges Material",
-      "destinations": [
-        "wertstoffhof",
-        "problemabfall"
-      ],
-      "labels": [
-        "Wertstoffhöfe",
-        "Giftmobil"
-      ],
-      "tip": null,
-      "notes": {
-        "wertstoffhof": "Bitte beachten Sie die Annahmezeiten für Problemstoffe!",
-        "problemabfall": "Sie können beim Giftmobil Abfälle mit problematischen Inhaltsstoffen kostenlos abgeben."
-      },
-      "detail_url": "https://www.awm-muenchen.de/abfall-entsorgen/abfalllexikon/detailansicht-lexikoneintrag/oelhaltiges-material",
-      "key": "lhaltiges-material",
-      "fingerprint": "96d2de617e54"
+      "key": "leuchtstoffroehren-neonroehren-uv-roehren",
+      "fingerprint": "1e425cb073c5"
     },
     {
       "term": "Liegen",
@@ -5529,50 +5471,23 @@
       "fingerprint": "73331918a35f"
     },
     {
-      "term": "Ölofen",
+      "term": "Lösungsmittel",
       "destinations": [
-        "wertstoffhof"
+        "wertstoffhof",
+        "problemabfall"
       ],
       "labels": [
-        "Wertstoffhöfe"
+        "Wertstoffhöfe",
+        "Giftmobil"
       ],
       "tip": null,
       "notes": {
-        "wertstoffhof": "Bitte beachten Sie die Annahmezeiten für Problemstoffe!"
+        "wertstoffhof": "Bitte beachten Sie die Annahmezeiten für Problemstoffe!",
+        "problemabfall": "Sie können beim Giftmobil Abfälle mit problematischen Inhaltsstoffen kostenlos abgeben."
       },
-      "detail_url": "https://www.awm-muenchen.de/abfall-entsorgen/abfalllexikon/detailansicht-lexikoneintrag/oelofen",
-      "key": "lofen",
-      "fingerprint": "71c2771e17e0"
-    },
-    {
-      "term": "Ölschlämme",
-      "destinations": [
-        "wertstoffhof"
-      ],
-      "labels": [
-        "Wertstoffhöfe"
-      ],
-      "tip": null,
-      "notes": {
-        "wertstoffhof": "Bitte beachten Sie die Annahmezeiten für Problemstoffe!"
-      },
-      "detail_url": "https://www.awm-muenchen.de/abfall-entsorgen/abfalllexikon/detailansicht-lexikoneintrag/oelschlaemme",
-      "key": "lschl-mme",
-      "fingerprint": "a03f8e937751"
-    },
-    {
-      "term": "Öltank",
-      "destinations": [
-        "wertstoffhof"
-      ],
-      "labels": [
-        "Wertstoffhöfe"
-      ],
-      "tip": null,
-      "notes": {},
-      "detail_url": "https://www.awm-muenchen.de/abfall-entsorgen/abfalllexikon/detailansicht-lexikoneintrag/oeltank",
-      "key": "ltank",
-      "fingerprint": "7ce0fe4daf90"
+      "detail_url": "https://www.awm-muenchen.de/abfall-entsorgen/abfalllexikon/detailansicht-lexikoneintrag/loesungsmittel",
+      "key": "loesungsmittel",
+      "fingerprint": "1b84fc9e264c"
     },
     {
       "term": "Luftballon",
@@ -5646,69 +5561,8 @@
       "tip": null,
       "notes": {},
       "detail_url": null,
-      "key": "luftpolsterumschl-ge-versandtaschen-mit-innenfutter",
-      "fingerprint": "8bc7d21680b9"
-    },
-    {
-      "term": "Möbel",
-      "destinations": [
-        "weiternutzen",
-        "wertstoffhof",
-        "sperrmuell",
-        "halle2"
-      ],
-      "labels": [
-        "Weiternutzen",
-        "Wertstoffhöfe",
-        "Sperrmüllabholung",
-        "Halle 2 (gut erhaltenes)"
-      ],
-      "tip": null,
-      "notes": {
-        "weiternutzen": "Verschenken, tauschen, kaufen, finden, reparieren... zu schade zum Wegwerfen!",
-        "sperrmuell": "Haben Sie sperrige Gegenstände, die Sie schon lange loswerden wollten? Dann sind Sie beim Sperrmüllabholdienst des AWM richtig.Die Sperrmüllabfuhr des Abfallwirtschaftsbetriebes entsorgt auch den Sperrmüll von Vereinen, Institutionen und Gewerbebetrieben.",
-        "halle2": "Gut erhaltenes für die Halle 2"
-      },
-      "detail_url": "https://www.awm-muenchen.de/abfall-entsorgen/abfalllexikon/detailansicht-lexikoneintrag/moebel",
-      "key": "m-bel",
-      "fingerprint": "156b0b01fd08"
-    },
-    {
-      "term": "Möbelpolitur, Möbelpflegemittel",
-      "destinations": [
-        "wertstoffhof",
-        "problemabfall"
-      ],
-      "labels": [
-        "Wertstoffhöfe",
-        "Giftmobil"
-      ],
-      "tip": null,
-      "notes": {
-        "wertstoffhof": "Bitte beachten Sie die Annahmezeiten für Problemstoffe!",
-        "problemabfall": "Sie können beim Giftmobil Abfälle mit problematischen Inhaltsstoffen kostenlos abgeben."
-      },
-      "detail_url": "https://www.awm-muenchen.de/abfall-entsorgen/abfalllexikon/detailansicht-lexikoneintrag/moebelpolitur-moebelpflegemittel",
-      "key": "m-belpolitur-m-belpflegemittel",
-      "fingerprint": "ef295482f9c9"
-    },
-    {
-      "term": "Münzen",
-      "destinations": [
-        "wertstoffhof",
-        "halle2"
-      ],
-      "labels": [
-        "Wertstoffhöfe",
-        "Halle 2 (gut erhaltenes)"
-      ],
-      "tip": null,
-      "notes": {
-        "halle2": "Gut erhaltenes für die Halle 2"
-      },
-      "detail_url": "https://www.awm-muenchen.de/abfall-entsorgen/abfalllexikon/detailansicht-lexikoneintrag/muenzen",
-      "key": "m-nzen",
-      "fingerprint": "d320221a6125"
+      "key": "luftpolsterumschlaege-versandtaschen-mit-innenfutter",
+      "fingerprint": "d18bf2cf41f5"
     },
     {
       "term": "Magnet",
@@ -5865,6 +5719,49 @@
       "fingerprint": "35b994924dac"
     },
     {
+      "term": "Möbel",
+      "destinations": [
+        "weiternutzen",
+        "wertstoffhof",
+        "sperrmuell",
+        "halle2"
+      ],
+      "labels": [
+        "Weiternutzen",
+        "Wertstoffhöfe",
+        "Sperrmüllabholung",
+        "Halle 2 (gut erhaltenes)"
+      ],
+      "tip": null,
+      "notes": {
+        "weiternutzen": "Verschenken, tauschen, kaufen, finden, reparieren... zu schade zum Wegwerfen!",
+        "sperrmuell": "Haben Sie sperrige Gegenstände, die Sie schon lange loswerden wollten? Dann sind Sie beim Sperrmüllabholdienst des AWM richtig.Die Sperrmüllabfuhr des Abfallwirtschaftsbetriebes entsorgt auch den Sperrmüll von Vereinen, Institutionen und Gewerbebetrieben.",
+        "halle2": "Gut erhaltenes für die Halle 2"
+      },
+      "detail_url": "https://www.awm-muenchen.de/abfall-entsorgen/abfalllexikon/detailansicht-lexikoneintrag/moebel",
+      "key": "moebel",
+      "fingerprint": "75c933028dab"
+    },
+    {
+      "term": "Möbelpolitur, Möbelpflegemittel",
+      "destinations": [
+        "wertstoffhof",
+        "problemabfall"
+      ],
+      "labels": [
+        "Wertstoffhöfe",
+        "Giftmobil"
+      ],
+      "tip": null,
+      "notes": {
+        "wertstoffhof": "Bitte beachten Sie die Annahmezeiten für Problemstoffe!",
+        "problemabfall": "Sie können beim Giftmobil Abfälle mit problematischen Inhaltsstoffen kostenlos abgeben."
+      },
+      "detail_url": "https://www.awm-muenchen.de/abfall-entsorgen/abfalllexikon/detailansicht-lexikoneintrag/moebelpolitur-moebelpflegemittel",
+      "key": "moebelpolitur-moebelpflegemittel",
+      "fingerprint": "6332d58b2576"
+    },
+    {
       "term": "Motoren, Kompressoren",
       "destinations": [
         "wertstoffhof",
@@ -5913,6 +5810,24 @@
       "detail_url": "https://www.awm-muenchen.de/abfall-entsorgen/abfalllexikon/detailansicht-lexikoneintrag/motorradhelm",
       "key": "motorradhelm",
       "fingerprint": "4475fa6401a9"
+    },
+    {
+      "term": "Münzen",
+      "destinations": [
+        "wertstoffhof",
+        "halle2"
+      ],
+      "labels": [
+        "Wertstoffhöfe",
+        "Halle 2 (gut erhaltenes)"
+      ],
+      "tip": null,
+      "notes": {
+        "halle2": "Gut erhaltenes für die Halle 2"
+      },
+      "detail_url": "https://www.awm-muenchen.de/abfall-entsorgen/abfalllexikon/detailansicht-lexikoneintrag/muenzen",
+      "key": "muenzen",
+      "fingerprint": "77ee91035e94"
     },
     {
       "term": "Mulchfolie",
@@ -6018,6 +5933,16 @@
       "fingerprint": "a970234d735c"
     },
     {
+      "term": "Nachtspeicheröfen, Kernsteine",
+      "destinations": [],
+      "labels": [],
+      "tip": null,
+      "notes": {},
+      "detail_url": "https://www.awm-muenchen.de/abfall-entsorgen/abfalllexikon/detailansicht-lexikoneintrag/nachtspeicheroefen-kernsteine",
+      "key": "nachtspeicheroefen-kernsteine",
+      "fingerprint": "25752ee0a3f5"
+    },
+    {
       "term": "Nähmaschinen",
       "destinations": [
         "weiternutzen",
@@ -6035,32 +5960,8 @@
         "halle2": "Gut erhaltenes für die Halle 2"
       },
       "detail_url": "https://www.awm-muenchen.de/abfall-entsorgen/abfalllexikon/detailansicht-lexikoneintrag/naehmaschinen",
-      "key": "n-hmaschinen",
-      "fingerprint": "544d8dfa0856"
-    },
-    {
-      "term": "Nüsse, Nussschalen",
-      "destinations": [
-        "bio"
-      ],
-      "labels": [
-        "Biotonne"
-      ],
-      "tip": null,
-      "notes": {},
-      "detail_url": null,
-      "key": "n-sse-nussschalen",
-      "fingerprint": "3e9039b09f29"
-    },
-    {
-      "term": "Nachtspeicheröfen, Kernsteine",
-      "destinations": [],
-      "labels": [],
-      "tip": null,
-      "notes": {},
-      "detail_url": "https://www.awm-muenchen.de/abfall-entsorgen/abfalllexikon/detailansicht-lexikoneintrag/nachtspeicheroefen-kernsteine",
-      "key": "nachtspeicher-fen-kernsteine",
-      "fingerprint": "0c7fa71929dd"
+      "key": "naehmaschinen",
+      "fingerprint": "65e8012e767b"
     },
     {
       "term": "Nagellack und -entferner",
@@ -6111,8 +6012,22 @@
         "problemabfall": "Sie können beim Giftmobil Abfälle mit problematischen Inhaltsstoffen kostenlos abgeben."
       },
       "detail_url": "https://www.awm-muenchen.de/abfall-entsorgen/abfalllexikon/detailansicht-lexikoneintrag/nitroverduenner",
-      "key": "nitroverd-nner",
-      "fingerprint": "e490d6547c1e"
+      "key": "nitroverduenner",
+      "fingerprint": "9f63eef6a1a5"
+    },
+    {
+      "term": "Nüsse, Nussschalen",
+      "destinations": [
+        "bio"
+      ],
+      "labels": [
+        "Biotonne"
+      ],
+      "tip": null,
+      "notes": {},
+      "detail_url": null,
+      "key": "nuesse-nussschalen",
+      "fingerprint": "6b9f2e666a58"
     },
     {
       "term": "Nylonstrümpfe",
@@ -6125,8 +6040,111 @@
       "tip": null,
       "notes": {},
       "detail_url": null,
-      "key": "nylonstr-mpfe",
-      "fingerprint": "0a48ced35b9a"
+      "key": "nylonstruempfe",
+      "fingerprint": "78b761ffb1f9"
+    },
+    {
+      "term": "Ölbinder",
+      "destinations": [
+        "wertstoffhof",
+        "problemabfall"
+      ],
+      "labels": [
+        "Wertstoffhöfe",
+        "Giftmobil"
+      ],
+      "tip": null,
+      "notes": {
+        "wertstoffhof": "Bitte beachten Sie die Annahmezeiten für Problemstoffe!",
+        "problemabfall": "Sie können beim Giftmobil Abfälle mit problematischen Inhaltsstoffen kostenlos abgeben."
+      },
+      "detail_url": "https://www.awm-muenchen.de/abfall-entsorgen/abfalllexikon/detailansicht-lexikoneintrag/oelbinder",
+      "key": "oelbinder",
+      "fingerprint": "6f6eadd48db2"
+    },
+    {
+      "term": "Ölfilter",
+      "destinations": [
+        "wertstoffhof",
+        "problemabfall"
+      ],
+      "labels": [
+        "Wertstoffhöfe",
+        "Giftmobil"
+      ],
+      "tip": null,
+      "notes": {
+        "wertstoffhof": "Bitte beachten Sie die Annahmezeiten für Problemstoffe!",
+        "problemabfall": "Sie können beim Giftmobil Abfälle mit problematischen Inhaltsstoffen kostenlos abgeben."
+      },
+      "detail_url": "https://www.awm-muenchen.de/abfall-entsorgen/abfalllexikon/detailansicht-lexikoneintrag/oelfilter",
+      "key": "oelfilter",
+      "fingerprint": "541d5c512271"
+    },
+    {
+      "term": "ölhaltiges Material",
+      "destinations": [
+        "wertstoffhof",
+        "problemabfall"
+      ],
+      "labels": [
+        "Wertstoffhöfe",
+        "Giftmobil"
+      ],
+      "tip": null,
+      "notes": {
+        "wertstoffhof": "Bitte beachten Sie die Annahmezeiten für Problemstoffe!",
+        "problemabfall": "Sie können beim Giftmobil Abfälle mit problematischen Inhaltsstoffen kostenlos abgeben."
+      },
+      "detail_url": "https://www.awm-muenchen.de/abfall-entsorgen/abfalllexikon/detailansicht-lexikoneintrag/oelhaltiges-material",
+      "key": "oelhaltiges-material",
+      "fingerprint": "50c941d80bef"
+    },
+    {
+      "term": "Ölofen",
+      "destinations": [
+        "wertstoffhof"
+      ],
+      "labels": [
+        "Wertstoffhöfe"
+      ],
+      "tip": null,
+      "notes": {
+        "wertstoffhof": "Bitte beachten Sie die Annahmezeiten für Problemstoffe!"
+      },
+      "detail_url": "https://www.awm-muenchen.de/abfall-entsorgen/abfalllexikon/detailansicht-lexikoneintrag/oelofen",
+      "key": "oelofen",
+      "fingerprint": "3e6a93f1a745"
+    },
+    {
+      "term": "Ölschlämme",
+      "destinations": [
+        "wertstoffhof"
+      ],
+      "labels": [
+        "Wertstoffhöfe"
+      ],
+      "tip": null,
+      "notes": {
+        "wertstoffhof": "Bitte beachten Sie die Annahmezeiten für Problemstoffe!"
+      },
+      "detail_url": "https://www.awm-muenchen.de/abfall-entsorgen/abfalllexikon/detailansicht-lexikoneintrag/oelschlaemme",
+      "key": "oelschlaemme",
+      "fingerprint": "e734993938f7"
+    },
+    {
+      "term": "Öltank",
+      "destinations": [
+        "wertstoffhof"
+      ],
+      "labels": [
+        "Wertstoffhöfe"
+      ],
+      "tip": null,
+      "notes": {},
+      "detail_url": "https://www.awm-muenchen.de/abfall-entsorgen/abfalllexikon/detailansicht-lexikoneintrag/oeltank",
+      "key": "oeltank",
+      "fingerprint": "e60c9eef6d8f"
     },
     {
       "term": "Opalglas",
@@ -6175,22 +6193,6 @@
       "fingerprint": "ee6c30c2d94b"
     },
     {
-      "term": "Papiertüte",
-      "destinations": [
-        "wertstoffhof",
-        "papier"
-      ],
-      "labels": [
-        "Wertstoffhof",
-        "Papiertonne"
-      ],
-      "tip": null,
-      "notes": {},
-      "detail_url": null,
-      "key": "papiert-te",
-      "fingerprint": "ec1e9f60a02c"
-    },
-    {
       "term": "Papiertaschentuch",
       "destinations": [
         "restmuell"
@@ -6203,6 +6205,22 @@
       "detail_url": null,
       "key": "papiertaschentuch",
       "fingerprint": "3ac8b2b10da0"
+    },
+    {
+      "term": "Papiertüte",
+      "destinations": [
+        "wertstoffhof",
+        "papier"
+      ],
+      "labels": [
+        "Wertstoffhof",
+        "Papiertonne"
+      ],
+      "tip": null,
+      "notes": {},
+      "detail_url": null,
+      "key": "papiertuete",
+      "fingerprint": "d0440a6e2f87"
     },
     {
       "term": "Parkett",
@@ -6350,8 +6368,8 @@
       "tip": null,
       "notes": {},
       "detail_url": null,
-      "key": "plastikt-te",
-      "fingerprint": "d3c8df3a4b94"
+      "key": "plastiktuete",
+      "fingerprint": "c3166c9da314"
     },
     {
       "term": "Plattenspieler",
@@ -6395,8 +6413,8 @@
         "halle2": "Gut erhaltenes für die Halle 2"
       },
       "detail_url": "https://www.awm-muenchen.de/abfall-entsorgen/abfalllexikon/detailansicht-lexikoneintrag/plstermoebel",
-      "key": "plsterm-bel",
-      "fingerprint": "dcbf613252c7"
+      "key": "plstermoebel",
+      "fingerprint": "12406ab8e223"
     },
     {
       "term": "Polaroid-Filmkassetten",
@@ -6433,8 +6451,8 @@
         "problemabfall": "Sie können beim Giftmobil Abfälle mit problematischen Inhaltsstoffen kostenlos abgeben."
       },
       "detail_url": "https://www.awm-muenchen.de/abfall-entsorgen/abfalllexikon/detailansicht-lexikoneintrag/problemabfaelle-chemikalien",
-      "key": "problemabf-lle-chemikalien",
-      "fingerprint": "5ad054f255d9"
+      "key": "problemabfaelle-chemikalien",
+      "fingerprint": "965f863696f3"
     },
     {
       "term": "PU-Schaumdosen, Montageschaum",
@@ -6505,20 +6523,6 @@
       "fingerprint": "06dfa9ba1327"
     },
     {
-      "term": "Röntgenbilder",
-      "destinations": [
-        "restmuell"
-      ],
-      "labels": [
-        "Restmülltonne"
-      ],
-      "tip": "Datenschutz beachten (zerkleiner, zerschneiden, Namen entfernen)",
-      "notes": {},
-      "detail_url": null,
-      "key": "r-ntgenbilder",
-      "fingerprint": "8f55fe0ba33d"
-    },
-    {
       "term": "Radio",
       "destinations": [
         "weiternutzen",
@@ -6560,8 +6564,8 @@
         "sperrmuell": "Haben Sie sperrige Gegenstände, die Sie schon lange loswerden wollten? Dann sind Sie beim Sperrmüllabholdienst des AWM richtig.Die Sperrmüllabfuhr des Abfallwirtschaftsbetriebes entsorgt auch den Sperrmüll von Vereinen, Institutionen und Gewerbebetrieben."
       },
       "detail_url": "https://www.awm-muenchen.de/abfall-entsorgen/abfalllexikon/detailansicht-lexikoneintrag/rasenmaeher",
-      "key": "rasenm-her",
-      "fingerprint": "803ebe935946"
+      "key": "rasenmaeher",
+      "fingerprint": "32c36187b03c"
     },
     {
       "term": "Rasierapparate",
@@ -6681,8 +6685,8 @@
       "tip": null,
       "notes": {},
       "detail_url": null,
-      "key": "reinigungst-cher",
-      "fingerprint": "b92ab6983751"
+      "key": "reinigungstuecher",
+      "fingerprint": "68e72241ab69"
     },
     {
       "term": "Restmüll",
@@ -6695,8 +6699,22 @@
       "tip": null,
       "notes": {},
       "detail_url": null,
-      "key": "restm-ll",
-      "fingerprint": "e0b786e71676"
+      "key": "restmuell",
+      "fingerprint": "120155186db0"
+    },
+    {
+      "term": "Röntgenbilder",
+      "destinations": [
+        "restmuell"
+      ],
+      "labels": [
+        "Restmülltonne"
+      ],
+      "tip": "Datenschutz beachten (zerkleiner, zerschneiden, Namen entfernen)",
+      "notes": {},
+      "detail_url": null,
+      "key": "roentgenbilder",
+      "fingerprint": "5a36952a328c"
     },
     {
       "term": "Rohrreiniger",
@@ -6806,8 +6824,8 @@
         "halle2": "Gut erhaltenes für die Halle 2"
       },
       "detail_url": "https://www.awm-muenchen.de/abfall-entsorgen/abfalllexikon/detailansicht-lexikoneintrag/saege-elektrisch",
-      "key": "s-ge-elektrisch",
-      "fingerprint": "1e47ba534347"
+      "key": "saege-elektrisch",
+      "fingerprint": "4d8fe7c03b0f"
     },
     {
       "term": "Sägemehl, Sägespäne",
@@ -6822,8 +6840,8 @@
         "bio": "In die gebührenfreien Biotonnen sollen Küchen- und Gartenabfälle."
       },
       "detail_url": "https://www.awm-muenchen.de/abfall-entsorgen/abfalllexikon/detailansicht-lexikoneintrag/saegemehl-saegespaene",
-      "key": "s-gemehl-s-gesp-ne",
-      "fingerprint": "8d22abcb1909"
+      "key": "saegemehl-saegespaene",
+      "fingerprint": "7e7bf589b453"
     },
     {
       "term": "Säuren",
@@ -6841,8 +6859,8 @@
         "problemabfall": "Sie können beim Giftmobil Abfälle mit problematischen Inhaltsstoffen kostenlos abgeben."
       },
       "detail_url": "https://www.awm-muenchen.de/abfall-entsorgen/abfalllexikon/detailansicht-lexikoneintrag/saeuren",
-      "key": "s-uren",
-      "fingerprint": "f491eff7b1f8"
+      "key": "saeuren",
+      "fingerprint": "ffdaa476343e"
     },
     {
       "term": "Sand",
@@ -6869,8 +6887,8 @@
       "tip": null,
       "notes": {},
       "detail_url": "https://www.awm-muenchen.de/abfall-entsorgen/abfalllexikon/detailansicht-lexikoneintrag/satellitenschuessel-receiver-sat-empfaenger",
-      "key": "satellitensch-ssel-receiver-sat-empf-nger",
-      "fingerprint": "c4930d3df4a4"
+      "key": "satellitenschuessel-receiver-sat-empfaenger",
+      "fingerprint": "4354fe510cfe"
     },
     {
       "term": "Schädlingsbekämpfungsmittel",
@@ -6888,8 +6906,8 @@
         "problemabfall": "Sie können beim Giftmobil Abfälle mit problematischen Inhaltsstoffen kostenlos abgeben."
       },
       "detail_url": "https://www.awm-muenchen.de/abfall-entsorgen/abfalllexikon/detailansicht-lexikoneintrag/schaedlingsbekaempfungsmittel",
-      "key": "sch-dlingsbek-mpfungsmittel",
-      "fingerprint": "255ecc4aa01b"
+      "key": "schaedlingsbekaempfungsmittel",
+      "fingerprint": "05299172d241"
     },
     {
       "term": "Schallplatten",
@@ -7043,8 +7061,8 @@
       "tip": null,
       "notes": {},
       "detail_url": null,
-      "key": "schn-re-seile",
-      "fingerprint": "884b43d4b690"
+      "key": "schnuere-seile",
+      "fingerprint": "ec3321cf8dec"
     },
     {
       "term": "Schnuller",
@@ -7092,8 +7110,8 @@
       "tip": "oder für größere Mengen zum Wertstoffhof in den Metallcontainer",
       "notes": {},
       "detail_url": null,
-      "key": "schrauben-n-gel",
-      "fingerprint": "3cbc78fbb42b"
+      "key": "schrauben-naegel",
+      "fingerprint": "11200367bcdf"
     },
     {
       "term": "Schreibmaschine",
@@ -7143,8 +7161,8 @@
       "tip": null,
       "notes": {},
       "detail_url": null,
-      "key": "schwammt-cher",
-      "fingerprint": "57fb9003f09c"
+      "key": "schwammtuecher",
+      "fingerprint": "c8277dc3b967"
     },
     {
       "term": "SD-Speicherkarte",
@@ -7187,8 +7205,8 @@
       "tip": null,
       "notes": {},
       "detail_url": null,
-      "key": "seife-k-rperpflegemittel",
-      "fingerprint": "ed92b4a98042"
+      "key": "seife-koerperpflegemittel",
+      "fingerprint": "77b9746b3917"
     },
     {
       "term": "Servietten",
@@ -7352,27 +7370,6 @@
       "fingerprint": "cd6756000db2"
     },
     {
-      "term": "Spülmaschine",
-      "destinations": [
-        "weiternutzen",
-        "wertstoffhof",
-        "sperrmuell"
-      ],
-      "labels": [
-        "Weiternutzen",
-        "Wertstoffhöfe",
-        "Sperrmüllabholung"
-      ],
-      "tip": null,
-      "notes": {
-        "weiternutzen": "Verschenken, tauschen, kaufen, finden, reparieren... zu schade zum Wegwerfen!",
-        "sperrmuell": "Haben Sie sperrige Gegenstände, die Sie schon lange loswerden wollten? Dann sind Sie beim Sperrmüllabholdienst des AWM richtig.Die Sperrmüllabfuhr des Abfallwirtschaftsbetriebes entsorgt auch den Sperrmüll von Vereinen, Institutionen und Gewerbebetrieben."
-      },
-      "detail_url": "https://www.awm-muenchen.de/abfall-entsorgen/abfalllexikon/detailansicht-lexikoneintrag/spuelmaschine",
-      "key": "sp-lmaschine",
-      "fingerprint": "d622e57b72cf"
-    },
-    {
       "term": "Spanplatten",
       "destinations": [
         "wertstoffhof"
@@ -7385,6 +7382,20 @@
       "detail_url": null,
       "key": "spanplatten",
       "fingerprint": "661d62e00a86"
+    },
+    {
+      "term": "Speiseabfälle, Essensreste",
+      "destinations": [
+        "bio"
+      ],
+      "labels": [
+        "Biotonne"
+      ],
+      "tip": "Es gibt viele leckere Resterezepte",
+      "notes": {},
+      "detail_url": null,
+      "key": "speiseabfaelle-essensreste",
+      "fingerprint": "2a0c74c751d6"
     },
     {
       "term": "Speiseöl,- fette, Frittierfett",
@@ -7402,22 +7413,8 @@
         "bio": "In die gebührenfreien Biotonnen sollen Küchen- und Gartenabfälle."
       },
       "detail_url": "https://www.awm-muenchen.de/abfall-entsorgen/abfalllexikon/detailansicht-lexikoneintrag/speiseoel-fette-frittierfett",
-      "key": "speise-l-fette-frittierfett",
-      "fingerprint": "1bdb5feb7980"
-    },
-    {
-      "term": "Speiseabfälle, Essensreste",
-      "destinations": [
-        "bio"
-      ],
-      "labels": [
-        "Biotonne"
-      ],
-      "tip": "Es gibt viele leckere Resterezepte",
-      "notes": {},
-      "detail_url": null,
-      "key": "speiseabf-lle-essensreste",
-      "fingerprint": "a43b957af183"
+      "key": "speiseoel-fette-frittierfett",
+      "fingerprint": "e0f844681e64"
     },
     {
       "term": "Sperrmüll",
@@ -7434,8 +7431,8 @@
         "sperrmuell": "Haben Sie sperrige Gegenstände, die Sie schon lange loswerden wollten? Dann sind Sie beim Sperrmüllabholdienst des AWM richtig.Die Sperrmüllabfuhr des Abfallwirtschaftsbetriebes entsorgt auch den Sperrmüll von Vereinen, Institutionen und Gewerbebetrieben."
       },
       "detail_url": "https://www.awm-muenchen.de/abfall-entsorgen/abfalllexikon/detailansicht-lexikoneintrag/sperrmuell",
-      "key": "sperrm-ll",
-      "fingerprint": "8ab94299e72e"
+      "key": "sperrmuell",
+      "fingerprint": "6d007d5f3b43"
     },
     {
       "term": "Spiegel",
@@ -7529,8 +7526,8 @@
         "sperrmuell": "Haben Sie sperrige Gegenstände, die Sie schon lange loswerden wollten? Dann sind Sie beim Sperrmüllabholdienst des AWM richtig.Die Sperrmüllabfuhr des Abfallwirtschaftsbetriebes entsorgt auch den Sperrmüll von Vereinen, Institutionen und Gewerbebetrieben."
       },
       "detail_url": "https://www.awm-muenchen.de/abfall-entsorgen/abfalllexikon/detailansicht-lexikoneintrag/sportgeraete",
-      "key": "sportger-te",
-      "fingerprint": "e0e40d6ca89a"
+      "key": "sportgeraete",
+      "fingerprint": "44e9d53df906"
     },
     {
       "term": "Spritzen",
@@ -7545,6 +7542,27 @@
       "detail_url": null,
       "key": "spritzen",
       "fingerprint": "7c3517398c32"
+    },
+    {
+      "term": "Spülmaschine",
+      "destinations": [
+        "weiternutzen",
+        "wertstoffhof",
+        "sperrmuell"
+      ],
+      "labels": [
+        "Weiternutzen",
+        "Wertstoffhöfe",
+        "Sperrmüllabholung"
+      ],
+      "tip": null,
+      "notes": {
+        "weiternutzen": "Verschenken, tauschen, kaufen, finden, reparieren... zu schade zum Wegwerfen!",
+        "sperrmuell": "Haben Sie sperrige Gegenstände, die Sie schon lange loswerden wollten? Dann sind Sie beim Sperrmüllabholdienst des AWM richtig.Die Sperrmüllabfuhr des Abfallwirtschaftsbetriebes entsorgt auch den Sperrmüll von Vereinen, Institutionen und Gewerbebetrieben."
+      },
+      "detail_url": "https://www.awm-muenchen.de/abfall-entsorgen/abfalllexikon/detailansicht-lexikoneintrag/spuelmaschine",
+      "key": "spuelmaschine",
+      "fingerprint": "8cd9cfc248c2"
     },
     {
       "term": "Staubsauger",
@@ -7576,24 +7594,6 @@
       "detail_url": "https://www.awm-muenchen.de/abfall-entsorgen/abfalllexikon/detailansicht-lexikoneintrag/staubsaugerbeutel",
       "key": "staubsaugerbeutel",
       "fingerprint": "17757a9d1214"
-    },
-    {
-      "term": "Äste",
-      "destinations": [
-        "wertstoffhof",
-        "bio",
-        "containerdienst"
-      ],
-      "labels": [
-        "Wertstoffhof",
-        "Biotonne",
-        "Containerdienst"
-      ],
-      "tip": "nicht zu dick",
-      "notes": {},
-      "detail_url": null,
-      "key": "ste",
-      "fingerprint": "8b11c91ead07"
     },
     {
       "term": "Stecknadeln",
@@ -7700,8 +7700,8 @@
       "tip": null,
       "notes": {},
       "detail_url": null,
-      "key": "stra-enkehricht",
-      "fingerprint": "af84491565e4"
+      "key": "strassenkehricht",
+      "fingerprint": "2897884317b2"
     },
     {
       "term": "Streusalz",
@@ -7794,20 +7794,6 @@
       "detail_url": "https://www.awm-muenchen.de/abfall-entsorgen/abfalllexikon/detailansicht-lexikoneintrag/surfbrett",
       "key": "surfbrett",
       "fingerprint": "7cceeccc88b8"
-    },
-    {
-      "term": "Tür",
-      "destinations": [
-        "wertstoffhof"
-      ],
-      "labels": [
-        "Wertstoffhof"
-      ],
-      "tip": null,
-      "notes": {},
-      "detail_url": null,
-      "key": "t-r",
-      "fingerprint": "a82a55f21a60"
     },
     {
       "term": "Tapeten",
@@ -8075,8 +8061,8 @@
         "halle2": "Gut erhaltenes für die Halle 2"
       },
       "detail_url": "https://www.awm-muenchen.de/abfall-entsorgen/abfalllexikon/detailansicht-lexikoneintrag/terracottatoepfe",
-      "key": "terracottat-pfe",
-      "fingerprint": "06ca1250f91b"
+      "key": "terracottatoepfe",
+      "fingerprint": "53c683e81140"
     },
     {
       "term": "Thermometer",
@@ -8241,8 +8227,8 @@
       "tip": null,
       "notes": {},
       "detail_url": null,
-      "key": "tont-pfe",
-      "fingerprint": "371d22c4faef"
+      "key": "tontoepfe",
+      "fingerprint": "92d2f2825344"
     },
     {
       "term": "Tonwaren",
@@ -8302,8 +8288,8 @@
         "problemabfall": "Sie können beim Giftmobil Abfälle mit problematischen Inhaltsstoffen kostenlos abgeben."
       },
       "detail_url": "https://www.awm-muenchen.de/abfall-entsorgen/abfalllexikon/detailansicht-lexikoneintrag/traenengas-pfefferspray",
-      "key": "tr-nengas-pfefferspray",
-      "fingerprint": "fe06ee301c99"
+      "key": "traenengas-pfefferspray",
+      "fingerprint": "e548ab8ed1a9"
     },
     {
       "term": "Trampolin",
@@ -8344,6 +8330,20 @@
       "fingerprint": "9ac57a3a92ca"
     },
     {
+      "term": "Tür",
+      "destinations": [
+        "wertstoffhof"
+      ],
+      "labels": [
+        "Wertstoffhof"
+      ],
+      "tip": null,
+      "notes": {},
+      "detail_url": null,
+      "key": "tuer",
+      "fingerprint": "5ff11fe29827"
+    },
+    {
       "term": "Umzugskartons",
       "destinations": [
         "wertstoffhof",
@@ -8377,8 +8377,8 @@
         "problemabfall": "Sie können beim Giftmobil Abfälle mit problematischen Inhaltsstoffen kostenlos abgeben."
       },
       "detail_url": "https://www.awm-muenchen.de/abfall-entsorgen/abfalllexikon/detailansicht-lexikoneintrag/ungeloeschter-kalk-calciumoxid",
-      "key": "ungel-schter-kalk-calciumoxid",
-      "fingerprint": "236b6f13b5a7"
+      "key": "ungeloeschter-kalk-calciumoxid",
+      "fingerprint": "e6e41b9be5a0"
     },
     {
       "term": "Unkraut, Rasenschnitt",
@@ -8486,8 +8486,8 @@
       "tip": null,
       "notes": {},
       "detail_url": null,
-      "key": "verbandmaterial-verb-nde",
-      "fingerprint": "19fd94cddd85"
+      "key": "verbandmaterial-verbaende",
+      "fingerprint": "9d44fd190a5c"
     },
     {
       "term": "Verdünner",
@@ -8505,8 +8505,8 @@
         "problemabfall": "Sie können beim Giftmobil Abfälle mit problematischen Inhaltsstoffen kostenlos abgeben."
       },
       "detail_url": "https://www.awm-muenchen.de/abfall-entsorgen/abfalllexikon/detailansicht-lexikoneintrag/verduenner",
-      "key": "verd-nner",
-      "fingerprint": "a3b78f633493"
+      "key": "verduenner",
+      "fingerprint": "810cb7cf26d3"
     },
     {
       "term": "Verkaufsverpackungen",
@@ -8553,8 +8553,8 @@
         "restmuell": "Alle Abfälle, die Sie in der Restmülltonne entsorgen, landen in der Müllverbrennungsanlage. Entsorgen Sie deshalb in der Restmülltonne bitte nur die Abfälle, die nicht mehr recycelt werden können."
       },
       "detail_url": "https://www.awm-muenchen.de/abfall-entsorgen/abfalllexikon/detailansicht-lexikoneintrag/videobaender-videokassetten-musikkassetten",
-      "key": "videob-nder-videokassetten-musikkassetten",
-      "fingerprint": "b598e924c4af"
+      "key": "videobaender-videokassetten-musikkassetten",
+      "fingerprint": "f7259ad16a5a"
     },
     {
       "term": "Videohüllen",
@@ -8567,8 +8567,8 @@
       "tip": null,
       "notes": {},
       "detail_url": null,
-      "key": "videoh-llen",
-      "fingerprint": "228b980bdcbc"
+      "key": "videohuellen",
+      "fingerprint": "ece0ffd602a9"
     },
     {
       "term": "Videokameras",
@@ -8675,8 +8675,8 @@
       "tip": null,
       "notes": {},
       "detail_url": null,
-      "key": "vorh-nge",
-      "fingerprint": "94c2aeacb253"
+      "key": "vorhaenge",
+      "fingerprint": "21bb1dc8b829"
     },
     {
       "term": "Vorhangleisten",
@@ -8691,34 +8691,6 @@
       "detail_url": null,
       "key": "vorhangleisten",
       "fingerprint": "c3cdd78746fc"
-    },
-    {
-      "term": "Wärmflasche",
-      "destinations": [
-        "restmuell"
-      ],
-      "labels": [
-        "Restmülltonne"
-      ],
-      "tip": null,
-      "notes": {},
-      "detail_url": null,
-      "key": "w-rmflasche",
-      "fingerprint": "fa33e6efb31c"
-    },
-    {
-      "term": "Wäscheklammern",
-      "destinations": [
-        "restmuell"
-      ],
-      "labels": [
-        "Restmülltonne"
-      ],
-      "tip": "aus Holz oder Kunststoff",
-      "notes": {},
-      "detail_url": null,
-      "key": "w-scheklammern",
-      "fingerprint": "ba7d1e913e34"
     },
     {
       "term": "Waagen, elektrisch",
@@ -8765,8 +8737,36 @@
       "tip": null,
       "notes": {},
       "detail_url": null,
-      "key": "wachspapier-wachst-cher",
-      "fingerprint": "745d60274923"
+      "key": "wachspapier-wachstuecher",
+      "fingerprint": "d3e93e26cdcb"
+    },
+    {
+      "term": "Wärmflasche",
+      "destinations": [
+        "restmuell"
+      ],
+      "labels": [
+        "Restmülltonne"
+      ],
+      "tip": null,
+      "notes": {},
+      "detail_url": null,
+      "key": "waermflasche",
+      "fingerprint": "ee8d03bf628f"
+    },
+    {
+      "term": "Wäscheklammern",
+      "destinations": [
+        "restmuell"
+      ],
+      "labels": [
+        "Restmülltonne"
+      ],
+      "tip": "aus Holz oder Kunststoff",
+      "notes": {},
+      "detail_url": null,
+      "key": "waescheklammern",
+      "fingerprint": "60198728acd2"
     },
     {
       "term": "Waschbecken",
@@ -8976,8 +8976,8 @@
       "tip": null,
       "notes": {},
       "detail_url": null,
-      "key": "wei-blech",
-      "fingerprint": "57df99f72279"
+      "key": "weissblech",
+      "fingerprint": "592b52b226ec"
     },
     {
       "term": "Wellblechplatten (asbestfrei)",
@@ -9040,8 +9040,8 @@
       "tip": null,
       "notes": {},
       "detail_url": null,
-      "key": "wurzelst-cke",
-      "fingerprint": "c866b15bddb3"
+      "key": "wurzelstoecke",
+      "fingerprint": "639c957fabaa"
     },
     {
       "term": "Xylamon, Xyladekor",
@@ -9073,8 +9073,8 @@
       "tip": "auch aus Bambus",
       "notes": {},
       "detail_url": null,
-      "key": "zahnb-rste",
-      "fingerprint": "4b1d12cd6087"
+      "key": "zahnbuerste",
+      "fingerprint": "d325adbf1fa8"
     },
     {
       "term": "Zahnspange",
@@ -9167,8 +9167,8 @@
       "tip": null,
       "notes": {},
       "detail_url": null,
-      "key": "zements-cke-leer",
-      "fingerprint": "331d885bb895"
+      "key": "zementsaecke-leer",
+      "fingerprint": "02b133fbdaad"
     },
     {
       "term": "Ziegelschutt",
@@ -9225,8 +9225,8 @@
       "tip": null,
       "notes": {},
       "detail_url": null,
-      "key": "zitrusfr-chte",
-      "fingerprint": "0ddb1a5e0708"
+      "key": "zitrusfruechte",
+      "fingerprint": "910be31cf052"
     }
   ]
 }

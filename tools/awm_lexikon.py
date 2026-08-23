@@ -77,6 +77,17 @@ IGNORED_LABELS = {"mehr infos", "weitere informationen", "hier", "zum formular"}
 unknown_labels = {}   # подпись -> сколько раз встретилась; печатается в конце прогона
 
 
+UMLAUTS = {"ä": "ae", "ö": "oe", "ü": "ue", "ß": "ss", "é": "e", "è": "e", "á": "a", "à": "a"}
+
+
+def slug(s):
+    """Ключ записи. Умляуты разворачиваем, иначе Papiertüte становится papiert-te."""
+    s = s.lower()
+    for k, v in UMLAUTS.items():
+        s = s.replace(k, v)
+    return re.sub(r"[^a-z0-9]+", "-", s).strip("-")
+
+
 def norm(s):
     """Нормализация подписи: без переносов, без хвостовых скобок, в нижнем регистре."""
     s = re.sub(r"\s+", " ", (s or "")).strip().lower()
@@ -320,7 +331,7 @@ def enrich_details(entries, limit=None):
 
 def snapshot(entries, source_url):
     for e in entries:
-        e["key"] = re.sub(r"[^a-z0-9]+", "-", e["term"].lower()).strip("-")
+        e["key"] = slug(e["term"])
         e["fingerprint"] = hashlib.sha1(
             (e["key"] + "|" + ",".join(sorted(e["destinations"]))).encode()
         ).hexdigest()[:12]

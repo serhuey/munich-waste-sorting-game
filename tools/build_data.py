@@ -302,7 +302,7 @@ def build(repo, date, today=None, langs=LANGS):
         for p in future:
             if p not in problems and "не действует" in p:
                 report["warnings"].append("%s: после %s %s" % (stem, FUTURE_PROBE, p))
-        raw.pop("_comment", None)
+        raw = {k: v for k, v in raw.items() if not k.startswith("_")}
         items.append(raw)
         report["included"].append(stem)
 
