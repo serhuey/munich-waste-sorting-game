@@ -1,0 +1,42 @@
+{
+  "_todo": [
+    "открыть source.url и прочитать запись целиком",
+    "вписать destinations в каждом варианте — это адресаты игры, а не AWM",
+    "написать explanation: почему так, на de и en",
+    "заполнить labels.en",
+    "поставить source.verified_by и source.verified_on",
+    "перенести: python3 tools/drafts.py promote <id>"
+  ],
+  "_hint": "источник — норма закона; в лексиконе AWM такой записи нет",
+  "id": "pfandflasche_einweg",
+  "tier": 2,
+  "attrs": [
+    "examine"
+  ],
+  "labels": {
+    "de": "Einwegflasche mit Pfand (PET)",
+    "en": ""
+  },
+  "source": {
+    "authority": "law",
+    "reference": "VerpackG § 31",
+    "url": "https://www.gesetze-im-internet.de/verpackg/__31.html",
+    "verified_by": "",
+    "verified_on": ""
+  },
+  "variants": [
+    {
+      "id": "standard",
+      "kind": "simple",
+      "labels": {
+        "de": "",
+        "en": ""
+      },
+      "destinations": []
+    }
+  ],
+  "explanation": {
+    "de": "",
+    "en": ""
+  }
+}

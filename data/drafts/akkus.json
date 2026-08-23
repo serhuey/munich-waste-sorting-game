@@ -1,0 +1,61 @@
+{
+  "_todo": [
+    "открыть source.url и прочитать запись целиком",
+    "вписать destinations в каждом варианте — это адресаты игры, а не AWM",
+    "написать explanation: почему так, на de и en",
+    "заполнить labels.en",
+    "поставить source.verified_by и source.verified_on",
+    "перенести: python3 tools/drafts.py promote <id>"
+  ],
+  "_awm_term": "Akkus",
+  "_awm_tip": null,
+  "_awm_notes": {
+    "wertstoffhof": "Bitte beachten Sie die Annahmezeiten für Problemstoffe!",
+    "problemabfall": "Sie können beim Giftmobil Abfälle mit problematischen Inhaltsstoffen kostenlos abgeben.",
+    "wertstoffmobil": "Sie wollen Haushaltsgegenstände, Batterien, Energiesparlampen oder Elektrokleingeräte entsorgen?Das Wertstoffmobil hält ganz in Ihrer Nähe …"
+  },
+  "id": "akkus",
+  "tier": 2,
+  "attrs": [],
+  "labels": {
+    "de": "Akkus",
+    "en": ""
+  },
+  "source": {
+    "authority": "awm",
+    "key": "akkus",
+    "url": "https://www.awm-muenchen.de/abfall-entsorgen/abfalllexikon/detailansicht-lexikoneintrag/akkus",
+    "destinations_at_verification": [
+      "wertstoffhof",
+      "problemabfall",
+      "wertstoffmobil"
+    ],
+    "verified_by": "",
+    "verified_on": ""
+  },
+  "variants": [
+    {
+      "id": "standard",
+      "kind": "simple",
+      "labels": {
+        "de": "",
+        "en": ""
+      },
+      "destinations": []
+    }
+  ],
+  "explanation": {
+    "de": "",
+    "en": ""
+  },
+  "sources": [
+    {
+      "authority": "law",
+      "reference": "BattG § 9",
+      "url": "https://www.gesetze-im-internet.de/battg/__9.html",
+      "verified_by": "",
+      "verified_on": ""
+    }
+  ],
+  "_hint": "у предмета два источника: запись AWM и норма закона для возврата в магазин — оба нужно подписать"
+}

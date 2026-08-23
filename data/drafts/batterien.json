@@ -1,0 +1,58 @@
+{
+  "_todo": [
+    "открыть source.url и прочитать запись целиком",
+    "вписать destinations в каждом варианте — это адресаты игры, а не AWM",
+    "написать explanation: почему так, на de и en",
+    "заполнить labels.en",
+    "поставить source.verified_by и source.verified_on",
+    "перенести: python3 tools/drafts.py promote <id>"
+  ],
+  "_awm_term": "Batterien, Knopfzellen",
+  "_awm_tip": null,
+  "_awm_notes": {
+    "problemabfall": "Sie können beim Giftmobil Abfälle mit problematischen Inhaltsstoffen kostenlos abgeben."
+  },
+  "id": "batterien",
+  "tier": 2,
+  "attrs": [],
+  "labels": {
+    "de": "Batterien, Knopfzellen",
+    "en": ""
+  },
+  "source": {
+    "authority": "awm",
+    "key": "batterien-knopfzellen",
+    "url": "https://www.awm-muenchen.de/abfall-entsorgen/abfalllexikon/detailansicht-lexikoneintrag/batterien-knopfzellen",
+    "destinations_at_verification": [
+      "wertstoffhof",
+      "problemabfall"
+    ],
+    "verified_by": "",
+    "verified_on": ""
+  },
+  "variants": [
+    {
+      "id": "standard",
+      "kind": "simple",
+      "labels": {
+        "de": "",
+        "en": ""
+      },
+      "destinations": []
+    }
+  ],
+  "explanation": {
+    "de": "",
+    "en": ""
+  },
+  "sources": [
+    {
+      "authority": "law",
+      "reference": "BattG § 9",
+      "url": "https://www.gesetze-im-internet.de/battg/__9.html",
+      "verified_by": "",
+      "verified_on": ""
+    }
+  ],
+  "_hint": "у предмета два источника: запись AWM и норма закона для возврата в магазин — оба нужно подписать"
+}

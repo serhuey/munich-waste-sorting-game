@@ -169,40 +169,40 @@ def check_variant(v, where, containers, date, problems, langs):
         problems.append("%s: kind должен быть simple или composite, а не %r" % (where, kind))
 
 
-def check_source(source, snapshot_index, today, problems):
+def check_source(source, snapshot_index, today, problems, where="source"):
     if not isinstance(source, dict):
-        problems.append("нет блока source")
+        problems.append("нет блока %s" % where)
         return
     authority = source.get("authority")
     if authority not in AUTHORITIES:
-        problems.append("source.authority должен быть awm или law, а не %r" % (authority,))
+        problems.append("%s.authority должен быть awm или law, а не %r" % (where, authority))
     if not isinstance(source.get("url"), str) or not source["url"].startswith("http"):
-        problems.append("source.url отсутствует или не похож на ссылку")
+        problems.append("%s.url отсутствует или не похож на ссылку" % where)
     if not isinstance(source.get("verified_by"), str) or not source["verified_by"].strip():
-        problems.append("source.verified_by пуст — предмет никто не сверял")
+        problems.append("%s.verified_by пуст — предмет никто не сверял" % where)
 
     raw_date = source.get("verified_on")
     if not isinstance(raw_date, str) or not raw_date:
-        problems.append("нет source.verified_on — предмет не сверялся вручную (R15)")
+        problems.append("нет %s.verified_on — предмет не сверялся вручную (R15)" % where)
     else:
         try:
             when = iso(raw_date)
         except ValueError:
-            problems.append("source.verified_on не дата в формате ГГГГ-ММ-ДД: %r" % raw_date)
+            problems.append("%s.verified_on не дата в формате ГГГГ-ММ-ДД: %r" % (where, raw_date))
         else:
             if when > today:
-                problems.append("source.verified_on в будущем: %s" % raw_date)
+                problems.append("%s.verified_on в будущем: %s" % (where, raw_date))
 
     if authority == "law":
         if not isinstance(source.get("reference"), str) or not source["reference"].strip():
-            problems.append("для authority=law нужен source.reference с нормой закона")
+            problems.append("для authority=law нужен %s.reference с нормой закона" % where)
         if source.get("key"):
-            problems.append("для authority=law поле source.key лишнее: закон не лежит в лексиконе")
+            problems.append("для authority=law поле %s.key лишнее: закон не лежит в лексиконе" % where)
         return
 
     key = source.get("key")
     if not isinstance(key, str) or not key:
-        problems.append("нет source.key — не с чем сверять снимок лексикона")
+        problems.append("нет %s.key — не с чем сверять снимок лексикона" % where)
         return
     entry = snapshot_index.get(key)
     if entry is None:
@@ -211,7 +211,7 @@ def check_source(source, snapshot_index, today, problems):
         return
     declared = source.get("destinations_at_verification")
     if not isinstance(declared, list):
-        problems.append("нет source.destinations_at_verification — нечего сравнивать со снимком")
+        problems.append("нет %s.destinations_at_verification — нечего сравнивать со снимком" % where)
         return
     now, then = sorted(entry.get("destinations") or []), sorted(str(x) for x in declared)
     if now != then:
@@ -240,6 +240,12 @@ def check_item(raw, stem, containers, snapshot_index, date, today, langs=LANGS):
     check_text_map(raw.get("labels"), "labels", problems, langs)
     check_text_map(raw.get("explanation"), "explanation", problems, langs)
     check_source(raw.get("source"), snapshot_index, today, problems)
+    extra = raw.get("sources", [])
+    if not isinstance(extra, list):
+        problems.append("sources должен быть списком дополнительных источников")
+    else:
+        for i, src in enumerate(extra):
+            check_source(src, snapshot_index, today, problems, "sources[%d]" % i)
 
     variants = raw.get("variants")
     if not isinstance(variants, list) or not variants:

@@ -227,6 +227,43 @@ class GateTest(unittest.TestCase):
         self.assertEqual(report["excluded"], [])
         self.assertEqual(content["items"], [])
 
+    # --- источники, которых нет в лексиконе ------------------------------
+
+    LAW = {
+        "authority": "law",
+        "reference": "BattG § 9 Abs. 1",
+        "url": "https://www.gesetze-im-internet.de/battg/__9.html",
+        "verified_by": "sergei",
+        "verified_on": "2026-08-20",
+    }
+
+    def test_law_only_source_is_accepted(self):
+        self.item(id="pfandflasche", source=dict(self.LAW, reference="VerpackG § 31"))
+        _, report = self.build()
+        self.assertEqual(report["included"], ["pfandflasche"], report["excluded"])
+
+    def test_law_source_without_a_norm_is_excluded(self):
+        law = dict(self.LAW); law.pop("reference")
+        self.item(id="pfandflasche", source=law)
+        _, report = self.build()
+        self.assertTrue(any("reference" in r for r in self.excluded_reasons(report, "pfandflasche")))
+
+    def test_law_source_may_not_carry_a_lexicon_key(self):
+        self.item(id="pfandflasche", source=dict(self.LAW, key="pizzakarton"))
+        _, report = self.build()
+        self.assertTrue(any("лишнее" in r for r in self.excluded_reasons(report, "pfandflasche")))
+
+    def test_second_source_is_validated_too(self):
+        self.item(sources=[dict(self.LAW, verified_on="")])
+        _, report = self.build()
+        reasons = self.excluded_reasons(report)
+        self.assertTrue(any("sources[0]" in r for r in reasons), reasons)
+
+    def test_awm_item_may_carry_an_additional_law_source(self):
+        self.item(sources=[self.LAW])
+        _, report = self.build()
+        self.assertEqual(report["included"], ["pizzakarton"], report["excluded"])
+
     # --- переход 1 января 2027 ---------------------------------------------
 
     def test_item_bound_to_a_retiring_container_warns_about_the_switch(self):

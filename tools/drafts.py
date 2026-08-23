@@ -45,6 +45,43 @@ def snapshot_index():
     return path, {e["key"]: e for e in data["entries"]}
 
 
+def law_source(reference, url):
+    return {"authority": "law", "reference": reference, "url": url,
+            "verified_by": "", "verified_on": ""}
+
+
+def write_draft(item_id, draft, force):
+    os.makedirs(DRAFTS, exist_ok=True)
+    dest = os.path.join(DRAFTS, item_id + ".json")
+    if os.path.exists(dest) and not force:
+        sys.exit("уже есть %s — --force, если правда нужно перезаписать" % dest)
+    with open(dest, "w", encoding="utf-8") as f:
+        json.dump(draft, f, ensure_ascii=False, indent=2)
+    return dest
+
+
+def cmd_new_law(a):
+    """Заготовка для предмета, которого нет в лексиконе: возврат в магазин держится
+    на федеральном законе, а не на AWM."""
+    draft = {
+        "_todo": TODO,
+        "_hint": "источник — норма закона; в лексиконе AWM такой записи нет",
+        "id": a.id,
+        "tier": a.tier,
+        "attrs": a.attrs.split(",") if a.attrs else [],
+        "labels": {"de": a.term, "en": ""},
+        "source": law_source(a.reference, a.url),
+        "variants": [
+            {"id": "standard", "kind": "simple",
+             "labels": {"de": "", "en": ""}, "destinations": []}
+        ],
+        "explanation": {"de": "", "en": ""},
+    }
+    write_draft(a.id, draft, a.force)
+    print("заготовка: data/drafts/%s.json   (%s, %s)" % (a.id, a.term, a.reference))
+    return 0
+
+
 def cmd_new(a):
     path, index = snapshot_index()
     entry = index.get(a.key)
@@ -53,11 +90,6 @@ def cmd_new(a):
         sys.exit("ключа %s нет в %s%s" % (a.key, os.path.basename(path),
                                           ("\n  похожие: " + ", ".join(near)) if near else ""))
     item_id = a.id or entry["key"].split("-")[0]
-    os.makedirs(DRAFTS, exist_ok=True)
-    dest = os.path.join(DRAFTS, item_id + ".json")
-    if os.path.exists(dest) and not a.force:
-        sys.exit("уже есть %s — --force, если правда нужно перезаписать" % dest)
-
     draft = {
         "_todo": TODO,
         "_awm_term": entry["term"],
@@ -81,8 +113,11 @@ def cmd_new(a):
         ],
         "explanation": {"de": "", "en": ""},
     }
-    with open(dest, "w", encoding="utf-8") as f:
-        json.dump(draft, f, ensure_ascii=False, indent=2)
+    if a.law:
+        draft["sources"] = [law_source(a.law, a.law_url or "")]
+        draft["_hint"] = ("у предмета два источника: запись AWM и норма закона "
+                          "для возврата в магазин — оба нужно подписать")
+    write_draft(item_id, draft, a.force)
     print("заготовка: data/drafts/%s.json   (%s)" % (item_id, entry["term"]))
     return 0
 
@@ -159,8 +194,20 @@ def main():
     n.add_argument("--tier", type=int, required=True)
     n.add_argument("--id", default=None, help="идентификатор предмета в игре")
     n.add_argument("--attrs", default="", help="borderline,examine,separable")
+    n.add_argument("--law", default=None, help="добавить второй источник: норма закона")
+    n.add_argument("--law-url", default=None, dest="law_url")
     n.add_argument("--force", action="store_true")
     n.set_defaults(func=cmd_new)
+
+    nl = sub.add_parser("new-law", help="заготовка для предмета, которого нет в лексиконе")
+    nl.add_argument("--id", required=True)
+    nl.add_argument("--tier", type=int, required=True)
+    nl.add_argument("--term", required=True, help="немецкое название")
+    nl.add_argument("--reference", required=True, help="норма: VerpackG § 31 и т.п.")
+    nl.add_argument("--url", required=True)
+    nl.add_argument("--attrs", default="")
+    nl.add_argument("--force", action="store_true")
+    nl.set_defaults(func=cmd_new_law)
 
     l = sub.add_parser("list", help="показать очередь")
     l.set_defaults(func=cmd_list)
