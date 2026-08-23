@@ -1,0 +1,9 @@
+{
+  "_comment": "Скопируй в values.local.json и впиши реальные значения. Тот файл в .gitignore и в публичный репозиторий не попадает: адрес и телефон должны быть на сайте, но не в истории коммитов.",
+  "STRASSE_HAUSNUMMER": "Musterstraße 1",
+  "PLZ": "80331",
+  "TELEFON": "+49 000 0000000",
+  "USTIDNR": "DE000000000",
+  "LOG_SPEICHERDAUER": "7 Tage",
+  "STAND_DATUM": "1. Januar 2026"
+}

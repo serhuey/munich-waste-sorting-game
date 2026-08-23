@@ -5,3 +5,6 @@ tools/data/raw-*.html
 __pycache__/
 *.py[cod]
 .DS_Store
+
+# Личные данные для Impressum: на сайте они публичны, в истории коммитов им не место.
+legal/values.local.json

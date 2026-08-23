@@ -138,10 +138,12 @@ game/
 server/
   count.php                            aggregate counters, no identifiers
 legal/
-  impressum.html  datenschutz.html
+  impressum.html  datenschutz.html     templates with {{PLACEHOLDERS}}
+  values.example.json                  the keys; values.local.json is git-ignored
 tools/
   awm_lexikon.py                       snapshot and diff (exists)
   build_data.py                        validate authored layer, emit dist/
+  render_legal.py                      substitute personal details into dist/
   publish.py                           copy dist/ into portfolio-site
 dist/                                  build output, committed
 ```
@@ -361,13 +363,15 @@ dist/                                  build output, committed
 - **Goal.** The legal minimum, without which publication is unlawful whether or not anything is measured (KD13).
 - **Requirements.** R26, AE14.
 - **Dependencies.** U12.
-- **Files.** `legal/impressum.html`, `legal/datenschutz.html`, `game/index.html`.
-- **Approach.** Both pages reachable from every screen. The privacy notice is no narrower than Art. 13 GDPR — controller and contact, purposes and legal basis, recipients, retention, data-subject rights, right to complain — and on top of that names the concrete event list from U12 and states that nothing is stored on the device. The Impressum needs a ladungsfähige Anschrift; a PO box does not qualify.
+- **Files.** `legal/impressum.html`, `legal/datenschutz.html`, `legal/values.example.json`, `tools/render_legal.py`, `game/index.html`.
+- **Approach.** The operator's address, telephone and VAT number are required to be public on the site, but this repository is public and its history is permanent — an address committed today outlives the move that makes it wrong. The pages are therefore templates carrying `{{PLACEHOLDERS}}`; values live in the git-ignored `legal/values.local.json` and are substituted into `dist/` at build time, where an unfilled placeholder fails the build rather than reaching a page. Both pages reachable from every screen. The privacy notice is no narrower than Art. 13 GDPR — controller and contact, purposes and legal basis, recipients, retention, data-subject rights, right to complain — and on top of that names the concrete event list from U12 and states that nothing is stored on the device. The Impressum needs a ladungsfähige Anschrift; a PO box does not qualify.
 - **Execution note.** The address is the author's decision and is on the critical path — it blocks publication, not development. The portfolio site currently has neither page, so this work benefits both.
 - **Test scenarios.**
   - Both pages open from the start screen, mid-run and from the finale.
   - The event list in the notice matches the events `analytics.js` actually sends — verified by diffing the two lists.
   - Neither page depends on JavaScript to render.
+  - A value missing from `values.local.json` fails the render and names the key; no page ships with a visible placeholder.
+  - The rendered pages exist only under `dist/`; `git status` after a build shows no personal data.
 - **Verification.** A reviewer reaches both documents from any screen in one tap.
 
 ### U14. Deployment and the portfolio case
