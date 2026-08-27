@@ -224,7 +224,8 @@ dist/                                  build output, committed
 - **Goal.** The two taps that make an item more than its name.
 - **Requirements.** R4, R5, R14, F2, F3, AE2, AE3, AE4.
 - **Dependencies.** U3.
-- **Files.** `game/js/item.js`, `game/js/examine.js`, `game/js/split.js`, `game/css/game.css`.
+- **Files.** `game/js/rules.js`, `game/js/fall.js`, `game/js/main.js`, `game/css/game.css`, `game/test/tests.js`.
+- **Built. Deviations, each deliberate.** No separate `examine.js` and `split.js`: both are states of one object in flight, and splitting them into modules would have meant passing that state between them. The readable-and-unreadable label, the split into slots and the per-slot scoring are pure functions in `rules.js`; `fall.js` gained pause, a timed penalty and relabelling; `main.js` owns the order of the two gestures. The build gained a check this unit revealed: an item whose every destination sits in a place the tier has not unlocked cannot be answered at all, and it now fails the gate — it immediately caught three drafts where the machine had proposed a fifth-tier destination for a second-tier item.
 - **Approach.**
   1. `requires examination`: the label is rendered deliberately illegible in flight — small, low contrast, blurred — and a tap halts the fall and shows it large. Halting costs time against the reward curve; it is never a hint about the answer.
   2. `separable`: a tap breaks the item into its parts, which are sorted one at a time in any order, across places where needed.
@@ -235,7 +236,7 @@ dist/                                  build output, committed
   - Covers AE3. The pizza box with residue cannot be sent anywhere whole; a tap yields cardboard and residue.
   - Covers AE4. The yoghurt pot's parts resolve to containers in two different places, and sorting them requires a place change.
   - Parts sorted in reverse order score the same as parts sorted in declaration order.
-- **Verification.** Every authored item carrying `examine` or `separable` is playable through its full variant set.
+- **Verification.** Every authored item carrying `examine` or `separable` is playable through its full variant set. Done end to end on a stand: the card falls with its variant unreadable, examination halts the fall and shows it, the hint then offers taking the item apart, and the two parts are answered into Papier and Bio for "разобрано: 2 из 2". Landing a composite item whole is refused with the reason.
 
 ### U5. Scoring, early drop, explanations
 

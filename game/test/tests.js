@@ -89,18 +89,67 @@ test('a composite variant answers in parts', () => {
 
 test('a borderline item falls slower than a plain one', () => {
   const strip = rules.stripForTier(PLACES, d('2026-08-27'), 1);
-  const variant = { kind: 'simple', destinations: ['papier'] };
-  const plain = rules.fallDuration({ tier: 1, attrs: [] }, variant, strip, 'home', d('2026-08-27'));
-  const slow = rules.fallDuration({ tier: 1, attrs: ['borderline'] }, variant, strip, 'home', d('2026-08-27'));
+  const plain = rules.fallDuration({ tier: 1, attrs: [] }, ['papier'], strip, 'home');
+  const slow = rules.fallDuration({ tier: 1, attrs: ['borderline'] }, ['papier'], strip, 'home');
   assert(slow > plain, 'помеченный предмет обязан падать дольше: ' + slow + ' vs ' + plain);
 });
 
 test('an item whose place is not the active one falls slower', () => {
   const strip = rules.stripForTier(PLACES, d('2026-08-27'), 3);
-  const variant = { kind: 'simple', destinations: ['glas_weiss'] };
-  const here = rules.fallDuration({ tier: 3, attrs: [] }, variant, strip, 'insel', d('2026-08-27'));
-  const away = rules.fallDuration({ tier: 3, attrs: [] }, variant, strip, 'home', d('2026-08-27'));
+  const here = rules.fallDuration({ tier: 3, attrs: [] }, ['glas_weiss'], strip, 'insel');
+  const away = rules.fallDuration({ tier: 3, attrs: [] }, ['glas_weiss'], strip, 'home');
   assert(away > here, 'смена места стоит времени: ' + away + ' vs ' + here);
+});
+
+test('a part falls by its own destination, not the whole item\'s', () => {
+  const strip = rules.stripForTier(PLACES, d('2026-08-27'), 3);
+  const homePart = rules.fallDuration({ tier: 3, attrs: [] }, ['papier'], strip, 'home');
+  const awayPart = rules.fallDuration({ tier: 3, attrs: [] }, ['glas_weiss'], strip, 'home');
+  assert(awayPart > homePart, 'часть, лежащая в другом месте, падает дольше');
+});
+
+test('examination changes what can be read, not what is true', () => {
+  const item = { id: 'dose', attrs: ['examine'], labels: { de: 'Aludose', en: 'Can' } };
+  const variant = { id: 'pfand', kind: 'simple', labels: { de: 'mit Pfand', en: 'deposit' },
+                    destinations: ['papier'] };
+  const before = rules.visibleLabel(item, variant, false);
+  const after = rules.visibleLabel(item, variant, true);
+  assert(!before.legible, 'до осмотра надпись нечитаема');
+  assert(after.legible, 'после осмотра читаема');
+  same(before.detail, after.detail, 'текст один и тот же — меняется только читаемость');
+  same(after.name, 'Aludose');
+});
+
+test('an item without the examine attribute is legible from the start', () => {
+  const shown = rules.visibleLabel({ id: 'x', attrs: [], labels: { de: 'X' } },
+                                   { labels: { de: 'y' } }, false);
+  assert(shown.legible);
+});
+
+test('a composite variant must be taken apart, a simple one must not', () => {
+  assert(rules.variantNeedsSplit({ kind: 'composite', parts: [] }));
+  assert(!rules.variantNeedsSplit({ kind: 'simple', destinations: ['papier'] }));
+});
+
+test('parts are scored by slot, so the order they are sorted in does not matter', () => {
+  const slots = [
+    { id: 'karton', destinations: ['papier'] },
+    { id: 'reste', destinations: ['bio'] }
+  ];
+  const inOrder = rules.scoreSlots(slots, { karton: 'papier', reste: 'bio' }, d('2026-08-27'));
+  const reversed = rules.scoreSlots(slots, { reste: 'bio', karton: 'papier' }, d('2026-08-27'));
+  same(inOrder.right, 2);
+  same(reversed.right, inOrder.right, 'порядок разбора не влияет на счёт');
+});
+
+test('a correct part still counts when another part is wrong', () => {
+  const slots = [
+    { id: 'huelle', destinations: ['papier'] },
+    { id: 'becher', destinations: ['kunststoff'] }
+  ];
+  const score = rules.scoreSlots(slots, { huelle: 'papier', becher: 'restmuell' }, d('2026-08-27'));
+  same(score.right, 1);
+  same(score.detail.map(x => x.ok), [true, false]);
 });
 
 test('a wrong container in the right place is not a place error', () => {

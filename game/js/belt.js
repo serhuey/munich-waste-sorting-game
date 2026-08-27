@@ -129,6 +129,16 @@ export class Belt {
     this.index = this.centers.indexOf(this.centerX() - target) >= 0
       ? this.centers.indexOf(this.centerX() - target) : this.index;
     cancelAnimationFrame(this.anim);
+
+    // A hidden tab gets no animation frames, so an animated scroll there would
+    // simply never arrive. Nobody is watching it travel anyway.
+    if (typeof document !== 'undefined' && document.hidden) {
+      this.offset = target;
+      this.render();
+      this.index = this.activeIndex();
+      return;
+    }
+
     const from = this.offset, t0 = performance.now();
     const tick = () => {
       const k = Math.min(1, (performance.now() - t0) / ms);

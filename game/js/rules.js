@@ -69,12 +69,15 @@ export function answerSlots(variant, date) {
 // deliberately in one place. An item falls slower when it deserves thought
 // (borderline) and slower again when its answer is not in the active place,
 // because changing place costs an extra action against the same clock.
-export const TIMING = { base: 5200, perTier: 250, borderline: 1.35, otherPlace: 1.25 };
+export const TIMING = { base: 5200, perTier: 250, borderline: 1.35, otherPlace: 1.25,
+                        examineCost: 0.15 };
 
-export function fallDuration(item, variant, strip, activePlaceId, date) {
+// destinations is a plain list of container ids: a whole item passes its
+// variant's, a part passes its own, and neither needs to know about the other.
+export function fallDuration(item, destinations, strip, activePlaceId) {
   let ms = TIMING.base + (item.tier - 1) * TIMING.perTier;
   if ((item.attrs || []).includes('borderline')) ms *= TIMING.borderline;
-  const wanted = new Set(answerSlots(variant, date).flatMap(s => s.destinations));
+  const wanted = new Set(destinations);
   const here = strip.some(c => wanted.has(c.id) && c.placeId === activePlaceId);
   if (!here) ms *= TIMING.otherPlace;
   return Math.round(ms);
@@ -92,6 +95,41 @@ export function errorKind(strip, chosenId, correctIds) {
   const chosenPlace = placeOfContainer(strip, chosenId);
   const correctPlaces = new Set(correctIds.map(id => placeOfContainer(strip, id)));
   return correctPlaces.has(chosenPlace) ? 'container' : 'place';
+}
+
+export function needsExamination(item) {
+  return (item.attrs || []).includes('examine');
+}
+
+export function variantNeedsSplit(variant) {
+  return variant.kind === 'composite';
+}
+
+// What the player can read on the falling card. Before examination the variant
+// is deliberately unreadable — the answer is printed on the object in small
+// type, and going to look at it is the move R4 is about.
+export function visibleLabel(item, variant, examined) {
+  const name = (item.labels && item.labels.de) || item.id;
+  if (!needsExamination(item) || examined) {
+    const detail = variant && variant.labels && variant.labels.de;
+    return { name, detail: detail || '', legible: true };
+  }
+  return { name, detail: (variant.labels && variant.labels.de) || '', legible: false };
+}
+
+// Parts are answered one at a time and the order does not matter (R5): scoring
+// is a lookup by slot, never a comparison of sequences.
+export function scoreSlots(slots, answers, date) {
+  let right = 0;
+  const detail = slots.map(slot => {
+    const chosen = answers[slot.id];
+    const wanted = slot.destinations && slot.destinations.length
+      ? slot.destinations : destinationsOn(slot, date);
+    const ok = wanted.includes(chosen);
+    if (ok) right += 1;
+    return { id: slot.id, chosen, wanted, ok };
+  });
+  return { right, total: slots.length, detail };
 }
 
 export function pickVariant(item) {

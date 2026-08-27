@@ -224,8 +224,21 @@ def check_source(source, snapshot_index, today, problems, where="source", requir
                         % (", ".join(then), ", ".join(now), source.get("url") or key))
 
 
+def reachable_containers(places, tier, date):
+    """Контейнеры, доступные игроку на его тире: место открывается не раньше
+    своего тира, и адресат в ещё закрытом месте ответить нельзя."""
+    out = {}
+    for p in places or []:
+        if not in_window(p, date) or (p.get("tier") or 1) > tier:
+            continue
+        for c in p.get("containers") or []:
+            if in_window(c, date):
+                out[c["id"]] = p["id"]
+    return out
+
+
 def check_item(raw, stem, containers, snapshot_index, date, today, langs=LANGS,
-               require_signature=True):
+               require_signature=True, places=None):
     problems = []
     item_id = raw.get("id")
     if not isinstance(item_id, str) or not ID.match(item_id):
@@ -277,6 +290,22 @@ def check_item(raw, stem, containers, snapshot_index, date, today, langs=LANGS,
                         "игрок не сможет их различить (R4)")
     if any(v.get("kind") == "composite" for v in variants) and "separable" not in attrs:
         problems.append("есть составной вариант, но нет атрибута separable (R5)")
+
+    # Предмет, все адресаты которого лежат в ещё закрытых местах, играть нельзя:
+    # нужного контейнера просто нет на ленте.
+    if places is not None and isinstance(tier, int) and 1 <= tier <= 5:
+        reachable = reachable_containers(places, tier, date)
+        for i, v in enumerate(variants):
+            for holder, where in ([(v, "variants[%d]" % i)] if v.get("kind") != "composite"
+                                  else [(p, "variants[%d].parts[%d]" % (i, j))
+                                        for j, p in enumerate(v.get("parts") or [])]):
+                dests = normalise_destinations(holder.get("destinations") or []) or []
+                live = [d["id"] for d in dests
+                        if d["id"] in reachable and in_window(d, date)]
+                if dests and not live:
+                    problems.append(
+                        "%s: на тире %d ни один адресат не доступен — место ещё "
+                        "не открыто" % (where, tier))
     return problems
 
 
@@ -315,12 +344,14 @@ def build(repo, date, today=None, langs=LANGS, fixtures=False):
         except ValueError as ex:
             report["excluded"].append((stem, ["файл не разбирается как JSON: %s" % ex]))
             continue
-        problems = check_item(raw, stem, containers, index, date, today, langs)
+        problems = check_item(raw, stem, containers, index, date, today, langs,
+                              places=places)
         if problems:
             report["excluded"].append((stem, problems))
             continue
         # тот же предмет на дату перехода: не исключаем, но предупреждаем
-        future = check_item(raw, stem, containers, index, iso(FUTURE_PROBE), today, langs)
+        future = check_item(raw, stem, containers, index, iso(FUTURE_PROBE), today, langs,
+                            places=places)
         for p in future:
             if p not in problems and "не действует" in p:
                 report["warnings"].append("%s: после %s %s" % (stem, FUTURE_PROBE, p))
@@ -350,7 +381,7 @@ def build(repo, date, today=None, langs=LANGS, fixtures=False):
                         if not (pl.get(lang) or "").strip():
                             pl[lang] = part.get("id", fill)
             problems = check_item(raw, stem, containers, index, date, today, langs,
-                                  require_signature=False)
+                                  require_signature=False, places=places)
             if problems:
                 report["excluded"].append((stem + " (черновик)", problems))
                 continue

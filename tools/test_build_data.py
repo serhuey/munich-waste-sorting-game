@@ -229,6 +229,22 @@ class GateTest(unittest.TestCase):
         self.assertEqual(report["excluded"], [])
         self.assertEqual(content["items"], [])
 
+    def test_destination_in_a_locked_place_is_excluded(self):
+        # У острова tier 3: на первом тире его контейнеров на ленте нет.
+        self.item(tier=1, variants=[{"id": "s", "kind": "simple",
+                                     "labels": {"de": "a", "en": "b"},
+                                     "destinations": ["lvp"]}])
+        _, report = self.build()
+        self.assertTrue(any("место ещё" in r for r in self.excluded_reasons(report)),
+                        report["excluded"])
+
+    def test_the_same_destination_is_fine_on_its_own_tier(self):
+        self.item(tier=3, variants=[{"id": "s", "kind": "simple",
+                                     "labels": {"de": "a", "en": "b"},
+                                     "destinations": ["lvp"]}])
+        _, report = self.build()
+        self.assertEqual(report["included"], ["pizzakarton"], report["excluded"])
+
     # --- источники, которых нет в лексиконе ------------------------------
 
     LAW = {
