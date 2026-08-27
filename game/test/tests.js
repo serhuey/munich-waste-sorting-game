@@ -131,6 +131,18 @@ test('a composite variant must be taken apart, a simple one must not', () => {
   assert(!rules.variantNeedsSplit({ kind: 'simple', destinations: ['papier'] }));
 });
 
+test('a tap never throws the object away', () => {
+  const simple = { kind: 'simple', destinations: ['papier'] };
+  const composite = { kind: 'composite', parts: [] };
+  same(rules.tapAction(null), 'none');
+  same(rules.tapAction({ examined: true, split: false, variant: simple }), 'none',
+       'у обычного предмета тапу отвечать нечем');
+  same(rules.tapAction({ examined: false, split: false, variant: simple }), 'examine');
+  same(rules.tapAction({ examined: true, split: false, variant: composite }), 'split');
+  same(rules.tapAction({ examined: true, split: true, variant: composite }), 'none',
+       'разобранный предмет больше не разбирается');
+});
+
 test('parts are scored by slot, so the order they are sorted in does not matter', () => {
   const slots = [
     { id: 'karton', destinations: ['papier'] },

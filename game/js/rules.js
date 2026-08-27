@@ -117,6 +117,16 @@ export function visibleLabel(item, variant, examined) {
   return { name, detail: (variant.labels && variant.labels.de) || '', legible: false };
 }
 
+// What a tap on the object does right now. Never "drop": the gesture that looks
+// at a thing must not be the gesture that throws it away, and an object with
+// nothing to examine and nothing to take apart simply does not answer the tap.
+export function tapAction(round) {
+  if (!round) return 'none';
+  if (!round.examined) return 'examine';
+  if (variantNeedsSplit(round.variant) && !round.split) return 'split';
+  return 'none';
+}
+
 // Parts are answered one at a time and the order does not matter (R5): scoring
 // is a lookup by slot, never a comparison of sequences.
 export function scoreSlots(slots, answers, date) {

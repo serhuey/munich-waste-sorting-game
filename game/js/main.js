@@ -110,14 +110,15 @@ function spawnPart(slot) {
   });
 }
 
-// A tap on the object is examination first, taking it apart second, and only
-// then an early drop — the two gestures never compete for the same object state.
+// A tap on the object examines it, then takes it apart, and otherwise does
+// nothing at all. Dropping early is a separate gesture — a tap past the object,
+// or the space bar — because a key that means "let me look" must never be the
+// key that throws the thing away.
 function tapItem() {
-  const round = state.round;
-  if (!round || !fall.current) return fall.drop();
-  if (!round.examined) return examine();
-  if (rules.variantNeedsSplit(round.variant) && !round.split) return split();
-  fall.drop();
+  if (!fall.current) return;
+  const action = rules.tapAction(state.round);
+  if (action === 'examine') return examine();
+  if (action === 'split') return split();
 }
 
 function examine() {
