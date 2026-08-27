@@ -182,12 +182,13 @@ dist/                                  build output, committed
 - **Goal.** A repeatable way for a human to turn an AWM entry into a verified item, and the first tier's worth of items produced through it.
 - **Requirements.** R13, R15, R16, R17, AE1, AE3.
 - **Dependencies.** U1.
-- **Files.** `docs/VERIFYING.md`, `data/items/*.json`, `data/verified/lexikon-2026-08-23.json`.
+- **Files.** `docs/VERIFYING.md`, `data/drafts/README.md`, `tools/drafts.py`, `tools/verify_ui.py`, `data/items/*.json`, `data/verified/lexikon-2026-08-23.json`.
 - **Approach.**
   1. `docs/VERIFYING.md` states the loop: open the AWM entry, read it, record destinations, copy the URL, stamp `verified_on`, run the build.
   2. Start from the snapshot's counter-intuitive entries — AWM's own `tip` field flags several (the receipt entry carries "blue to paper, white thermal to Restmüll" verbatim).
   3. Tier one is home: Restmüll, Papier, Bio. Target 8 items, at least two of them borderline.
   4. Explanations are written per item in German and English at authoring time, not generated later.
+  5. The author works in a local form (`tools/verify_ui.py`, standard library, bound to 127.0.0.1) rather than a text editor: destinations are checkboxes built from `data/places.json`, so a mistyped container id is not expressible, and the gate's complaints render under the form as they happen. It edits the same files; it is an editor over the JSON, not a second store.
 - **Execution note.** Content lands continuously from here to launch; this unit delivers the first tier and the workflow, not the whole corpus.
 - **Test scenarios.**
   - Every file in `data/items/` passes U1's validator.
