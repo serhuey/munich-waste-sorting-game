@@ -316,7 +316,7 @@ dist/                                  build output, committed
 
 ### U10. The 1 January 2027 switch
 
-- **Goal.** The yellow bin arrives and light packaging leaves the island, without touching game logic.
+- **Goal.** The yellow bin arrives and the packaging containers leave the island, without touching game logic.
 - **Requirements.** R18, R19, R20, F5, AE10.
 - **Dependencies.** U6.
 - **Files.** `data/places/2027.json`, `game/js/rules.js`, `data/i18n/*.json`.
@@ -325,7 +325,7 @@ dist/                                  build output, committed
   2. The transition period is a window in data — 2027-01-01 to 2027-03-31 as the starting value — and the change message opens every session inside it, stating the current rule first and what changed into what, with nothing recorded on the device (KTD3).
   3. The introductory text is versioned alongside the rules so it cannot outlive what it describes (R20).
 - **Test scenarios.**
-  - Covers AE10. With the clock at 2027-01-15, the yellow bin is at home, light packaging is gone from the island, and the message opens the session; opening a second session shows it again.
+  - Covers AE10. With the clock at 2027-01-15, the yellow bin is at home, both packaging containers are gone from the island, and the message opens the session; opening a second session shows it again.
   - With the clock at 2026-12-31 the 2026 edition renders unchanged.
   - An item whose destination moved is scored by the new rule after the switch and the old rule before it.
   - No `.js` file changes between the two editions — the switch is a data diff.
@@ -428,7 +428,7 @@ Content authoring (U2's loop) runs continuously across all four phases and is th
 - `python3 tools/build_data.py` exits non-zero when any authored item lacks manual verification, references a missing snapshot key, or contradicts the snapshot.
 - `python3 tools/awm_lexikon.py diff --latest` exits non-zero when destinations drifted, producing the reverification list (F6).
 - The game plays from cold start to finale on a physical phone, one-handed, in German and in English.
-- With the system clock at 2027-01-15 the yellow bin is present, light packaging is gone, and no `.js` file differs from the 2026 run.
+- With the system clock at 2027-01-15 the yellow bin is present, the plastic and metal containers are gone, and no `.js` file differs from the 2026 run.
 - A complete run stores nothing on the device: cookies, localStorage, sessionStorage and IndexedDB are all empty afterwards.
 - No network request leaves the page except to `count.php` on the same host.
 - Greyscale screenshots of every tier remain playable.

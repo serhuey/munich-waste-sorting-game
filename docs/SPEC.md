@@ -25,7 +25,7 @@ This is the requirements document: what the product must do and why, not how it 
 
 ### Summary
 
-A mobile-web game where waste falls from the top and one continuous belt of containers sits at the bottom, grouped by *place*: home, the shop, the Wertstoffinsel, the Wertstoffhof, hazardous drop-off. The player swipes along the belt, or jumps to a group by tapping its place tab. Places unlock one at a time, mirroring how the city is actually organised. The game ends with a Christmas tree — the one item whose correct answer is not a container at all. On 1 January 2027 the yellow bin arrives at home and light packaging leaves the island, as a data change rather than a code change.
+A mobile-web game where waste falls from the top and one continuous belt of containers sits at the bottom, grouped by *place*: home, the shop, the Wertstoffinsel, the Wertstoffhof, hazardous drop-off. The player swipes along the belt, or jumps to a group by tapping its place tab. Places unlock one at a time, mirroring how the city is actually organised. The game ends with a Christmas tree — the one item whose correct answer is not a container at all. On 1 January 2027 the yellow bin arrives at home and packaging in plastic and metal leaves the island, as a data change rather than a code change.
 
 ### Problem Frame
 
@@ -39,7 +39,7 @@ Munich does not work like the rest of Germany, and some of those differences wil
 
 **The fourth layer: a widespread misconception about penalties.** In Bavaria a household sorting mistake is worth around €20, and in practice the consequence is different anyway — a contaminated bin is emptied as Restmüll and billed. Real fines attach to illegal dumping — but even there several routes are usually correct, and a game that names one of them as *the* answer errs against the player.
 
-**The fifth layer: time.** On 1 January 2027 the city introduces the Gelbe Tonne, bins are distributed from November 2026, and the light-packaging containers leave the Wertstoffinseln. The whole city has to relearn, and what changes is the place.
+**The fifth layer: time.** On 1 January 2027 the city introduces the Gelbe Tonne, bins are distributed from November 2026, and the containers for plastic and metal packaging leave the Wertstoffinseln. The whole city has to relearn, and what changes is the place.
 
 ### Key Decisions
 
@@ -85,7 +85,7 @@ Munich does not work like the rest of Germany, and some of those differences wil
 
 **Gelbe Tonne transition**
 
-- R18. On 1 January 2027 the yellow bin appears among the containers of the place *home*, and the light-packaging container disappears from *Wertstoffinsel*, where glass and textiles remain; items whose destination changed are scored by the new rule. All of it happens as a data change, with no edit to game logic.
+- R18. On 1 January 2027 the yellow bin appears among the containers of the place *home*, and both packaging containers — plastic and metal — disappear from *Wertstoffinsel*, where glass and textiles remain; items whose destination changed are scored by the new rule. All of it happens as a data change, with no edit to game logic.
 - R19. Throughout the transition period the game shows a message at the start of every session: that the rules have changed, which items moved, and what to do until the yellow bin arrives in the courtyard. The message reads without knowledge of the old rules — it states the current rule first, then what changed into what. No record of having shown it is stored on the device.
 - R20. The game's introductory text is updated together with the rules: a description of the city's system must not outlive the change it describes.
 
@@ -107,14 +107,14 @@ Munich does not work like the rest of Germany, and some of those differences wil
 flowchart TB
   P1["Tier 1 — home<br/>Restmuell / Papier / Bio<br/>no tabs yet"]
   P2["Tier 2 — the shop<br/>Pfand machine, battery box,<br/>lamps and small electronics<br/>tabs and examination appear"]
-  P3["Tier 3 — Wertstoffinsel<br/>glass by colour, textiles,<br/>light packaging until 2027"]
+  P3["Tier 3 — Wertstoffinsel<br/>glass by colour, textiles,<br/>plastic and metal packaging until 2027"]
   P4["Tier 4 — Wertstoffhof<br/>electronics, batteries, Sperrmuell"]
   P5["Tier 5 — hazardous drop-off<br/>Problemabfall, medicines"]
   TREE["Finale — Christmas tree<br/>strip it, then choose a route<br/>available year-round"]
   P1 --> P2 --> P3 --> P4 --> P5 --> TREE
   SPLIT["Separable items<br/>a tap breaks them apart,<br/>parts may go to different places"]
   P3 -.-> SPLIT
-  SWITCH["1 January 2027<br/>yellow bin arrives at home,<br/>light packaging leaves the island"]
+  SWITCH["1 January 2027<br/>yellow bin arrives at home,<br/>plastic and metal leave the island"]
   SWITCH -.-> P1
   SWITCH -.-> P3
 ```
@@ -164,7 +164,7 @@ Worked example: a pizza box is one item with two variants. Clean is a simple var
 
 - F5. Migration on 1 January 2027
   - **Trigger:** 1 January 2027 arrives.
-  - **Steps:** rule data switches to the new edition; the yellow bin arrives at home and light packaging leaves the island; the introductory text updates; through the transition period a change message opens every session.
+  - **Steps:** rule data switches to the new edition; the yellow bin arrives at home and the plastic and metal containers leave the island; the introductory text updates; through the transition period a change message opens every session.
   - **Outcome:** the game runs on the new rules with the new set of places, with no edit to game logic.
   - **Covers R13, R18, R19, R20.**
 
@@ -180,13 +180,13 @@ Worked example: a pizza box is one item with two variants. Clean is a simple var
 - AE2. **Covers R4, R14.** Given: two visually identical bottles fall, one labelled `Mehrweg · Pfand` in small type, the other `Pfandfrei`. In flight the label is illegible; a tap shows it large. The first goes to the deposit-return machine at the shop, the second by material to the Wertstoffinsel. An answer given without examining is scored normally, but the explanation names what distinguished the variants.
 - AE15. **Covers R2, R8.** Given: a used phone charger falls. Both the shop and the Wertstoffhof are correct — shops above the size threshold accept small electronics under 25 cm without a purchase. Whichever the player picks counts, and the explanation names the other, because the point of this item is that the drive across town was never necessary.
 - AE3. **Covers R4, R5, R14.** Given: a pizza box falls. Examination reveals whether it has residue. A clean one goes whole into Papier. One with residue is tapped apart — cardboard to Papier, residue to Bio.
-- AE4. **Covers R2, R5, R9.** Given: a yoghurt pot with a foil lid and a paper sleeve falls. Taking it fully apart requires changing place: the sleeve to Papier at home, pot and foil to light packaging at the Wertstoffinsel. When the player places the sleeve correctly and the pot wrongly, the correct part counts and the wrong one is explained.
+- AE4. **Covers R2, R5, R9.** Given: a yoghurt pot with a foil lid and a paper sleeve falls. Taking it fully apart requires changing place: the sleeve to Papier at home, the pot to plastic packaging and the foil to metals at the Wertstoffinsel — three parts across two places. When the player places the sleeve correctly and the pot wrongly, the correct part counts and the wrong one is explained.
 - AE5. **Covers R8.** Given: an item falls whose source lists several correct destinations — say Wertstoffhof, Restmüll and bulky-waste collection. When the player picks any of them the answer is correct, and the explanation still names the others.
 - AE6. **Covers R10.** Given: the player drops an item early. A correct answer scores more than one given at ordinary pace; a wrong one costs more than an ordinary mistake. Dismissing the explanation quickly does not affect the score.
 - AE7. **Covers R7, R17.** Given: the player chooses a disposal route in the finale. Taking a shredded tree to a Wertstoffhof is correct regardless of date. Taking a whole tree to a designated Sammelstelle within its window is correct. Leaving the tree outside every valid route makes the game state that this is illegal dumping and name the real fine.
 - AE8. **Covers R16.** Given: the player reaches the finale in July, when AWM's seasonal page is not published. Then the game shows last season's list of sites, states its year and verification date, and links to AWM.
 - AE9. **Covers R15.** Given: an item appears in the data without a manual-verification flag. Then the build excludes it and the build process reports which item was excluded and why.
-- AE10. **Covers R18, R19.** Given: the player opens the game during the transition period after 1 January 2027. Then the session opens with a message stating the current rule first, then what changed into what, and what to do until the bin arrives; the yellow bin is at home and light packaging is gone from the island. Opening a new session shows the message again.
+- AE10. **Covers R18, R19.** Given: the player opens the game during the transition period after 1 January 2027. Then the session opens with a message stating the current rule first, then what changed into what, and what to do until the bin arrives; the yellow bin is at home and both packaging containers are gone from the island. Opening a new session shows the message again.
 - AE11. **Covers R12, R22.** Given: a colour-blind player holds the phone at arm's length. Then both the glass containers and the falling bottles are distinguishable by a non-colour signal, and tab and container labels are readable without zooming.
 - AE12. **Covers R21.** Given: a third language is added. Then only text and rule-data files change; the game-logic build is untouched.
 - AE13. **Covers R24.** Given: the game has been published to the list of entry points. Then every published link carries its own source tag, and for a moderated channel publication counted at the moment of submission.
@@ -266,6 +266,7 @@ Corrections to existing items are equally welcome, especially with a source link
 
 - AWM Abfalllexikon — per-item source of truth: `https://www.awm-muenchen.de/abfall-entsorgen/abfalllexikon`
 - How Munich's system works, the three bins and the Wertstoffinseln: `https://www.awm-muenchen.de/entsorgen/das-muenchner-muellsystem`
+- What actually stands at a Wertstoffinsel — glass by colour, plastic packaging and metals as separate containers, and the note that glass stays after the 2027 change: `https://www.awm-muenchen.de/abfall-entsorgen/abgabestellen/wertstoffinseln`
 - The Gelbe Tonne project, timing and parameters: `https://www.awm-muenchen.de/unternehmen/projekte/gelbe-tonne`
 - Gelbe Tonne FAQ, including replacement of the Wertstoffinsel containers and the bin being optional: `https://www.awm-muenchen.de/unternehmen/projekte/gelbe-tonne/faq-gelbe-tonne`
 - The 2027 introduction decision: `https://ru.muenchen.de/2026/85/Einfuehrung-der-Gelben-Tonne-nimmt-naechste-Huerde-124132`

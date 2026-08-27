@@ -16,7 +16,7 @@ Six places, in fact:
 |---|---|
 | Home | Restmüll, Papier, Bio — only the first is charged |
 | The shop | Anything labelled Pfand, batteries, old lamps, small electronics |
-| Wertstoffinsel | Glass by colour, textiles, packaging (until 2027) |
+| Wertstoffinsel | Glass by colour, textiles, plastic and metal packaging (until 2027) |
 | Wertstoffhof | Electronics, batteries, bulky waste |
 | Hazardous drop-off | Problemabfall, medicines |
 | Seasonal collection sites | Christmas trees — fully stripped, on set dates |
@@ -35,7 +35,7 @@ And most of what people believe about fines is wrong. A household sorting mistak
 
 ## Why now
 
-On **1 January 2027** Munich introduces the Gelbe Tonne. Bins are distributed from November 2026, and the light-packaging containers leave the Wertstoffinseln. The whole city has to relearn the answer — not just newcomers.
+On **1 January 2027** Munich introduces the Gelbe Tonne. Bins are distributed from November 2026, and the containers for plastic and metal packaging leave the Wertstoffinseln. The whole city has to relearn the answer — not just newcomers.
 
 This project is built to be correct on both sides of that date. Sorting rules live as data, so the switch is a data change rather than a rewrite.
 
