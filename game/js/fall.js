@@ -25,19 +25,24 @@ export class Fall {
     this.clear();
     const el = document.createElement('div');
     el.className = 'item' + (borderline ? ' borderline' : '');
+    // The card's own transform is rewritten every frame by the fall loop, so
+    // anything that wants to move the card has to move this wrapper instead.
+    const body = document.createElement('div');
+    body.className = 'body';
     const glyph = document.createElement('div');
     glyph.className = 'glyph';
     glyph.textContent = (item.attrs || []).includes('separable') ? '❖' : '◆';
     const name = document.createElement('div');
     name.className = 'name';
     name.textContent = label;
-    el.append(glyph, name);
+    body.append(glyph, name);
     if (detail) {
       const small = document.createElement('div');
       small.className = 'detail' + (legible ? '' : ' unreadable');
       small.textContent = detail;
-      el.append(small);
+      body.append(small);
     }
+    el.append(body);
     if (hint) {
       const tip = document.createElement('div');
       tip.className = 'hint';
@@ -61,6 +66,18 @@ export class Fall {
   drop() {
     if (!this.current || this.paused) return;
     this._land(true);
+  }
+
+  // A tap that has nothing to answer gets a shrug rather than silence: the
+  // object shakes, which says "there is nothing to look at here" without saying
+  // anything about the answer.
+  nudge() {
+    const body = this.el && this.el.querySelector('.body');
+    if (!body) return;
+    body.classList.remove('nudge');
+    void body.offsetWidth;          // restart the animation from the beginning
+    body.classList.add('nudge');
+    body.addEventListener('animationend', () => body.classList.remove('nudge'), { once: true });
   }
 
   // Replace the card's contents in place: after examination the same object is

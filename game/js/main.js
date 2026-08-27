@@ -119,6 +119,7 @@ function tapItem() {
   const action = rules.tapAction(state.round);
   if (action === 'examine') return examine();
   if (action === 'split') return split();
+  fall.nudge();
 }
 
 function examine() {
