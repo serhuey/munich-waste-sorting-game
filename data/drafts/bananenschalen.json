@@ -35,11 +35,14 @@
         "de": "",
         "en": ""
       },
-      "destinations": []
+      "destinations": [
+        "bio"
+      ]
     }
   ],
   "explanation": {
     "de": "",
     "en": ""
-  }
+  },
+  "_destinations_proposed": "подставлено машиной из снимка; подтвердить, открыв source.url"
 }

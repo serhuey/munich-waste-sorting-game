@@ -141,6 +141,56 @@ def missing_bits(raw):
     return out
 
 
+# Адресат AWM -> контейнер игры. Только однозначные пары: Wertstoffhof и
+# Wertstoffinsel держат по нескольку контейнеров, и какой из них верный —
+# решает человек, а не таблица.
+UNAMBIGUOUS = {
+    "restmuell": "restmuell",
+    "papier": "papier",
+    "bio": "bio",
+    "altkleider": "altkleider",
+    "sperrmuell": "sperrmuell",
+    "problemabfall": "giftmobil",
+}
+AMBIGUOUS = {"wertstoffinsel", "wertstoffhof", "wertstoffmobil", "halle2",
+             "weiternutzen", "containerdienst", "entsorgungspark"}
+
+
+def cmd_propose(a):
+    """Подставить очевидные адресаты. Это предложение машины, а не сверка:
+    подпись под ним всё равно ставит человек, прочитав страницу."""
+    names = ([a.id + ".json"] if a.id else
+             sorted(f for f in os.listdir(DRAFTS) if f.endswith(".json")))
+    touched, needs_human = 0, []
+    for name in names:
+        path = os.path.join(DRAFTS, name)
+        raw = bd.load_json(path)
+        src = raw.get("source") or {}
+        awm = src.get("destinations_at_verification") or []
+        mapped = [UNAMBIGUOUS[d] for d in awm if d in UNAMBIGUOUS]
+        skipped = [d for d in awm if d not in UNAMBIGUOUS]
+        variants = raw.get("variants") or []
+        empty = [v for v in variants if v.get("kind") == "simple" and not v.get("destinations")]
+        if not mapped or not empty:
+            needs_human.append((name[:-5], "нет однозначного адресата" if not mapped
+                                else "адресаты уже заполнены"))
+            continue
+        for v in empty:
+            v["destinations"] = list(mapped)
+        raw["_destinations_proposed"] = (
+            "подставлено машиной из снимка; подтвердить, открыв source.url"
+            + ("; не отображены: " + ", ".join(skipped) if skipped else ""))
+        with open(path, "w", encoding="utf-8") as f:
+            json.dump(raw, f, ensure_ascii=False, indent=2)
+        touched += 1
+    print("предложено адресатов: %d" % touched)
+    if needs_human:
+        print("решает человек (%d):" % len(needs_human))
+        for name, why in needs_human:
+            print("   %-24s %s" % (name, why))
+    return 0
+
+
 def cmd_list(a):
     if not os.path.isdir(DRAFTS):
         print("заготовок нет")
@@ -211,6 +261,10 @@ def main():
 
     l = sub.add_parser("list", help="показать очередь")
     l.set_defaults(func=cmd_list)
+
+    pr = sub.add_parser("propose", help="подставить очевидные адресаты из снимка")
+    pr.add_argument("--id", default=None, help="только один предмет")
+    pr.set_defaults(func=cmd_propose)
 
     p = sub.add_parser("promote", help="перенести готовую заготовку в data/items/")
     p.add_argument("id")

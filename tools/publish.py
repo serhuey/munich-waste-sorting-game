@@ -13,7 +13,7 @@
 а не скрипта. Скрипт печатает оставшиеся шаги и на этом заканчивается.
 """
 
-import argparse, filecmp, os, shutil, sys
+import argparse, filecmp, json, os, shutil, sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 REPO = os.path.dirname(HERE)
@@ -40,6 +40,10 @@ def main():
 
     if not os.path.isdir(DIST):
         sys.exit("нет %s — сначала собери контент: python3 tools/build_data.py" % DIST)
+    marker = os.path.join(DIST, "content.json")
+    if os.path.exists(marker) and json.load(open(marker, encoding="utf-8")).get("fixture"):
+        sys.exit("в dist/ лежит стенд с неподписанными черновиками — выкладывать нельзя.\n"
+                 "  пересобери без --fixtures: python3 tools/build_data.py")
     if not os.path.isdir(os.path.join(a.site, ".git")):
         sys.exit("не похоже на репозиторий сайта: %s\n"
                  "  укажи путь через --site или PORTFOLIO_SITE" % a.site)

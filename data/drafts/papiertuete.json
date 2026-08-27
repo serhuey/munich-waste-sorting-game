@@ -36,11 +36,14 @@
         "de": "",
         "en": ""
       },
-      "destinations": []
+      "destinations": [
+        "papier"
+      ]
     }
   ],
   "explanation": {
     "de": "",
     "en": ""
-  }
+  },
+  "_destinations_proposed": "подставлено машиной из снимка; подтвердить, открыв source.url; не отображены: wertstoffhof"
 }

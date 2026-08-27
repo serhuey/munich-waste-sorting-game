@@ -169,7 +169,7 @@ def check_variant(v, where, containers, date, problems, langs):
         problems.append("%s: kind должен быть simple или composite, а не %r" % (where, kind))
 
 
-def check_source(source, snapshot_index, today, problems, where="source"):
+def check_source(source, snapshot_index, today, problems, where="source", require_signature=True):
     if not isinstance(source, dict):
         problems.append("нет блока %s" % where)
         return
@@ -178,8 +178,12 @@ def check_source(source, snapshot_index, today, problems, where="source"):
         problems.append("%s.authority должен быть awm или law, а не %r" % (where, authority))
     if not isinstance(source.get("url"), str) or not source["url"].startswith("http"):
         problems.append("%s.url отсутствует или не похож на ссылку" % where)
-    if not isinstance(source.get("verified_by"), str) or not source["verified_by"].strip():
+    if require_signature and (not isinstance(source.get("verified_by"), str)
+                              or not source["verified_by"].strip()):
         problems.append("%s.verified_by пуст — предмет никто не сверял" % where)
+
+    if not require_signature:
+        return
 
     raw_date = source.get("verified_on")
     if not isinstance(raw_date, str) or not raw_date:
@@ -220,7 +224,8 @@ def check_source(source, snapshot_index, today, problems, where="source"):
                         % (", ".join(then), ", ".join(now), source.get("url") or key))
 
 
-def check_item(raw, stem, containers, snapshot_index, date, today, langs=LANGS):
+def check_item(raw, stem, containers, snapshot_index, date, today, langs=LANGS,
+               require_signature=True):
     problems = []
     item_id = raw.get("id")
     if not isinstance(item_id, str) or not ID.match(item_id):
@@ -238,14 +243,17 @@ def check_item(raw, stem, containers, snapshot_index, date, today, langs=LANGS):
         attrs = []
 
     check_text_map(raw.get("labels"), "labels", problems, langs)
-    check_text_map(raw.get("explanation"), "explanation", problems, langs)
-    check_source(raw.get("source"), snapshot_index, today, problems)
+    if require_signature:
+        check_text_map(raw.get("explanation"), "explanation", problems, langs)
+    check_source(raw.get("source"), snapshot_index, today, problems,
+                 require_signature=require_signature)
     extra = raw.get("sources", [])
     if not isinstance(extra, list):
         problems.append("sources должен быть списком дополнительных источников")
     else:
         for i, src in enumerate(extra):
-            check_source(src, snapshot_index, today, problems, "sources[%d]" % i)
+            check_source(src, snapshot_index, today, problems, "sources[%d]" % i,
+                         require_signature=require_signature)
 
     variants = raw.get("variants")
     if not isinstance(variants, list) or not variants:
@@ -272,7 +280,7 @@ def check_item(raw, stem, containers, snapshot_index, date, today, langs=LANGS):
     return problems
 
 
-def build(repo, date, today=None, langs=LANGS):
+def build(repo, date, today=None, langs=LANGS, fixtures=False):
     today = today or datetime.date.today()
     report = {"included": [], "excluded": [], "warnings": [], "fatal": []}
 
@@ -312,9 +320,41 @@ def build(repo, date, today=None, langs=LANGS):
         items.append(raw)
         report["included"].append(stem)
 
+    if fixtures:
+        drafts_dir = os.path.join(repo, "data", "drafts")
+        names = sorted(f for f in os.listdir(drafts_dir)
+                       if f.endswith(".json") and not f.startswith("_")) if os.path.isdir(drafts_dir) else []
+        for name in names:
+            stem = name[:-5]
+            try:
+                raw = load_json(os.path.join(drafts_dir, name))
+            except ValueError:
+                continue
+            fill = (raw.get("labels") or {}).get("de") or stem
+            for holder in [raw] + list(raw.get("variants") or []):
+                labels = holder.setdefault("labels", {})
+                for lang in langs:
+                    if not (labels.get(lang) or "").strip():
+                        labels[lang] = fill
+                for part in holder.get("parts") or []:
+                    pl = part.setdefault("labels", {})
+                    for lang in langs:
+                        if not (pl.get(lang) or "").strip():
+                            pl[lang] = part.get("id", fill)
+            problems = check_item(raw, stem, containers, index, date, today, langs,
+                                  require_signature=False)
+            if problems:
+                report["excluded"].append((stem + " (черновик)", problems))
+                continue
+            raw = {k: v for k, v in raw.items() if not k.startswith("_")}
+            raw["unverified"] = True
+            items.append(raw)
+            report["included"].append(stem + " (черновик)")
+
     content = {
         "built": today.isoformat(),
         "source_snapshot": os.path.basename(snap_path),
+        "fixture": bool(fixtures),
         "places": places,
         "items": items,
     }
@@ -350,10 +390,13 @@ def main():
     ap.add_argument("--date", default=None, help="дата, на которую собираем (ГГГГ-ММ-ДД)")
     ap.add_argument("--check", action="store_true", help="только проверить, ничего не писать")
     ap.add_argument("--repo", default=REPO, help="корень репозитория")
+    ap.add_argument("--fixtures", action="store_true",
+                    help="добавить неподписанные черновики — только для разработки движка, "
+                         "такую сборку publish.py не выложит")
     a = ap.parse_args()
 
     date = iso(a.date) if a.date else datetime.date.today()
-    content, report = build(a.repo, date)
+    content, report = build(a.repo, date, fixtures=a.fixtures)
     code = print_report(report, date)
     if content is None or a.check:
         return code
@@ -364,6 +407,9 @@ def main():
     with open(out, "w", encoding="utf-8") as f:
         json.dump(content, f, ensure_ascii=False, indent=2)
     print("записано: %s" % os.path.relpath(out, a.repo))
+    if a.fixtures:
+        print("ВНИМАНИЕ: в сборке есть неподписанные черновики. Это стенд для разработки,")
+        print("          выкладывать его нельзя — publish.py откажется.")
     return code
 
 
