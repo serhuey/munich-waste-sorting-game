@@ -68,6 +68,38 @@ tools/                Abfalllexikon snapshot and diff
 
 Start with `docs/SPEC.md`. It is a requirements document, not an architecture document — the how is deliberately still open.
 
+## Running it locally
+
+```bash
+python3 tools/build_data.py --fixtures     # build dist/ from drafts, for development
+python3 -m http.server 8080 --directory dist
+```
+
+`--fixtures` includes items nobody has verified yet, marks every one of them
+`unverified`, stamps the build as a stand and makes `tools/publish.py` refuse to
+copy it anywhere. Without the flag the build contains only signed items, which
+is what ships.
+
+Two development handles on the URL, and the first is also how the 2027 switch is
+demonstrated:
+
+- `?date=2027-01-15` reads the rules against another day. The yellow bin appears
+  at home and both packaging containers leave the island, with no other change.
+- `?tier=3` starts further up the ladder.
+
+Engine tests are a page, because the engine is a page:
+
+```bash
+python3 -m http.server 8081
+open http://127.0.0.1:8081/game/test/belt.test.html
+```
+
+Data and tool tests:
+
+```bash
+python3 tools/test_build_data.py
+```
+
 ## Contributing
 
 The most valuable contribution here is not code. It is a verified item: a waste item that newcomers get wrong, with a link to its AWM entry and the date you read it. Corrections to existing items are just as welcome, especially with a source link.

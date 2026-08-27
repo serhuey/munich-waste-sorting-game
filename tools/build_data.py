@@ -18,7 +18,7 @@
 2 — сборка невозможна (нет данных о местах или снимка лексикона).
 """
 
-import argparse, datetime, json, os, re, sys
+import argparse, datetime, json, os, re, shutil, sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 REPO = os.path.dirname(HERE)
@@ -415,6 +415,25 @@ def main():
     with open(out, "w", encoding="utf-8") as f:
         json.dump(content, f, ensure_ascii=False, indent=2)
     print("записано: %s" % os.path.relpath(out, a.repo))
+
+    # dist — это ровно то, что уедет на сервер: движок рядом с данными, теми же
+    # путями. Иначе игра в разработке и игра на домене расходятся в мелочах,
+    # которые видно только в проде.
+    game = os.path.join(a.repo, "game")
+    if os.path.isdir(game):
+        copied = 0
+        for base, _, files in os.walk(game):
+            if os.sep + "test" in base:
+                continue
+            for name in files:
+                if name.startswith(".") or name.endswith(".test.html"):
+                    continue
+                src = os.path.join(base, name)
+                dst = os.path.join(out_dir, os.path.relpath(src, game))
+                os.makedirs(os.path.dirname(dst), exist_ok=True)
+                shutil.copy2(src, dst)
+                copied += 1
+        print("движок скопирован: %d файлов" % copied)
     if a.fixtures:
         print("ВНИМАНИЕ: в сборке есть неподписанные черновики. Это стенд для разработки,")
         print("          выкладывать его нельзя — publish.py откажется.")

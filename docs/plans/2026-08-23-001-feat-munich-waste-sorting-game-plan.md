@@ -202,7 +202,8 @@ dist/                                  build output, committed
 - **Goal.** The spike's loop rebuilt as modules driven by `dist/content.json` instead of inline arrays.
 - **Requirements.** R1, R2, R3, R6, R22, F1.
 - **Dependencies.** U1.
-- **Files.** `game/index.html`, `game/css/game.css`, `game/js/main.js`, `game/js/fall.js`, `game/js/belt.js`, `game/js/item.js`, `game/test/belt.test.html`.
+- **Files.** `game/index.html`, `game/css/game.css`, `game/js/main.js`, `game/js/fall.js`, `game/js/belt.js`, `game/js/rules.js`, `game/test/belt.test.html`, `game/test/tests.js`.
+- **Built. Deviations, each deliberate.** `rules.js` replaced the planned `item.js`: what the engine needed was not an item class but the date-dependent rules — which containers exist today, which destinations a variant accepts today, how long a thing falls — and keeping them pure is what let the 2027 switch be tested by moving a clock. `build_data.py` now also copies `game/` into `dist/`, so the thing under development is the thing that ships, at the same paths. Two URL handles exist for development, `?date=` and `?tier=`; the first is how the before-and-after screenshots in Success Criteria get made.
 - **Approach.**
   1. Lift `prototype/spike-belt.html` intact where it works: one continuous track, groups with dividers, animated scroll, swipe plus tab jump, arrow keys agreeing in direction with the swipe.
   2. Places and containers come from data; the tab row renders only unlocked places and stays hidden while only `home` exists (R6).
@@ -216,7 +217,7 @@ dist/                                  build output, committed
   - An item whose place differs from the active place falls slower than the same item when its place is active.
   - At 320 px width the active group and part of its neighbour are both visible, and container labels are not truncated.
   - With only `home` unlocked, no tab row is rendered.
-- **Verification.** The tier-one loop is playable end to end on a phone, driven entirely by `dist/content.json`.
+- **Verification.** The tier-one loop is playable end to end on a phone, driven entirely by `dist/content.json`. Done: 13 engine tests pass, and the belt renders `restmuell, papier, bio` at home on 2026-12-31 against `restmuell, papier, bio, gelbe_tonne` on 2027-01-15, with `kunststoff` and `metall` leaving the island, changing nothing but the date.
 
 ### U4. Examination and separation
 
