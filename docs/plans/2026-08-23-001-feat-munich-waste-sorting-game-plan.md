@@ -321,7 +321,7 @@ dist/                                  build output, committed
 - **Dependencies.** U6.
 - **Files.** `data/places/2027.json`, `game/js/rules.js`, `data/i18n/*.json`.
 - **Approach.**
-  1. Containers carry `from` / `until`; `gelbe_tonne` starts 2027-01-01 at `home`, light packaging ends the same day at `wertstoffinsel`, glass and textiles stay.
+  1. Containers carry `from` / `until`; `gelbe_tonne` starts 2027-01-01 at `home`, and both `kunststoff` and `metall` end the same day at `wertstoffinsel`, where glass and textiles stay. Two containers, not one: AWM's own page for the islands lists plastic packaging and metals as separate containers, and the 2027 change moves plastic, composites and metal into the yellow bin together.
   2. The transition period is a window in data — 2027-01-01 to 2027-03-31 as the starting value — and the change message opens every session inside it, stating the current rule first and what changed into what, with nothing recorded on the device (KTD3).
   3. The introductory text is versioned alongside the rules so it cannot outlive what it describes (R20).
 - **Test scenarios.**

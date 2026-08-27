@@ -18,6 +18,8 @@ spec.loader.exec_module(bd)
 TODAY = datetime.date(2026, 8, 23)
 
 PLACES = {
+    "_source": {"url": "https://example.invalid/inseln", "fetched": "2026-08-23",
+                "confirmed_by": "test"},
     "places": [
         {"id": "home", "tier": 1, "labels": {"de": "Zuhause", "en": "At home"},
          "containers": [
@@ -305,6 +307,16 @@ class GateTest(unittest.TestCase):
         content, report = self.build()
         self.assertIsNone(content)
         self.assertTrue(any("нет снимка" in f for f in report["fatal"]))
+
+    def test_unconfirmed_places_file_warns(self):
+        import copy as _copy
+        places = _copy.deepcopy(PLACES)
+        places["_source"]["confirmed_by"] = ""
+        self.write("data/places.json", places)
+        self.item()
+        _, report = self.build()
+        self.assertTrue(any("никем не подтверждён" in w for w in report["warnings"]),
+                        report["warnings"])
 
     def test_duplicate_container_id_is_fatal(self):
         places = copy.deepcopy(PLACES)

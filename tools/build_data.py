@@ -286,6 +286,14 @@ def build(repo, date, today=None, langs=LANGS, fixtures=False):
 
     places, containers, fatal = load_places(repo)
     report["fatal"].extend(fatal)
+    try:
+        marks = load_json(os.path.join(repo, "data", "places.json")).get("_source") or {}
+        if not (marks.get("confirmed_by") or "").strip():
+            report["warnings"].append(
+                "data/places.json: состав мест и контейнеров никем не подтверждён — "
+                "открой _source.url, проверь и впиши _source.confirmed_by")
+    except (OSError, ValueError):
+        pass
     snap_path, snapshot = newest_snapshot(repo)
     if snapshot is None:
         report["fatal"].append("нет снимка лексикона в data/verified/ — "

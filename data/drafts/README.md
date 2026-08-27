@@ -63,7 +63,7 @@ Bio, Altkleider, Sperrmüll, Problemabfall), поле `destinations` запол�
    контейнеров из `data/places.json`, а не адресаты AWM. Список допустимых:
    `restmuell`, `papier`, `bio`, `gelbe_tonne`,
    `pfandautomat`, `batteriebox`, `elektro_ruecknahme`,
-   `glas_weiss`, `glas_gruen`, `glas_braun`, `altkleider`, `lvp`,
+   `glas_weiss`, `glas_gruen`, `glas_braun`, `altkleider`, `kunststoff`, `metall`,
    `elektroschrott`, `batterien`, `sperrmuell`,
    `giftmobil`, `problemstoffannahme`.
    Если правильных мест несколько — перечисляйте все, игра засчитает любое и

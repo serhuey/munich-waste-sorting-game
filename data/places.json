@@ -1,4 +1,10 @@
 {
+  "_source": {
+    "url": "https://www.awm-muenchen.de/abfall-entsorgen/abgabestellen/wertstoffinseln",
+    "fetched": "2026-08-27",
+    "confirmed_by": "",
+    "note": "Состав контейнеров на Wertstoffinsel взят с этой страницы: стекло по трём цветам, отдельно Kunststoffverpackungen, отдельно Metalle. С 2027 пластик, композит и металл уходят в Gelbe Tonne, стекло остаётся на островах. confirmed_by ставит человек, прочитавший страницу."
+  },
   "_comment": "Места и контейнеры. Одна редакция на все времена: контейнер живёт между from и until. until не включается — контейнер с until 2027-01-01 работает по 31 декабря 2026. Так переход 1 января 2027 не требует ни выкладки, ни правки кода (KTD5).",
   "places": [
     {
@@ -32,8 +38,10 @@
         { "id": "glas_gruen", "glyph": "△", "pattern": "hatch",  "labels": { "de": "Grünglas",  "en": "Green glass" } },
         { "id": "glas_braun", "glyph": "□", "pattern": "cross",  "labels": { "de": "Braunglas", "en": "Brown glass" } },
         { "id": "altkleider", "glyph": "✂", "pattern": "weave",  "labels": { "de": "Altkleidercontainer", "en": "Textiles" } },
-        { "id": "lvp", "glyph": "◇", "pattern": "grid", "until": "2027-01-01",
-          "labels": { "de": "Leichtverpackungen", "en": "Light packaging" } }
+        { "id": "kunststoff", "glyph": "◇", "pattern": "grid", "until": "2027-01-01",
+          "labels": { "de": "Kunststoffverpackungen", "en": "Plastic packaging" } },
+        { "id": "metall", "glyph": "⬡", "pattern": "scales", "until": "2027-01-01",
+          "labels": { "de": "Metalle", "en": "Metals" } }
       ]
     },
     {
