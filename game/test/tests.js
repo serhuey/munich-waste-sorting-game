@@ -4,6 +4,8 @@
 
 import * as rules from '../js/rules.js';
 import { nearestIndex } from '../js/belt.js';
+import * as score from '../js/score.js';
+import * as explain from '../js/explain.js';
 
 const results = [];
 const eq = (a, b) => JSON.stringify(a) === JSON.stringify(b);
@@ -182,6 +184,60 @@ test('shuffle keeps every item exactly once', () => {
   const list = [1, 2, 3, 4, 5, 6, 7, 8];
   same(rules.shuffle(list).sort((a, b) => a - b), list);
   same(list, [1, 2, 3, 4, 5, 6, 7, 8], 'исходный список не должен меняться');
+});
+
+test('dropping early is worth more, and being wrong early costs more', () => {
+  const rightNow = score.scoreAnswer({ ok: true, early: true, remaining: 1 });
+  const rightLate = score.scoreAnswer({ ok: true, early: false, remaining: 0 });
+  const wrongNow = score.scoreAnswer({ ok: false, early: true, remaining: 1 });
+  const wrongLate = score.scoreAnswer({ ok: false, early: false, remaining: 0 });
+  same([rightNow, rightLate, wrongNow, wrongLate], [150, 100, -75, -50]);
+  assert(rightNow > rightLate, 'ранний верный ответ дороже');
+  assert(wrongNow < wrongLate, 'ранняя ошибка дороже обходится');
+});
+
+test('the early bonus shrinks as the object falls', () => {
+  const top = score.scoreAnswer({ ok: true, early: true, remaining: 1 });
+  const middle = score.scoreAnswer({ ok: true, early: true, remaining: 0.5 });
+  const bottom = score.scoreAnswer({ ok: true, early: true, remaining: 0 });
+  assert(top > middle && middle > bottom, [top, middle, bottom].join(' > '));
+  same(bottom, 100, 'у самой ленты ранний сброс уже ничего не добавляет');
+});
+
+test('taking an item apart never scores below sending it whole', () => {
+  const bothWrong = score.scoreAnswer({ ok: false, early: false, remaining: 0 }) * 2;
+  same(bothWrong, -100, 'без пола две ошибки стоили бы вдвое');
+  same(score.splitFloor(bothWrong, score.POINTS.wrong), -50, 'пол по R9');
+  same(score.splitFloor(200, score.POINTS.wrong), 200, 'хороший разбор пол не трогает');
+});
+
+test('a tier clears on a share, not on a clean run', () => {
+  assert(score.tierCleared(7, 10), '70% проходит');
+  assert(!score.tierCleared(69, 100), '69% не проходит');
+  assert(score.tierCleared(10, 10), 'чистый проход тоже проходит');
+  assert(!score.tierCleared(0, 0), 'без ответов нечего засчитывать');
+});
+
+test('a correct answer still names the other correct destinations', () => {
+  const strip = rules.stripOn(PLACES, d('2026-08-27'));
+  const line = explain.explainSlot({
+    strip,
+    slot: { id: 'whole', labels: { de: 'Ladegerät' }, destinations: ['restmuell', 'papier'] },
+    chosen: 'restmuell', errorKind: 'container'
+  });
+  assert(line.ok, 'ответ верный');
+  same(line.also, ['Papier'], 'второй верный адресат назван даже при верном ответе');
+});
+
+test('a place error is explained as a place, not as a container', () => {
+  const strip = rules.stripOn(PLACES, d('2026-08-27'));
+  const line = explain.explainSlot({
+    strip, slot: { id: 'whole', labels: { de: 'Flasche' }, destinations: ['glas_weiss'] },
+    chosen: 'restmuell', errorKind: 'place'
+  });
+  assert(!line.ok);
+  same(line.kind, 'place');
+  same([line.chosenPlace, line.wantedPlace], ['Zuhause', 'Insel']);
 });
 
 const box = document.getElementById('out');

@@ -120,6 +120,14 @@ header b { color: var(--ink); font-weight: 600; }
   width: 100%; text-align: center; }
 .panel-card h2 { margin: 0 0 8px; font-size: 20px; }
 .panel-card p { margin: 0 0 6px; color: var(--muted); font-size: 15px; }
+.panel-card h2.ok { color: var(--ok); }
+.panel-card h2.bad { color: var(--bad); }
+#panel-lines { text-align: left; margin: 10px 0 12px; }
+.panel-row { font-size: 15px; padding: 3px 0; }
+.panel-row.ok { color: var(--ok); }
+.panel-row.bad { color: var(--bad); }
+.panel-row.quiet { color: var(--muted); font-size: 14px; padding-top: 0; }
+#panel-note:empty { display: none; }
 .panel-card button { font: inherit; font-size: 16px; margin-top: 14px; padding: 10px 22px;
   border-radius: 10px; border: 0; background: var(--aim); color: #fff; cursor: pointer; }
 

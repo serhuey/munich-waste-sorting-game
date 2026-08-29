@@ -5,6 +5,8 @@
 import { Belt } from './belt.js';
 import { Fall } from './fall.js';
 import * as rules from './rules.js';
+import * as score from './score.js';
+import * as explain from './explain.js';
 
 const el = id => document.getElementById(id);
 
@@ -19,9 +21,10 @@ const startAt = Math.max(1, Math.min(5, parseInt(params.get('tier'), 10) || 1));
 // same item at several speeds, and that is easier with a handle than with edits.
 const slow = Math.max(0.25, Math.min(20, parseFloat(params.get('slow')) || 1));
 
+const lang = (navigator.language || 'de').slice(0, 2) === 'en' ? 'en' : 'de';
 const state = { content: null, date: asked ? new Date(asked + 'T12:00:00Z') : new Date(),
                 tier: startAt, queue: [], strip: [], activePlace: null,
-                right: 0, answered: 0, round: null, flight: null };
+                right: 0, answered: 0, points: 0, round: null, flight: null };
 
 const belt = new Belt({
   beltEl: el('belt'), trackEl: el('track'), tabsEl: el('tabs'),
@@ -48,6 +51,7 @@ function startTier(tier) {
   state.tier = tier;
   state.right = 0;
   state.answered = 0;
+  state.points = 0;
   state.round = null;
   state.strip = rules.stripForTier(state.content.places, state.date, tier);
   belt.setStrip(state.strip);
@@ -56,6 +60,7 @@ function startTier(tier) {
   el('tier').textContent = tier;
   el('total').textContent = state.queue.length;
   el('right').textContent = '0';
+  el('points').textContent = '0';
   hidePanel();
   next();
 }
@@ -71,7 +76,7 @@ function next() {
   state.round = {
     item, variant,
     examined: !rules.needsExamination(item),
-    split: false, slots: null, answers: {}
+    split: false, slots: null, answers: {}, lines: [], partPoints: 0
   };
   el('left').textContent = state.queue.length + 1;
   spawnWhole();
@@ -126,18 +131,18 @@ function examine() {
   const round = state.round;
   fall.pause();
   const detail = (round.variant.labels && round.variant.labels.de) || '—';
-  showPanel(
-    (round.item.labels && round.item.labels.de) || round.item.id,
-    detail,
-    'осмотр стоит времени, а не подсказывает ответ',
-    () => {
+  showPanel({
+    title: (round.item.labels && round.item.labels.de) || round.item.id,
+    line: detail,
+    note: 'осмотр стоит времени, а не подсказывает ответ',
+    action: () => {
       round.examined = true;
       hidePanel();
       fall.relabel({ detail, legible: true, hint: hintFor(round) });
       fall.resume(rules.TIMING.examineCost);
     },
-    'дальше'
-  );
+    actionLabel: 'дальше'
+  });
 }
 
 function split() {
@@ -148,56 +153,72 @@ function split() {
   next();
 }
 
-function landed({ item, variant, el: itemEl, early }) {
+function landed({ item, variant, el: itemEl, early, remaining }) {
   const round = state.round;
   const chosen = belt.activeContainer();
   const flight = state.flight;
 
   // A composite object cannot be sent anywhere whole; landing it undivided is
-  // the mistake the attribute exists to teach.
+  // the mistake the attribute exists to teach, and the explanation talks about
+  // the object rather than about containers.
   if (flight.kind === 'whole' && rules.variantNeedsSplit(variant) && !round.split) {
-    mark(itemEl, false);
+    const points = score.scoreAnswer({ ok: false, early, remaining });
     state.answered += 1;
-    say('✗ этот предмет нельзя отправить целиком — его надо разобрать', false);
+    addPoints(points);
+    mark(itemEl, false);
     state.round = null;
-    return setTimeout(next, 900);
+    return showExplanation(explain.explainUndivided(item, variant, lang), points);
   }
 
-  const wanted = flight.kind === 'part'
-    ? flight.slot.destinations
-    : rules.answerSlots(variant, state.date)[0].destinations;
-  const ok = !!chosen && wanted.includes(chosen.id);
-
-  if (flight.kind === 'part') {
-    round.answers[flight.slot.id] = chosen && chosen.id;
-    round.slots = round.slots.slice(1);
-  }
+  const slot = flight.kind === 'part'
+    ? flight.slot
+    : rules.answerSlots(variant, state.date)[0];
+  const ok = !!chosen && slot.destinations.includes(chosen.id);
+  const points = score.scoreAnswer({ ok, early, remaining });
+  const line = explain.explainSlot({
+    strip: state.strip, slot, chosen: chosen && chosen.id,
+    errorKind: rules.errorKind(state.strip, chosen && chosen.id, slot.destinations)
+  });
 
   state.answered += 1;
   if (ok) state.right += 1;
   el('right').textContent = state.right;
   mark(itemEl, ok);
 
-  // U5 replaces this with the written explanation, which must also name other
-  // correct destinations even when the answer was right (R8).
-  const names = wanted.map(id => (state.strip.find(c => c.id === id) || {}).labels)
-    .filter(Boolean).map(l => l.de);
-  const kind = ok ? '' : ' · ' + (rules.errorKind(state.strip, chosen && chosen.id, wanted) === 'place'
-    ? 'не то место' : 'не тот контейнер');
-  const part = flight.kind === 'part' ? ((flight.slot.labels && flight.slot.labels.de) + ': ') : '';
-  say((ok ? '✓ ' : '✗ ') + part + names.join(' / ') + kind + (early ? ' · рано' : ''), ok);
+  if (flight.kind === 'part') {
+    round.answers[slot.id] = chosen && chosen.id;
+    round.lines.push(line);
+    round.partPoints += points;
+    round.slots = round.slots.slice(1);
+    // Parts share one explanation at the end of the item; a short line keeps the
+    // player informed that the part registered while the next one is falling.
+    say((ok ? '✓ ' : '✗ ') + line.part + ' → ' + (line.chosen || '—'), ok);
+    return setTimeout(next, 550);
+  }
 
-  if (flight.kind !== 'part') state.round = null;
-  setTimeout(next, 700);
+  addPoints(points);
+  state.round = null;
+  showExplanation(explain.explainAnswer({
+    item, strip: state.strip, lines: [line], points, lang
+  }), points);
 }
 
+// Parts are scored one by one, then floored: taking an item apart must never
+// score below sending the same item whole, or the game would be teaching
+// players not to bother (R9).
 function finishRound() {
   const round = state.round;
-  const score = rules.scoreSlots(rules.answerSlots(round.variant, state.date),
-                                 round.answers, state.date);
-  say('разобрано: ' + score.right + ' из ' + score.total, score.right === score.total);
+  const points = score.splitFloor(round.partPoints, score.POINTS.wrong);
+  addPoints(points);
   state.round = null;
-  setTimeout(next, 700);
+  showExplanation(explain.explainAnswer({
+    item: round.item, strip: state.strip, lines: round.lines, points, lang
+  }), points);
+}
+
+function addPoints(points) {
+  state.points += points;
+  el('points').textContent = state.points;
 }
 
 function mark(itemEl, ok) {
@@ -212,15 +233,20 @@ function mark(itemEl, ok) {
 
 function finishTier() {
   belt.locked = true;
+  const cleared = score.tierCleared(state.right, state.answered);
+  const share = score.sharePercent(state.right, state.answered);
   const more = rules.itemsForTier(state.content.items, state.tier + 1).length > 0;
-  const share = state.answered ? Math.round((state.right / state.answered) * 100) : 0;
-  showPanel(
-    'Тир ' + state.tier + ' пройден',
-    state.right + ' из ' + state.answered + ' — ' + share + '%',
-    more ? 'Дальше: тир ' + (state.tier + 1) : 'Предметов дальше нет',
-    more ? () => startTier(state.tier + 1) : () => startTier(1),
-    more ? 'продолжить' : 'сначала'
-  );
+  const nextTier = cleared && more;
+  showPanel({
+    title: cleared ? 'Тир ' + state.tier + ' пройден' : 'Тир ' + state.tier + ' не пройден',
+    line: state.right + ' из ' + state.answered + ' — ' + share + '% · ' +
+          state.points + ' очков',
+    note: cleared
+      ? (more ? 'Дальше: тир ' + (state.tier + 1) : 'Предметов дальше нет')
+      : 'Нужно ' + Math.round(score.CLEAR_SHARE * 100) + '%. Ошибки не блокируют — можно пройти ещё раз',
+    action: () => startTier(nextTier ? state.tier + 1 : state.tier),
+    actionLabel: nextTier ? 'продолжить' : (cleared ? 'сначала' : 'ещё раз')
+  });
 }
 
 function say(text, ok) {
@@ -229,10 +255,55 @@ function say(text, ok) {
   box.className = 'say ' + (ok ? 'ok' : 'bad');
 }
 
-function showPanel(title, line, note, action, actionLabel) {
-  el('panel-title').textContent = title;
-  el('panel-line').textContent = line;
-  el('panel-note').textContent = note;
+// Every answer gets an explanation before the game moves on (R8). Dismissing it
+// quickly is allowed and changes nothing: the score was settled at the landing.
+function showExplanation(result, points) {
+  const lines = [];
+  if (result.undivided) {
+    lines.push({ text: 'целиком отправить нельзя — надо было разобрать: ' +
+                       result.parts.join(' + '), ok: false });
+  } else {
+    result.lines.forEach(l => {
+      if (l.ok) {
+        lines.push({ text: l.part + ' → ' + l.chosen, ok: true });
+        if (l.also.length) {
+          lines.push({ text: 'верно было также: ' + l.also.join(', '), ok: true, quiet: true });
+        }
+      } else if (l.kind === 'place') {
+        lines.push({ text: l.part + ': не то место — ' + (l.chosenPlace || '—') +
+                           ' вместо ' + l.wantedPlace, ok: false });
+        lines.push({ text: 'нужно: ' + l.wanted.join(' / '), ok: false, quiet: true });
+      } else {
+        lines.push({ text: l.part + ': не тот контейнер — ' + (l.chosen || '—'), ok: false });
+        lines.push({ text: 'нужно: ' + l.wanted.join(' / '), ok: false, quiet: true });
+      }
+    });
+  }
+  showPanel({
+    title: (points >= 0 ? '+' : '') + points,
+    titleOk: points >= 0,
+    line: '',
+    lines,
+    note: result.reason,
+    action: () => { hidePanel(); next(); },
+    actionLabel: 'дальше'
+  });
+}
+
+function showPanel({ title, titleOk, line, lines, note, action, actionLabel }) {
+  const head = el('panel-title');
+  head.textContent = title;
+  head.className = titleOk === undefined ? '' : (titleOk ? 'ok' : 'bad');
+  el('panel-line').textContent = line || '';
+  const box = el('panel-lines');
+  box.textContent = '';
+  (lines || []).forEach(l => {
+    const row = document.createElement('div');
+    row.className = 'panel-row ' + (l.ok ? 'ok' : 'bad') + (l.quiet ? ' quiet' : '');
+    row.textContent = l.text;
+    box.append(row);
+  });
+  el('panel-note').textContent = note || '';
   const btn = el('panel-btn');
   btn.textContent = actionLabel;
   btn.onclick = action;

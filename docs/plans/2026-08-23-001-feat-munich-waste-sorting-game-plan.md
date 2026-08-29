@@ -243,7 +243,8 @@ dist/                                  build output, committed
 - **Goal.** A score that measures knowing rather than remembering, and an explanation after every answer.
 - **Requirements.** R8, R9, R10, R11, AE5, AE6, AE15.
 - **Dependencies.** U3, U4.
-- **Files.** `game/js/score.js`, `game/js/explain.js`, `game/test/score.test.html`.
+- **Files.** `game/js/score.js`, `game/js/explain.js`, `game/js/main.js`, `game/index.html`, `game/css/game.css`, `game/test/tests.js`.
+- **Built. Deviations, each deliberate.** One test page for the whole engine rather than a second one for scoring: the tests are pure functions and splitting the page would only mean two places to look. A composite item gets one explanation at the end listing every part, with a one-line acknowledgement as each part lands — R8 asks for an explanation after every answer, and for an object that comes apart the answer is the object; a panel per part would triple the interruptions without adding a sentence. A tier that is not cleared offers another run rather than blocking: the share is the gate, and failing it costs a retry, not progress.
 - **Approach.**
   1. Starting numbers, all tuning targets: correct 100; correct early drop scaled by remaining fall, up to 150; wrong -50; wrong early drop -75. Examining costs only time.
   2. Composite items score per part, with a floor guaranteeing that taking an item apart never scores below sending it whole (R9).
@@ -256,7 +257,7 @@ dist/                                  build output, committed
   - Covers AE15. The charger accepts both the shop and the Wertstoffhof, and the explanation names the one not chosen.
   - Covers R9. A composite item sorted entirely wrongly still scores no lower than the same item sent whole to a wrong destination.
   - A tier at 70% correct clears; at 69% it does not.
-- **Verification.** A full tier can be played to a clear and to a fail, with explanations shown for every answer.
+- **Verification.** A full tier can be played to a clear and to a fail, with explanations shown for every answer. Done: measured in the running game, a correct early drop scores +149 of a possible +150, the same answer at the belt +100, a wrong answer at the belt -50 and a wrong early drop -75; a two-part item answered entirely wrongly scores -50 rather than -100, the floor holding.
 
 ### U6. The ladder of places
 
