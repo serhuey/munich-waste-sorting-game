@@ -15,7 +15,7 @@
   "attrs": [],
   "labels": {
     "de": "Kaffeefilter, Teefilter, Teebeutel",
-    "en": ""
+    "en": "Coffee filters, tea filters, tea bags"
   },
   "source": {
     "authority": "awm",
@@ -24,8 +24,8 @@
     "destinations_at_verification": [
       "bio"
     ],
-    "verified_by": "",
-    "verified_on": ""
+    "verified_by": "Sergei Grieg",
+    "verified_on": "2026-08-30"
   },
   "variants": [
     {
@@ -41,8 +41,8 @@
     }
   ],
   "explanation": {
-    "de": "",
-    "en": ""
+    "de": "Ja, da ist ein kleines Stück Papier drin, aber die widerstandsfähigen deutschen Bakterien wandeln es sehr schnell in biologischen Abfall um.",
+    "en": "Yes, there’s a bit of paper in there, but the tough German bacteria turn it into biological waste very quickly."
   },
   "_destinations_proposed": "подставлено машиной из снимка; подтвердить, открыв source.url"
 }

@@ -1,0 +1,79 @@
+{
+  "_todo": [
+    "открыть source.url и прочитать запись целиком",
+    "вписать destinations в каждом варианте — это адресаты игры, а не AWM",
+    "написать explanation: почему так, на de и en",
+    "заполнить labels.en",
+    "поставить source.verified_by и source.verified_on",
+    "перенести: python3 tools/drafts.py promote <id>"
+  ],
+  "_awm_term": "Aludose",
+  "_awm_tip": null,
+  "_awm_notes": {},
+  "id": "aludose",
+  "tier": 3,
+  "attrs": [
+    "examine"
+  ],
+  "labels": {
+    "de": "Aludose",
+    "en": "Aluminum can"
+  },
+  "source": {
+    "authority": "awm",
+    "key": "aludose",
+    "url": "https://www.awm-muenchen.de/abfall-entsorgen/abfalllexikon",
+    "destinations_at_verification": [
+      "wertstoffinsel"
+    ],
+    "verified_by": "Sergei Grieg",
+    "verified_on": "2026-08-29"
+  },
+  "variants": [
+    {
+      "id": "einwegpfand_0_25",
+      "kind": "simple",
+      "labels": {
+        "de": "Einwegpfand 0,25€",
+        "en": "Disposable deposit €0.25"
+      },
+      "destinations": [
+        "pfandautomat"
+      ],
+      "explanation": {
+        "de": "Dosen mit Pfandzeichen bringst du zum Automaten für Pfandflaschen und -dosen zurück.",
+        "en": "A can with the deposit mark goes back to the machine that takes deposit bottles and cans."
+      }
+    },
+    {
+      "id": "pfandfrei",
+      "kind": "simple",
+      "labels": {
+        "de": "Pfandfrei",
+        "en": "No deposit"
+      },
+      "destinations": [
+        "metall"
+      ],
+      "explanation": {
+        "de": "Dosen ohne Pfandzeichen oder mit der Aufschrift „Pfandfrei“ wirfst du in den Metall-Container auf der Wertstoffinsel.",
+        "en": "A can without the deposit mark, or marked ‘Pfandfrei’, goes into the metal container at the Wertstoffinsel."
+      }
+    }
+  ],
+  "explanation": {
+    "de": "Entscheidend ist das DPG-Pfandlogo auf der Dose — nicht das Material.",
+    "en": "What decides is the DPG deposit logo on the can — not the material."
+  },
+  "sources": [
+    {
+      "authority": "law",
+      "reference": "VerpackG § 31",
+      "url": "https://www.gesetze-im-internet.de/verpackg/__31.html",
+      "verified_by": "Sergei Grieg",
+      "verified_on": "2026-08-29"
+    }
+  ],
+  "_hint": "у предмета два источника: запись AWM и норма закона для возврата в магазин — оба нужно подписать | тир 3: у варианта без залога адресат на острове, а остров открывается на третьем тире",
+  "_note_ru": "важно искать символ \"Logo der DPG\" (потом вставим картинкой)"
+}

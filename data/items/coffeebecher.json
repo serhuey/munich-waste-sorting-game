@@ -17,7 +17,7 @@
   "attrs": [],
   "labels": {
     "de": "Coffee-to-go-Becher, Pappbecher, Einwegbecher, Pappteller",
-    "en": ""
+    "en": "Takeaway coffee cups, paper cups, disposable cups, paper plates"
   },
   "source": {
     "authority": "awm",
@@ -26,8 +26,8 @@
     "destinations_at_verification": [
       "restmuell"
     ],
-    "verified_by": "",
-    "verified_on": ""
+    "verified_by": "Sergei Grieg",
+    "verified_on": "2026-08-29"
   },
   "variants": [
     {
@@ -43,8 +43,8 @@
     }
   ],
   "explanation": {
-    "de": "",
-    "en": ""
+    "de": "Du musst es in die „Restmüll“-Tonne werfen und nicht in die „Papiertonne“, auch wenn du ein brillantes Gedicht auf einen Pappteller geschrieben hast.",
+    "en": "You’ll have to put it in the ‘Restmüll’ bin rather than the ‘Papiertonne’ bin, even if you’ve written a brilliant poem on a paper plate."
   },
   "_destinations_proposed": "подставлено машиной из снимка; подтвердить, открыв source.url"
 }

@@ -7,25 +7,27 @@
     "поставить source.verified_by и source.verified_on",
     "перенести: python3 tools/drafts.py promote <id>"
   ],
-  "_awm_term": "Backpapier",
+  "_awm_term": "Thermosflasche, -kanne",
   "_awm_tip": null,
   "_awm_notes": {},
-  "id": "backpapier",
-  "tier": 1,
-  "attrs": [],
+  "id": "thermosflasche",
+  "tier": 2,
+  "attrs": [
+    "borderline"
+  ],
   "labels": {
-    "de": "Backpapier",
-    "en": "Baking paper"
+    "de": "Thermosflasche, -kanne",
+    "en": "Thermos flask, thermos jug"
   },
   "source": {
     "authority": "awm",
-    "key": "backpapier",
+    "key": "thermosflasche-kanne",
     "url": "https://www.awm-muenchen.de/abfall-entsorgen/abfalllexikon",
     "destinations_at_verification": [
       "restmuell"
     ],
-    "verified_by": "",
-    "verified_on": ""
+    "verified_by": "Sergei Grieg",
+    "verified_on": "2026-08-30"
   },
   "variants": [
     {
@@ -41,8 +43,8 @@
     }
   ],
   "explanation": {
-    "de": "",
-    "en": ""
+    "de": "Ich hoffe, dort gab es keine Elektroheizung.",
+    "en": "I hope there wasn’t any electric heating in there."
   },
   "_destinations_proposed": "подставлено машиной из снимка; подтвердить, открыв source.url"
 }

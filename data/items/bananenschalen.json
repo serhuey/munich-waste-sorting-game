@@ -7,27 +7,25 @@
     "поставить source.verified_by и source.verified_on",
     "перенести: python3 tools/drafts.py promote <id>"
   ],
-  "_awm_term": "Aludose",
+  "_awm_term": "Bananenschalen",
   "_awm_tip": null,
   "_awm_notes": {},
-  "id": "aludose",
-  "tier": 3,
-  "attrs": [
-    "examine"
-  ],
+  "id": "bananenschalen",
+  "tier": 1,
+  "attrs": [],
   "labels": {
-    "de": "Aludose",
-    "en": ""
+    "de": "Bananenschalen",
+    "en": "Banana skins"
   },
   "source": {
     "authority": "awm",
-    "key": "aludose",
+    "key": "bananenschalen",
     "url": "https://www.awm-muenchen.de/abfall-entsorgen/abfalllexikon",
     "destinations_at_verification": [
-      "wertstoffinsel"
+      "bio"
     ],
-    "verified_by": "",
-    "verified_on": ""
+    "verified_by": "Sergei Grieg",
+    "verified_on": "2026-08-29"
   },
   "variants": [
     {
@@ -37,21 +35,14 @@
         "de": "",
         "en": ""
       },
-      "destinations": []
+      "destinations": [
+        "bio"
+      ]
     }
   ],
   "explanation": {
-    "de": "",
-    "en": ""
+    "de": "Es ist natürlich eine Verpackung, aber es ist vollkommen essbar.",
+    "en": "It’s packaging, of course, but it’s perfectly edible."
   },
-  "sources": [
-    {
-      "authority": "law",
-      "reference": "VerpackG § 31",
-      "url": "https://www.gesetze-im-internet.de/verpackg/__31.html",
-      "verified_by": "",
-      "verified_on": ""
-    }
-  ],
-  "_hint": "у предмета два источника: запись AWM и норма закона для возврата в магазин — оба нужно подписать | тир 3: у варианта без залога адресат на острове, а остров открывается на третьем тире"
+  "_destinations_proposed": "подставлено машиной из снимка; подтвердить, открыв source.url"
 }

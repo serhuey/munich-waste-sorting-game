@@ -7,25 +7,25 @@
     "поставить source.verified_by и source.verified_on",
     "перенести: python3 tools/drafts.py promote <id>"
   ],
-  "_awm_term": "Bananenschalen",
-  "_awm_tip": null,
+  "_awm_term": "Zahnbürste",
+  "_awm_tip": "auch aus Bambus",
   "_awm_notes": {},
-  "id": "bananenschalen",
-  "tier": 1,
+  "id": "zahnbuerste",
+  "tier": 2,
   "attrs": [],
   "labels": {
-    "de": "Bananenschalen",
-    "en": ""
+    "de": "Zahnbürste",
+    "en": "Toothbrush"
   },
   "source": {
     "authority": "awm",
-    "key": "bananenschalen",
+    "key": "zahnbuerste",
     "url": "https://www.awm-muenchen.de/abfall-entsorgen/abfalllexikon",
     "destinations_at_verification": [
-      "bio"
+      "restmuell"
     ],
-    "verified_by": "",
-    "verified_on": ""
+    "verified_by": "Sergei Grieg",
+    "verified_on": "2026-08-29"
   },
   "variants": [
     {
@@ -36,13 +36,13 @@
         "en": ""
       },
       "destinations": [
-        "bio"
+        "restmuell"
       ]
     }
   ],
   "explanation": {
-    "de": "",
-    "en": ""
+    "de": "Wechsle deine Zahnbürste öfter — sonst sammeln sich darauf so viele Bakterien, dass sie sich fast lebendig anfühlt. Trotzdem: Restmüll, nicht Biotonne.",
+    "en": "Change your toothbrush more often — otherwise so many bacteria build up on it that it almost feels alive. Even so: Restmüll, not Biotonne."
   },
   "_destinations_proposed": "подставлено машиной из снимка; подтвердить, открыв source.url"
 }

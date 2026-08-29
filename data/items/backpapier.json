@@ -7,25 +7,25 @@
     "поставить source.verified_by и source.verified_on",
     "перенести: python3 tools/drafts.py promote <id>"
   ],
-  "_awm_term": "Eierschalen",
+  "_awm_term": "Backpapier",
   "_awm_tip": null,
   "_awm_notes": {},
-  "id": "eierschalen",
+  "id": "backpapier",
   "tier": 1,
   "attrs": [],
   "labels": {
-    "de": "Eierschalen",
-    "en": ""
+    "de": "Backpapier",
+    "en": "Baking paper"
   },
   "source": {
     "authority": "awm",
-    "key": "eierschalen",
+    "key": "backpapier",
     "url": "https://www.awm-muenchen.de/abfall-entsorgen/abfalllexikon",
     "destinations_at_verification": [
-      "bio"
+      "restmuell"
     ],
-    "verified_by": "",
-    "verified_on": ""
+    "verified_by": "Sergei Grieg",
+    "verified_on": "2026-08-29"
   },
   "variants": [
     {
@@ -36,13 +36,13 @@
         "en": ""
       },
       "destinations": [
-        "bio"
+        "restmuell"
       ]
     }
   ],
   "explanation": {
-    "de": "",
-    "en": ""
+    "de": "Obwohl es sich um eine Papiersorte handelt, eignet es sich nicht für das Recycling zu gewöhnlichem Papier.",
+    "en": "Although it is a type of paper, it is not suitable for recycling into ordinary paper."
   },
   "_destinations_proposed": "подставлено машиной из снимка; подтвердить, открыв source.url"
 }

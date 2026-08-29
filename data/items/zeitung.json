@@ -7,25 +7,26 @@
     "поставить source.verified_by и source.verified_on",
     "перенести: python3 tools/drafts.py promote <id>"
   ],
-  "_awm_term": "Windeln",
+  "_awm_term": "Zeitung, Zeitschrift, Illustrierte",
   "_awm_tip": null,
   "_awm_notes": {},
-  "id": "windeln",
+  "id": "zeitung",
   "tier": 1,
   "attrs": [],
   "labels": {
-    "de": "Windeln",
-    "en": ""
+    "de": "Zeitung, Zeitschrift, Illustrierte",
+    "en": "Newspaper, magazine, illustrated magazine"
   },
   "source": {
     "authority": "awm",
-    "key": "windeln",
+    "key": "zeitung-zeitschrift-illustrierte",
     "url": "https://www.awm-muenchen.de/abfall-entsorgen/abfalllexikon",
     "destinations_at_verification": [
-      "restmuell"
+      "wertstoffhof",
+      "papier"
     ],
-    "verified_by": "",
-    "verified_on": ""
+    "verified_by": "Sergei Grieg",
+    "verified_on": "2026-08-30"
   },
   "variants": [
     {
@@ -36,13 +37,13 @@
         "en": ""
       },
       "destinations": [
-        "restmuell"
+        "papier"
       ]
     }
   ],
   "explanation": {
-    "de": "",
-    "en": ""
+    "de": "Liest du noch gedruckte Zeitungen? Dann bist du wahrscheinlich Deutscher.",
+    "en": "Do you still read printed newspapers? You are probably German."
   },
-  "_destinations_proposed": "подставлено машиной из снимка; подтвердить, открыв source.url"
+  "_destinations_proposed": "подставлено машиной из снимка; подтвердить, открыв source.url; не отображены: wertstoffhof"
 }

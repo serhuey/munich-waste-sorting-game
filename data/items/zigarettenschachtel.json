@@ -7,25 +7,26 @@
     "поставить source.verified_by и source.verified_on",
     "перенести: python3 tools/drafts.py promote <id>"
   ],
-  "_awm_term": "Papiertaschentuch",
-  "_awm_tip": null,
+  "_awm_term": "Zigarettenschachteln",
+  "_awm_tip": "ohne Alu und Plastik",
   "_awm_notes": {},
-  "id": "papiertaschentuch",
+  "id": "zigarettenschachtel",
   "tier": 1,
   "attrs": [],
   "labels": {
-    "de": "Papiertaschentuch",
-    "en": ""
+    "de": "Zigarettenschachteln",
+    "en": "Cigarette pack"
   },
   "source": {
     "authority": "awm",
-    "key": "papiertaschentuch",
+    "key": "zigarettenschachteln",
     "url": "https://www.awm-muenchen.de/abfall-entsorgen/abfalllexikon",
     "destinations_at_verification": [
-      "restmuell"
+      "wertstoffhof",
+      "papier"
     ],
-    "verified_by": "",
-    "verified_on": ""
+    "verified_by": "Sergei Grieg",
+    "verified_on": "2026-08-30"
   },
   "variants": [
     {
@@ -36,13 +37,13 @@
         "en": ""
       },
       "destinations": [
-        "restmuell"
+        "papier"
       ]
     }
   ],
   "explanation": {
-    "de": "",
-    "en": ""
+    "de": "Rauchen ist tödlich! Wirf deine Packung weg. Aber wenn sie noch voll ist, wirf sie nicht hier hinein. Wirf die Zigaretten zuerst in die „Restmülltonne“.",
+    "en": "Smoking kills! Throw away your packet. But if it’s full, don’t put it here. First, throw the cigarettes into the ‘Restmülltonne’."
   },
-  "_destinations_proposed": "подставлено машиной из снимка; подтвердить, открыв source.url"
+  "_destinations_proposed": "подставлено машиной из снимка; подтвердить, открыв source.url; не отображены: wertstoffhof"
 }

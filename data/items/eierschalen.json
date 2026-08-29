@@ -7,26 +7,25 @@
     "поставить source.verified_by и source.verified_on",
     "перенести: python3 tools/drafts.py promote <id>"
   ],
-  "_awm_term": "Zigarettenschachteln",
-  "_awm_tip": "ohne Alu und Plastik",
+  "_awm_term": "Eierschalen",
+  "_awm_tip": null,
   "_awm_notes": {},
-  "id": "zigarettenschachtel",
+  "id": "eierschalen",
   "tier": 1,
   "attrs": [],
   "labels": {
-    "de": "Zigarettenschachteln",
-    "en": ""
+    "de": "Eierschalen",
+    "en": "Eggshells"
   },
   "source": {
     "authority": "awm",
-    "key": "zigarettenschachteln",
+    "key": "eierschalen",
     "url": "https://www.awm-muenchen.de/abfall-entsorgen/abfalllexikon",
     "destinations_at_verification": [
-      "wertstoffhof",
-      "papier"
+      "bio"
     ],
-    "verified_by": "",
-    "verified_on": ""
+    "verified_by": "Sergei Grieg",
+    "verified_on": "2026-08-29"
   },
   "variants": [
     {
@@ -37,13 +36,13 @@
         "en": ""
       },
       "destinations": [
-        "papier"
+        "bio"
       ]
     }
   ],
   "explanation": {
-    "de": "",
-    "en": ""
+    "de": "Schau es dir genauer an – das ist definitiv kein Plastik!",
+    "en": "Take a closer look – it’s definitely not plastic!"
   },
-  "_destinations_proposed": "подставлено машиной из снимка; подтвердить, открыв source.url; не отображены: wertstoffhof"
+  "_destinations_proposed": "подставлено машиной из снимка; подтвердить, открыв source.url"
 }

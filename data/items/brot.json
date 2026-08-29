@@ -7,27 +7,25 @@
     "поставить source.verified_by и source.verified_on",
     "перенести: python3 tools/drafts.py promote <id>"
   ],
-  "_awm_term": "Thermosflasche, -kanne",
-  "_awm_tip": null,
+  "_awm_term": "Brot, Backwaren",
+  "_awm_tip": "\"altes\" Brot schmeckt wieder lecker, wenn man es toastet/grillt",
   "_awm_notes": {},
-  "id": "thermosflasche",
-  "tier": 2,
-  "attrs": [
-    "borderline"
-  ],
+  "id": "brot",
+  "tier": 1,
+  "attrs": [],
   "labels": {
-    "de": "Thermosflasche, -kanne",
-    "en": ""
+    "de": "Brot, Backwaren",
+    "en": "Bread, baked goods"
   },
   "source": {
     "authority": "awm",
-    "key": "thermosflasche-kanne",
+    "key": "brot-backwaren",
     "url": "https://www.awm-muenchen.de/abfall-entsorgen/abfalllexikon",
     "destinations_at_verification": [
-      "restmuell"
+      "bio"
     ],
-    "verified_by": "",
-    "verified_on": ""
+    "verified_by": "Sergei Grieg",
+    "verified_on": "2026-08-29"
   },
   "variants": [
     {
@@ -38,13 +36,13 @@
         "en": ""
       },
       "destinations": [
-        "restmuell"
+        "bio"
       ]
     }
   ],
   "explanation": {
-    "de": "",
-    "en": ""
+    "de": "Uns wurde beigebracht, dass man Brot nicht wegwerfen darf, aber wenn es erst einmal Schimmel angesetzt hat, kann man nichts mehr dagegen tun.",
+    "en": "We were taught that you mustn’t throw bread away, but if mould has got to it first, there’s nothing you can do about it."
   },
   "_destinations_proposed": "подставлено машиной из снимка; подтвердить, открыв source.url"
 }
