@@ -124,6 +124,7 @@ input[type=text],textarea,select{width:100%;padding:7px 9px;border:1px solid var
 textarea{min-height:56px;resize:vertical}
 .row{display:flex;gap:12px}.row>*{flex:1}
 .box{border:1px solid var(--line);border-radius:9px;padding:12px;margin-bottom:12px}
+.box.quiet{border-style:dashed;opacity:.85}
 .hint{background:#8881;border-radius:8px;padding:10px 12px;margin-bottom:14px;font-size:13px}
 .hint b{display:block;font-size:11px;text-transform:uppercase;letter-spacing:.05em;opacity:.6}
 .dest{display:flex;flex-wrap:wrap;gap:6px}
@@ -227,6 +228,30 @@ function textField(obj, key, title, opts = {}) {
   return el('label', {}, [el('span', {}, title), i]);
 }
 
+// Необязательное пояснение: у варианта — чем он отличается от соседнего,
+// у части — почему она едет именно туда. Пустое поле не должно превращаться
+// в пустой объект: гейт справедливо потребует от него оба языка.
+function optionalReason(holder, title) {
+  const box = el('div', {class: 'box quiet'});
+  box.append(el('div', {class: 'place'}, title));
+  const sync = () => {
+    const e = holder.explanation;
+    if (e && !(e.de || '').trim() && !(e.en || '').trim()) delete holder.explanation;
+  };
+  const field = lang => {
+    const t = el('textarea', {rows: 2});
+    t.value = (holder.explanation || {})[lang] || '';
+    t.addEventListener('input', () => {
+      holder.explanation = holder.explanation || {de: '', en: ''};
+      holder.explanation[lang] = t.value;
+      sync();
+    });
+    return el('label', {}, [el('span', {}, lang === 'de' ? 'по-немецки' : 'по-английски'), t]);
+  };
+  box.append(el('div', {class: 'row'}, [field('de'), field('en')]));
+  return box;
+}
+
 // Название варианта заполняет его код, пока код не трогали руками.
 function labelWithCode(holder, title, codeTitle, hint) {
   holder.labels = holder.labels || {de: '', en: ''};
@@ -256,7 +281,8 @@ function variantBlock(v, i) {
       }
       s.addEventListener('change', () => {
         v.kind = s.value;
-        if (v.kind === 'composite') { delete v.destinations; v.parts = v.parts || [newPart(), newPart()]; }
+        box.append(optionalReason(v, 'почему этот вариант едет именно сюда — необязательно'));
+  if (v.kind === 'composite') { delete v.destinations; v.parts = v.parts || [newPart(), newPart()]; }
         else { delete v.parts; v.destinations = v.destinations || []; }
         render();
       });
@@ -277,6 +303,7 @@ function variantBlock(v, i) {
         textField(part.labels, 'en', 'название, en')
       ]));
       pb.append(destPicker(part));
+      pb.append(optionalReason(part, 'почему эта часть едет именно сюда — необязательно'));
       pb.append(el('button', {class: 'link', onclick: () => { v.parts.splice(j, 1); render(); }},
         'убрать часть'));
       box.append(pb);
@@ -373,6 +400,7 @@ function render() {
 
   m.append(el('h3', {}, 'пояснение игроку'));
   draft.explanation = draft.explanation || {de: '', en: ''};
+  m.append(el('div', {class: 'place'}, 'общее для предмета: чем варианты отличаются и что тут вообще важно'));
   m.append(areaField(draft.explanation, 'de', 'по-немецки'));
   m.append(areaField(draft.explanation, 'en', 'по-английски'));
   m.append(areaField(draft, '_note_ru', 'заметка по-русски — если немецкий текст напишет Claude'));

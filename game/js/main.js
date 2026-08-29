@@ -199,7 +199,7 @@ function landed({ item, variant, el: itemEl, early, remaining }) {
   addPoints(points);
   state.round = null;
   showExplanation(explain.explainAnswer({
-    item, strip: state.strip, lines: [line], points, lang
+    item, variant, slots: [slot], strip: state.strip, lines: [line], points, lang
   }), points);
 }
 
@@ -212,7 +212,9 @@ function finishRound() {
   addPoints(points);
   state.round = null;
   showExplanation(explain.explainAnswer({
-    item: round.item, strip: state.strip, lines: round.lines, points, lang
+    item: round.item, variant: round.variant,
+    slots: rules.answerSlots(round.variant, state.date),
+    strip: state.strip, lines: round.lines, points, lang
   }), points);
 }
 
@@ -284,13 +286,13 @@ function showExplanation(result, points) {
     titleOk: points >= 0,
     line: '',
     lines,
-    note: result.reason,
+    reasons: result.reasons,
     action: () => { hidePanel(); next(); },
     actionLabel: 'дальше'
   });
 }
 
-function showPanel({ title, titleOk, line, lines, note, action, actionLabel }) {
+function showPanel({ title, titleOk, line, lines, reasons, note, action, actionLabel }) {
   const head = el('panel-title');
   head.textContent = title;
   head.className = titleOk === undefined ? '' : (titleOk ? 'ok' : 'bad');
@@ -303,7 +305,20 @@ function showPanel({ title, titleOk, line, lines, note, action, actionLabel }) {
     row.textContent = l.text;
     box.append(row);
   });
-  el('panel-note').textContent = note || '';
+  const notes = el('panel-note');
+  notes.textContent = '';
+  if (note) notes.textContent = note;
+  (reasons || []).forEach(r => {
+    const p = document.createElement('p');
+    p.className = 'reason';
+    if (r.scope) {
+      const tag = document.createElement('b');
+      tag.textContent = r.scope + ': ';
+      p.append(tag);
+    }
+    p.append(document.createTextNode(r.text));
+    notes.append(p);
+  });
   const btn = el('panel-btn');
   btn.textContent = actionLabel;
   btn.onclick = action;

@@ -229,6 +229,34 @@ class GateTest(unittest.TestCase):
         self.assertEqual(report["excluded"], [])
         self.assertEqual(content["items"], [])
 
+    def test_variant_reason_is_optional_but_must_be_complete(self):
+        good = dict(ITEM["variants"][0], explanation={"de": "warum", "en": "why"})
+        self.item(variants=[good])
+        _, report = self.build()
+        self.assertEqual(report["included"], ["pizzakarton"], report["excluded"])
+
+        half = dict(ITEM["variants"][0], explanation={"de": "warum"})
+        self.item(variants=[half])
+        _, report = self.build()
+        self.assertTrue(any("variants[0] explanation" in r
+                            for r in self.excluded_reasons(report)), report["excluded"])
+
+    def test_part_reason_is_optional_but_must_be_complete(self):
+        composite = {
+            "id": "mit_resten", "kind": "composite",
+            "labels": {"de": "mit Resten", "en": "with residue"},
+            "parts": [
+                {"id": "karton", "labels": {"de": "Karton", "en": "Cardboard"},
+                 "destinations": ["papier"], "explanation": {"de": "sauber", "en": "clean"}},
+                {"id": "reste", "labels": {"de": "Reste", "en": "Residue"},
+                 "destinations": ["bio"], "explanation": {"en": "only english"}},
+            ],
+        }
+        self.item(attrs=["separable"], variants=[composite])
+        _, report = self.build()
+        self.assertTrue(any("parts[1] explanation" in r
+                            for r in self.excluded_reasons(report)), report["excluded"])
+
     def test_destination_in_a_locked_place_is_excluded(self):
         # У острова tier 3: на первом тире его контейнеров на ленте нет.
         self.item(tier=1, variants=[{"id": "s", "kind": "simple",

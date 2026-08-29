@@ -135,9 +135,17 @@ def check_destinations(raw, where, containers, date, problems):
     return dests
 
 
+def check_optional_text_map(value, where, problems, langs):
+    """Необязательный текст: нет — и ладно, но если есть, то на всех языках."""
+    if value is None:
+        return
+    check_text_map(value, where, problems, langs)
+
+
 def check_variant(v, where, containers, date, problems, langs):
     kind = v.get("kind")
     check_text_map(v.get("labels"), where + " labels", problems, langs)
+    check_optional_text_map(v.get("explanation"), where + " explanation", problems, langs)
     if kind == "simple":
         if "parts" in v:
             problems.append("%s: у простого варианта не может быть parts" % where)
@@ -164,6 +172,7 @@ def check_variant(v, where, containers, date, problems, langs):
                                 "ни variants, ни parts (R14). Предмет, которому нужны "
                                 "два уровня, заводится как два предмета" % pw)
             check_text_map(part.get("labels"), pw + " labels", problems, langs)
+            check_optional_text_map(part.get("explanation"), pw + " explanation", problems, langs)
             check_destinations(part.get("destinations"), pw, containers, date, problems)
     else:
         problems.append("%s: kind должен быть simple или composite, а не %r" % (where, kind))

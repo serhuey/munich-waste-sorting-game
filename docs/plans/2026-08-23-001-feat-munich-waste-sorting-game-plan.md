@@ -248,7 +248,8 @@ dist/                                  build output, committed
 - **Approach.**
   1. Starting numbers, all tuning targets: correct 100; correct early drop scaled by remaining fall, up to 150; wrong -50; wrong early drop -75. Examining costs only time.
   2. Composite items score per part, with a floor guaranteeing that taking an item apart never scores below sending it whole (R9).
-  3. The explanation always renders before the next item: destination and reason; when the mistake was the place, the text addresses the place (KTD7); when several destinations are correct, it names the others even after a correct answer.
+  3. A reason may live at three levels — the part, the variant, the item — and the panel shows whichever exist, most specific first. Only the item's is required. Without this an object with two variants could only be given one sentence for both, and AE2 asks for two things at once: what distinguishes the variants, and why this one goes where it goes.
+  4. The explanation always renders before the next item: destination and reason; when the mistake was the place, the text addresses the place (KTD7); when several destinations are correct, it names the others even after a correct answer.
   4. A tier clears on a share of correct answers — starting threshold 70% — never on a clean run (R11).
 - **Test scenarios.**
   - Covers AE6. A correct early drop scores above a correct answer at ordinary pace; a wrong early drop costs more than an ordinary mistake.

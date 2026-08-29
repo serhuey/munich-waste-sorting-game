@@ -36,9 +36,26 @@ export function explainSlot({ strip, slot, chosen, errorKind }) {
   return line;
 }
 
-export function reasonText(item, lang) {
-  const text = item.explanation || {};
+export function reasonText(holder, lang) {
+  const text = (holder && holder.explanation) || {};
   return text[lang] || text.de || text.en || '';
+}
+
+// Three reasons can exist and each answers a different question: the part says
+// why that piece goes there, the variant says why this version differs from the
+// other one, and the item says what the whole thing teaches. Whichever exist are
+// shown, in that order, without repeating one that is identical to another.
+export function reasons({ item, variant, slots, lang }) {
+  const out = [];
+  (slots || []).forEach(slot => {
+    const text = reasonText(slot, lang);
+    if (text) out.push({ scope: (slot.labels && slot.labels.de) || slot.id, text });
+  });
+  const ofVariant = reasonText(variant, lang);
+  if (ofVariant) out.push({ scope: (variant.labels && variant.labels.de) || null, text: ofVariant });
+  const ofItem = reasonText(item, lang);
+  if (ofItem && !out.some(r => r.text === ofItem)) out.push({ scope: null, text: ofItem });
+  return out;
 }
 
 // A whole item that had to be taken apart and was not: the mistake is not the
@@ -48,15 +65,15 @@ export function explainUndivided(item, variant, lang) {
     ok: false,
     undivided: true,
     parts: (variant.parts || []).map(p => (p.labels && p.labels.de) || p.id),
-    reason: reasonText(item, lang),
+    reasons: reasons({ item, variant, slots: [], lang }),
   };
 }
 
-export function explainAnswer({ item, strip, lines, points, lang }) {
+export function explainAnswer({ item, variant, slots, lines, points, lang }) {
   return {
     ok: lines.every(l => l.ok),
     lines,
     points,
-    reason: reasonText(item, lang),
+    reasons: reasons({ item, variant, slots, lang }),
   };
 }

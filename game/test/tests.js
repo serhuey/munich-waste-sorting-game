@@ -240,6 +240,40 @@ test('a place error is explained as a place, not as a container', () => {
   same([line.chosenPlace, line.wantedPlace], ['Zuhause', 'Insel']);
 });
 
+test('three reasons answer three different questions, in order', () => {
+  const item = { id: 'dose', labels: { de: 'Aludose' },
+                 explanation: { de: 'das Wort Pfand entscheidet' } };
+  const variant = { id: 'frei', labels: { de: 'Pfandfrei' },
+                    explanation: { de: 'kein Pfand, also nach Material' } };
+  const slots = [{ id: 'frei', labels: { de: 'Pfandfrei' },
+                   explanation: { de: 'Aluminium gehört zu den Metallen' } }];
+  const got = explain.reasons({ item, variant, slots, lang: 'de' });
+  same(got.map(r => r.text), [
+    'Aluminium gehört zu den Metallen',
+    'kein Pfand, also nach Material',
+    'das Wort Pfand entscheidet'
+  ], 'сначала часть, потом вариант, потом предмет');
+});
+
+test('an item with one reason still explains itself', () => {
+  const item = { id: 'x', explanation: { de: 'nur eins' } };
+  const got = explain.reasons({ item, variant: { id: 'v' }, slots: [{ id: 'v' }], lang: 'de' });
+  same(got.map(r => r.text), ['nur eins']);
+  same(got[0].scope, null, 'общее пояснение идёт без заголовка');
+});
+
+test('the same sentence is never shown twice', () => {
+  const text = { de: 'одно и то же' };
+  const got = explain.reasons({ item: { explanation: text },
+                                variant: { explanation: text }, slots: [], lang: 'de' });
+  same(got.length, 1);
+});
+
+test('a missing translation falls back rather than showing nothing', () => {
+  same(explain.reasonText({ explanation: { en: 'only english' } }, 'de'), 'only english');
+  same(explain.reasonText({}, 'de'), '');
+});
+
 const box = document.getElementById('out');
 const bad = results.filter(r => !r.ok);
 box.innerHTML = results.map(r =>

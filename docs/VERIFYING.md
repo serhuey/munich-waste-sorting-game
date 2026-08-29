@@ -24,6 +24,14 @@ sees today. Then, by hand:
 3. **Write `explanation` in German and English.** The reason, not the rule. When
    several destinations are correct, say so — the game shows the others even
    after a correct answer (R8).
+
+   There are three places a reason can live, and they answer different
+   questions. The item's is required and says what the whole thing teaches —
+   for two bottles, that the word on the label decides. A variant may carry its
+   own, saying why this version differs from its neighbour. A part of a
+   composite item may carry one too, saying why that piece goes where it goes.
+   The game shows whichever exist, from the most specific to the most general.
+   Only the item's is mandatory; write the others when the object earns them.
 4. **Fill `labels.en`**, and the variant labels if there is more than one.
 5. **Sign it:** `verified_by` and `verified_on`.
 

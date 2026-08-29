@@ -54,15 +54,20 @@ export function destinationsOn(holder, date) {
     .map(d => d.id);
 }
 
+// A slot carries its own reason when the data has one: why this part goes where
+// it goes is not the same sentence as why the object as a whole works this way.
 export function answerSlots(variant, date) {
   if (variant.kind === 'composite') {
     return (variant.parts || []).map(part => ({
       id: part.id,
       labels: part.labels,
+      explanation: part.explanation || null,
       destinations: destinationsOn(part, date)
     }));
   }
-  return [{ id: variant.id, labels: variant.labels, destinations: destinationsOn(variant, date) }];
+  return [{ id: variant.id, labels: variant.labels,
+            explanation: variant.explanation || null,
+            destinations: destinationsOn(variant, date) }];
 }
 
 // Fall timing. These numbers are the first thing to tune by playing; they are
