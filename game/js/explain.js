@@ -18,11 +18,13 @@ function placeName(strip, id) {
 // One line per answered slot: what was chosen, what was right, and — when it was
 // wrong — whether the mistake was the place or the container inside it. The two
 // are different mistakes and get different sentences (KD7).
-export function explainSlot({ strip, slot, chosen, errorKind }) {
+export function explainSlot({ strip, slot, chosen, errorKind, fallbackName }) {
   const wanted = slot.destinations;
   const ok = !!chosen && wanted.includes(chosen);
   const line = {
-    part: (slot.labels && slot.labels.de) || slot.id,
+    // An unnamed slot is the object itself, so the line says the object's name
+    // rather than a machine key nobody chose.
+    part: (slot.labels && slot.labels.de) || fallbackName || slot.id,
     ok,
     wanted: wanted.map(id => containerName(strip, id)),
     chosen: chosen ? containerName(strip, chosen) : null,
@@ -49,7 +51,7 @@ export function reasons({ item, variant, slots, lang }) {
   const out = [];
   (slots || []).forEach(slot => {
     const text = reasonText(slot, lang);
-    if (text) out.push({ scope: (slot.labels && slot.labels.de) || slot.id, text });
+    if (text) out.push({ scope: (slot.labels && slot.labels.de) || null, text });
   });
   const ofVariant = reasonText(variant, lang);
   if (ofVariant) out.push({ scope: (variant.labels && variant.labels.de) || null, text: ofVariant });

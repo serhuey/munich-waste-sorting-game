@@ -136,15 +136,27 @@ def check_destinations(raw, where, containers, date, problems):
 
 
 def check_optional_text_map(value, where, problems, langs):
-    """Необязательный текст: нет — и ладно, но если есть, то на всех языках."""
+    """Необязательный текст: пусто — и ладно, но начал — заполни на всех языках.
+
+    Пустой объект считается отсутствующим: форма и заготовки создают
+    {"de": "", "en": ""} заранее, и требовать от такого текста было бы
+    требованием заполнить то, что решено не заполнять.
+    """
     if value is None:
+        return
+    if isinstance(value, dict) and not any((v or "").strip() for v in value.values()):
         return
     check_text_map(value, where, problems, langs)
 
 
-def check_variant(v, where, containers, date, problems, langs):
+def check_variant(v, where, containers, date, problems, langs, named=True):
     kind = v.get("kind")
-    check_text_map(v.get("labels"), where + " labels", problems, langs)
+    # Название варианта различает версии предмета. Когда версия одна, различать
+    # нечего: на карточке оно просто повторяло бы имя предмета.
+    if named:
+        check_text_map(v.get("labels"), where + " labels", problems, langs)
+    else:
+        check_optional_text_map(v.get("labels"), where + " labels", problems, langs)
     check_optional_text_map(v.get("explanation"), where + " explanation", problems, langs)
     if kind == "simple":
         if "parts" in v:
@@ -292,7 +304,7 @@ def check_item(raw, stem, containers, snapshot_index, date, today, langs=LANGS,
             problems.append("%s: id варианта %s повторяется" % (where, vid))
         else:
             seen.add(vid)
-        check_variant(v, where, containers, date, problems, langs)
+        check_variant(v, where, containers, date, problems, langs, named=len(variants) > 1)
 
     if len(variants) > 1 and "examine" not in attrs:
         problems.append("у предмета больше одного варианта, но нет атрибута examine — "
@@ -379,11 +391,13 @@ def build(repo, date, today=None, langs=LANGS, fixtures=False):
             except ValueError:
                 continue
             fill = (raw.get("labels") or {}).get("de") or stem
-            for holder in [raw] + list(raw.get("variants") or []):
+            named = len(raw.get("variants") or []) > 1
+            for holder in [raw] + (list(raw.get("variants") or []) if named else []):
                 labels = holder.setdefault("labels", {})
                 for lang in langs:
                     if not (labels.get(lang) or "").strip():
                         labels[lang] = fill
+            for holder in list(raw.get("variants") or []):
                 for part in holder.get("parts") or []:
                     pl = part.setdefault("labels", {})
                     for lang in langs:

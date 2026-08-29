@@ -115,11 +115,12 @@ export function variantNeedsSplit(variant) {
 // type, and going to look at it is the move R4 is about.
 export function visibleLabel(item, variant, examined) {
   const name = (item.labels && item.labels.de) || item.id;
-  if (!needsExamination(item) || examined) {
-    const detail = variant && variant.labels && variant.labels.de;
-    return { name, detail: detail || '', legible: true };
-  }
-  return { name, detail: (variant.labels && variant.labels.de) || '', legible: false };
+  // Only a named variant has anything to show under the name: with one version
+  // of the object there is nothing to tell apart, and repeating its name there
+  // would be noise pretending to be information.
+  const detail = (variant && variant.labels && variant.labels.de) || '';
+  const legible = !needsExamination(item) || examined;
+  return { name, detail, legible: detail ? legible : true };
 }
 
 // What a tap on the object does right now. Never "drop": the gesture that looks

@@ -229,6 +229,23 @@ class GateTest(unittest.TestCase):
         self.assertEqual(report["excluded"], [])
         self.assertEqual(content["items"], [])
 
+    def test_a_lone_variant_needs_no_name(self):
+        lone = {"id": "standard", "kind": "simple", "destinations": ["papier"]}
+        self.item(variants=[lone])
+        _, report = self.build()
+        self.assertEqual(report["included"], ["pizzakarton"], report["excluded"])
+
+    def test_two_variants_must_both_be_named(self):
+        self.item(attrs=["examine"], variants=[
+            {"id": "a", "kind": "simple", "labels": {"de": "sauber", "en": "clean"},
+             "destinations": ["papier"]},
+            {"id": "b", "kind": "simple", "destinations": ["restmuell"]},
+        ])
+        _, report = self.build()
+        reasons = self.excluded_reasons(report)
+        self.assertTrue(any("variants[1] labels" in r for r in reasons), reasons)
+        self.assertFalse(any("variants[0] labels" in r for r in reasons), reasons)
+
     def test_variant_reason_is_optional_but_must_be_complete(self):
         good = dict(ITEM["variants"][0], explanation={"de": "warum", "en": "why"})
         self.item(variants=[good])

@@ -281,19 +281,35 @@ function variantBlock(v, i) {
       }
       s.addEventListener('change', () => {
         v.kind = s.value;
-        box.append(optionalReason(v, 'почему этот вариант едет именно сюда — необязательно'));
-  if (v.kind === 'composite') { delete v.destinations; v.parts = v.parts || [newPart(), newPart()]; }
-        else { delete v.parts; v.destinations = v.destinations || []; }
+        if (v.kind === 'composite') {
+          delete v.destinations;
+          v.parts = v.parts || [newPart(), newPart()];
+        } else {
+          delete v.parts;
+          v.destinations = v.destinations || [];
+        }
         render();
       });
       return el('label', {}, [el('span', {}, 'вид'), s]);
     })()
   ]));
-  box.append(el('div', {class: 'row'}, [
-    ...labelWithCode(v, 'как называется вариант, de', 'код варианта',
-                     'игроку не показывается'),
-    textField(v.labels, 'en', 'то же, en')
-  ]));
+  // Название варианта различает версии предмета. Пока версия одна, различать
+  // нечего — и спрашивать нечего.
+  if (draft.variants.length > 1) {
+    box.append(el('div', {class: 'row'}, [
+      ...labelWithCode(v, 'как называется вариант, de', 'код варианта',
+                       'игроку не показывается'),
+      textField(v.labels, 'en', 'то же, en')
+    ]));
+  } else {
+    box.append(el('div', {class: 'place'},
+      'вариант один — название ему не нужно; поля появятся, если добавить второй'));
+  }
+  // Своя причина у варианта имеет смысл только рядом с другим вариантом: у
+  // единственного она совпадает с общей причиной предмета.
+  if (draft.variants.length > 1) {
+    box.append(optionalReason(v, 'почему этот вариант едет именно сюда — необязательно'));
+  }
   if (v.kind === 'composite') {
     (v.parts || []).forEach((part, j) => {
       const pb = el('div', {class: 'box'});

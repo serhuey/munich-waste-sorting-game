@@ -177,6 +177,7 @@ function landed({ item, variant, el: itemEl, early, remaining }) {
   const points = score.scoreAnswer({ ok, early, remaining });
   const line = explain.explainSlot({
     strip: state.strip, slot, chosen: chosen && chosen.id,
+    fallbackName: (item.labels && item.labels.de) || item.id,
     errorKind: rules.errorKind(state.strip, chosen && chosen.id, slot.destinations)
   });
 
