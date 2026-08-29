@@ -53,11 +53,18 @@
         "en": "No deposit"
       },
       "destinations": [
-        "metall"
+        {
+          "id": "metall",
+          "until": "2027-01-01"
+        },
+        {
+          "id": "gelbe_tonne",
+          "from": "2027-01-01"
+        }
       ],
       "explanation": {
-        "de": "Dosen ohne Pfandzeichen oder mit der Aufschrift „Pfandfrei“ wirfst du in den Metall-Container auf der Wertstoffinsel.",
-        "en": "A can without the deposit mark, or marked ‘Pfandfrei’, goes into the metal container at the Wertstoffinsel."
+        "de": "Dosen ohne Pfandzeichen oder mit der Aufschrift „Pfandfrei“ wirfst du in den Metall-Container auf der Wertstoffinsel. Ab 2027 wandert sie mit dem Metall in die Gelbe Tonne.",
+        "en": "A can without the deposit mark, or marked ‘Pfandfrei’, goes into the metal container at the Wertstoffinsel. From 2027 it moves, with the metal, into the yellow bin."
       }
     }
   ],
@@ -72,6 +79,13 @@
       "url": "https://www.gesetze-im-internet.de/verpackg/__31.html",
       "verified_by": "Sergei Grieg",
       "verified_on": "2026-08-29"
+    },
+    {
+      "authority": "page",
+      "reference": "Wertstoffinseln: Kunststoff, Verbund und Metall gehen ab 2027 in die Gelbe Tonne, Glas bleibt",
+      "url": "https://www.awm-muenchen.de/abfall-entsorgen/abgabestellen/wertstoffinseln",
+      "verified_by": "Sergei Grieg",
+      "verified_on": "2026-08-30"
     }
   ],
   "_hint": "у предмета два источника: запись AWM и норма закона для возврата в магазин — оба нужно подписать | тир 3: у варианта без залога адресат на острове, а остров открывается на третьем тире",

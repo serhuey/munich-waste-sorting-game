@@ -69,6 +69,14 @@ The set is curated, not exhaustive. A good item is one a newcomer gets wrong:
 AWM's own `tip` field, preserved in the snapshot, flags many of these: 49 entries
 carry one.
 
+## Sources that are AWM but not the lexicon
+
+Some rules live on an ordinary AWM page rather than in the Abfalllexikon: what
+stands at a Wertstoffinsel, or what moves where on 1 January 2027. Those carry
+`"authority": "page"` with the page's name in `source.reference` and its address
+in `source.url`. They are read and signed exactly like a lexicon entry; what they
+skip is the snapshot comparison, because a page is not an entry with a key.
+
 ## Sources that are not AWM
 
 Take-back at shops rests on federal law, not on the city: the Batteriegesetz

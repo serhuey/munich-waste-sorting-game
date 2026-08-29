@@ -305,6 +305,24 @@ class GateTest(unittest.TestCase):
         _, report = self.build()
         self.assertEqual(report["included"], ["pfandflasche"], report["excluded"])
 
+    def test_a_page_source_is_accepted(self):
+        page = {"authority": "page",
+                "reference": "Wertstoffinseln: was in welchen Container gehört",
+                "url": "https://www.awm-muenchen.de/abfall-entsorgen/abgabestellen/wertstoffinseln",
+                "verified_by": "sergei", "verified_on": "2026-08-20"}
+        self.item(sources=[page])
+        _, report = self.build()
+        self.assertEqual(report["included"], ["pizzakarton"], report["excluded"])
+
+    def test_a_page_source_needs_a_name_and_no_lexicon_key(self):
+        page = {"authority": "page", "url": "https://example.invalid/x",
+                "key": "pizzakarton", "verified_by": "sergei", "verified_on": "2026-08-20"}
+        self.item(sources=[page])
+        _, report = self.build()
+        reasons = " ".join(self.excluded_reasons(report))
+        self.assertIn("reference", reasons)
+        self.assertIn("лишнее", reasons)
+
     def test_law_source_without_a_norm_is_excluded(self):
         law = dict(self.LAW); law.pop("reference")
         self.item(id="pfandflasche", source=law)

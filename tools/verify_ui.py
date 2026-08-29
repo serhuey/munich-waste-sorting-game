@@ -342,10 +342,11 @@ const newVariant = () => ({id: '', kind: 'simple', labels: {de: '', en: ''}, des
 function sourceBlock(src, title) {
   const b = el('div', {class: 'box'});
   b.append(el('h3', {}, title));
-  if (src.authority === 'law') {
-    b.append(el('div', {class: 'hint'}, [el('b', {}, 'норма'), src.reference || '']));
-  } else {
+  if (src.authority === 'awm') {
     b.append(el('div', {class: 'hint'}, [el('b', {}, 'запись лексикона'), src.key || '']));
+  } else {
+    b.append(el('div', {class: 'hint'}, [
+      el('b', {}, src.authority === 'law' ? 'норма' : 'страница AWM'), src.reference || '']));
   }
   b.append(el('div', {}, el('a', {href: src.url, target: '_blank'}, 'открыть источник ↗')));
   const name = el('input', {type: 'text', value: src.verified_by || '',

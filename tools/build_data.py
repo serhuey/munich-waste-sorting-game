@@ -25,7 +25,11 @@ REPO = os.path.dirname(HERE)
 
 LANGS = ("de", "en")
 ATTRS = {"borderline", "examine", "separable"}
-AUTHORITIES = {"awm", "law"}
+# awm  — запись Abfalllexikon, сверяется со снимком;
+# page — отдельная страница AWM, которой в лексиконе нет (например, состав
+#        контейнеров на острове или переход 2027 года);
+# law  — норма федерального закона, к AWM отношения не имеющая.
+AUTHORITIES = {"awm", "page", "law"}
 FUTURE_PROBE = "2027-01-01"   # дата, на которой проверяем переход на Gelbe Tonne
 ID = re.compile(r"^[a-z0-9][a-z0-9_]*$")
 
@@ -218,11 +222,13 @@ def check_source(source, snapshot_index, today, problems, where="source", requir
             if when > today:
                 problems.append("%s.verified_on в будущем: %s" % (where, raw_date))
 
-    if authority == "law":
+    if authority in ("law", "page"):
+        what = "нормой закона" if authority == "law" else "названием страницы"
         if not isinstance(source.get("reference"), str) or not source["reference"].strip():
-            problems.append("для authority=law нужен %s.reference с нормой закона" % where)
+            problems.append("для authority=%s нужен %s.reference с %s" % (authority, where, what))
         if source.get("key"):
-            problems.append("для authority=law поле %s.key лишнее: закон не лежит в лексиконе" % where)
+            problems.append("для authority=%s поле %s.key лишнее: этого источника нет в "
+                            "лексиконе" % (authority, where))
         return
 
     key = source.get("key")
