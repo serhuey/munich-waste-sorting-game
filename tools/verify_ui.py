@@ -61,7 +61,9 @@ def validate(item_id, raw):
     path, snapshot = bd.newest_snapshot(REPO)
     index = {e["key"]: e for e in snapshot["entries"]} if snapshot else {}
     today = datetime.date.today()
-    return bd.check_item(raw, item_id, containers, index, today, today)
+    # places передаём обязательно: иначе форма не увидит недоступного на тире
+    # адресата, а сборка увидит — и человек узнает об этом уже после подписи.
+    return bd.check_item(raw, item_id, containers, index, today, today, places=places)
 
 
 def state():
@@ -116,6 +118,7 @@ h3{font-size:12px;text-transform:uppercase;letter-spacing:.05em;opacity:.6;margi
 .q.ready .dot{background:var(--ok)}
 label{display:block;margin:0 0 10px}
 label>span{display:block;font-size:12px;opacity:.65;margin-bottom:3px}
+small.help{display:block;font-size:11px;opacity:.5;margin-top:2px}
 input[type=text],textarea,select{width:100%;padding:7px 9px;border:1px solid var(--line);
   border-radius:6px;font:inherit;background:transparent;color:inherit}
 textarea{min-height:56px;resize:vertical}
@@ -145,6 +148,13 @@ a{color:var(--accent)}
 <main id="main"><div class="empty">Выберите предмет слева.</div></main>
 <script>
 let S = null, cur = null, draft = null;
+
+// Код варианта игроку не показывается — он нужен движку, чтобы отличать версии
+// предмета внутри файла. Печатать его руками незачем: делаем из названия.
+const UMLAUTS = {'ä':'ae','ö':'oe','ü':'ue','ß':'ss','é':'e','è':'e','á':'a','à':'a'};
+const slug = text => (text || '').toLowerCase().split('')
+  .map(ch => UMLAUTS[ch] || ch).join('')
+  .replace(/[^a-z0-9]+/g, '_').replace(/^_+|_+$/g, '').slice(0, 24);
 
 const api = async (p, body) => {
   const r = await fetch(p, body ? {method:'POST', body: JSON.stringify(body)} : {});
@@ -209,10 +219,24 @@ function destPicker(holder) {
   return wrap;
 }
 
-function textField(obj, key, title) {
-  const i = el('input', {type: 'text', value: obj[key] || ''});
-  i.addEventListener('input', () => obj[key] = i.value);
+function textField(obj, key, title, opts = {}) {
+  const i = el('input', {type: 'text', value: obj[key] || '',
+                         ...(opts.placeholder ? {placeholder: opts.placeholder} : {})});
+  i.addEventListener('input', () => { obj[key] = i.value; if (opts.onInput) opts.onInput(); });
+  if (opts.hint) return el('label', {}, [el('span', {}, title), i, el('small', {class: 'help'}, opts.hint)]);
   return el('label', {}, [el('span', {}, title), i]);
+}
+
+// Название варианта заполняет его код, пока код не трогали руками.
+function labelWithCode(holder, title, codeTitle, hint) {
+  holder.labels = holder.labels || {de: '', en: ''};
+  const code = textField(holder, 'id', codeTitle, {hint, placeholder: 'заполнится само'});
+  const input = code.querySelector('input');
+  const de = textField(holder.labels, 'de', title, {onInput: () => {
+    if (!holder._manualId) { holder.id = slug(holder.labels.de); input.value = holder.id; }
+  }});
+  input.addEventListener('input', () => { holder._manualId = true; });
+  return [de, code];
 }
 function areaField(obj, key, title) {
   const t = el('textarea');
@@ -224,7 +248,6 @@ function areaField(obj, key, title) {
 function variantBlock(v, i) {
   const box = el('div', {class: 'box'});
   box.append(el('div', {class: 'row'}, [
-    textField(v, 'id', 'идентификатор варианта'),
     (() => {
       const s = el('select');
       for (const k of ['simple', 'composite']) {
@@ -240,18 +263,17 @@ function variantBlock(v, i) {
       return el('label', {}, [el('span', {}, 'вид'), s]);
     })()
   ]));
-  v.labels = v.labels || {de: '', en: ''};
   box.append(el('div', {class: 'row'}, [
-    textField(v.labels, 'de', 'как называется вариант, de'),
+    ...labelWithCode(v, 'как называется вариант, de', 'код варианта',
+                     'игроку не показывается'),
     textField(v.labels, 'en', 'то же, en')
   ]));
   if (v.kind === 'composite') {
     (v.parts || []).forEach((part, j) => {
       const pb = el('div', {class: 'box'});
-      part.labels = part.labels || {de: '', en: ''};
       pb.append(el('div', {class: 'row'}, [
-        textField(part, 'id', 'часть — идентификатор'),
-        textField(part.labels, 'de', 'название, de'),
+        ...labelWithCode(part, 'часть — название, de', 'код части',
+                         'игроку не показывается'),
         textField(part.labels, 'en', 'название, en')
       ]));
       pb.append(destPicker(part));
@@ -388,8 +410,18 @@ async function check() {
   }
 }
 
+function clean(node) {
+  if (Array.isArray(node)) return node.map(clean);
+  if (node && typeof node === 'object') {
+    const out = {};
+    for (const [k, v] of Object.entries(node)) if (k !== '_manualId') out[k] = clean(v);
+    return out;
+  }
+  return node;
+}
+
 async function save(andPromote) {
-  await api('/api/draft/' + cur, draft);
+  await api('/api/draft/' + cur, clean(draft));
   if (!andPromote) { flash('сохранено'); await check(); S = await api('/api/state'); renderQueue(); return; }
   const r = await api('/api/promote/' + cur, {});
   if (r.ok) {

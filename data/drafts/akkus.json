@@ -19,7 +19,7 @@
   "attrs": [],
   "labels": {
     "de": "Akkus",
-    "en": ""
+    "en": "Akkus"
   },
   "source": {
     "authority": "awm",
@@ -30,8 +30,8 @@
       "problemabfall",
       "wertstoffmobil"
     ],
-    "verified_by": "",
-    "verified_on": ""
+    "verified_by": "Sergei Grieg",
+    "verified_on": "2026-08-29"
   },
   "variants": [
     {
@@ -42,7 +42,8 @@
         "en": ""
       },
       "destinations": [
-        "giftmobil"
+        "giftmobil",
+        "batterien"
       ]
     }
   ],
