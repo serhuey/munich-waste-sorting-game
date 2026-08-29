@@ -49,15 +49,26 @@ export function reasonText(holder, lang) {
 // shown, in that order, without repeating one that is identical to another.
 export function reasons({ item, variant, slots, lang }) {
   const out = [];
-  (slots || []).forEach(slot => {
-    const text = reasonText(slot, lang);
-    if (text) out.push({ scope: (slot.labels && slot.labels.de) || null, text });
-  });
+  // A simple variant is its own only slot, so its reason belongs to the variant
+  // and must not also be read off the slot — that printed the same paragraph
+  // twice. Only a composite variant has parts that can speak for themselves.
+  const composite = !!variant && variant.kind === 'composite';
+  if (composite) {
+    (slots || []).forEach(slot => {
+      const text = reasonText(slot, lang);
+      if (text) out.push({ scope: (slot.labels && slot.labels.de) || null, text });
+    });
+  }
   const ofVariant = reasonText(variant, lang);
-  if (ofVariant) out.push({ scope: (variant.labels && variant.labels.de) || null, text: ofVariant });
+  if (ofVariant) {
+    out.push({ scope: composite ? (variant.labels && variant.labels.de) || null : null,
+               text: ofVariant });
+  }
   const ofItem = reasonText(item, lang);
-  if (ofItem && !out.some(r => r.text === ofItem)) out.push({ scope: null, text: ofItem });
-  return out;
+  if (ofItem) out.push({ scope: null, text: ofItem });
+  // Belt and braces: the same sentence is never worth printing twice, whichever
+  // two levels happen to carry it.
+  return out.filter((r, i) => out.findIndex(x => x.text === r.text) === i);
 }
 
 // A whole item that had to be taken apart and was not: the mistake is not the

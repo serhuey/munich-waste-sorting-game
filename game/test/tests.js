@@ -241,18 +241,29 @@ test('a place error is explained as a place, not as a container', () => {
 });
 
 test('three reasons answer three different questions, in order', () => {
-  const item = { id: 'dose', labels: { de: 'Aludose' },
-                 explanation: { de: 'das Wort Pfand entscheidet' } };
-  const variant = { id: 'frei', labels: { de: 'Pfandfrei' },
-                    explanation: { de: 'kein Pfand, also nach Material' } };
-  const slots = [{ id: 'frei', labels: { de: 'Pfandfrei' },
-                   explanation: { de: 'Aluminium gehört zu den Metallen' } }];
+  const item = { id: 'karton', explanation: { de: 'zwei Antworten, nicht eine' } };
+  const variant = { id: 'fettig', kind: 'composite', labels: { de: 'mit Resten' },
+                    explanation: { de: 'mit Resten ist er nicht mehr sauber' } };
+  const slots = [{ id: 'reste', labels: { de: 'Reste' },
+                   explanation: { de: 'Essensreste gehören in die Biotonne' } }];
   const got = explain.reasons({ item, variant, slots, lang: 'de' });
   same(got.map(r => r.text), [
-    'Aluminium gehört zu den Metallen',
-    'kein Pfand, also nach Material',
-    'das Wort Pfand entscheidet'
+    'Essensreste gehören in die Biotonne',
+    'mit Resten ist er nicht mehr sauber',
+    'zwei Antworten, nicht eine'
   ], 'сначала часть, потом вариант, потом предмет');
+});
+
+test('a simple variant explains itself once, not twice', () => {
+  const item = { id: 'dose', explanation: { de: 'das DPG-Logo entscheidet' } };
+  const variant = { id: 'frei', kind: 'simple', labels: { de: 'Pfandfrei' },
+                    explanation: { de: 'ohne Pfandzeichen: Metall' } };
+  // Слот простого варианта — сам вариант, и пояснение у них одно и то же.
+  const slots = [{ id: 'frei', labels: { de: 'Pfandfrei' },
+                   explanation: variant.explanation }];
+  const got = explain.reasons({ item, variant, slots, lang: 'de' });
+  same(got.map(r => r.text), ['ohne Pfandzeichen: Metall', 'das DPG-Logo entscheidet']);
+  same(got[0].scope, null, 'у единственного слота заголовок не нужен — он уже в строке ответа');
 });
 
 test('an item with one reason still explains itself', () => {
