@@ -6,6 +6,7 @@ import * as rules from '../js/rules.js';
 import { nearestIndex } from '../js/belt.js';
 import * as score from '../js/score.js';
 import * as explain from '../js/explain.js';
+import * as progress from '../js/progress.js';
 
 const results = [];
 const eq = (a, b) => JSON.stringify(a) === JSON.stringify(b);
@@ -26,7 +27,7 @@ const PLACES = [
     { id: 'papier', labels: { de: 'Papier', en: 'Paper' } },
     { id: 'gelbe_tonne', from: '2027-01-01', labels: { de: 'Gelbe Tonne', en: 'Yellow bin' } }
   ] },
-  { id: 'insel', tier: 3, labels: { de: 'Insel', en: 'Island' }, containers: [
+  { id: 'insel', tier: 2, labels: { de: 'Insel', en: 'Island' }, containers: [
     { id: 'glas_weiss', labels: { de: 'Weißglas', en: 'Clear glass' } },
     { id: 'kunststoff', until: '2027-01-01', labels: { de: 'Kunststoff', en: 'Plastic' } },
     { id: 'metall', until: '2027-01-01', labels: { de: 'Metalle', en: 'Metals' } }
@@ -69,7 +70,7 @@ test('the strip carries place order and index', () => {
 
 test('a tier only shows places already unlocked', () => {
   same(rules.stripForTier(PLACES, d('2026-08-27'), 1).map(c => c.id), ['restmuell', 'papier']);
-  same(rules.stripForTier(PLACES, d('2026-08-27'), 3).map(c => c.id).length, 5);
+  same(rules.stripForTier(PLACES, d('2026-08-27'), 2).map(c => c.id).length, 5);
 });
 
 test('destinations accept both the short and the dated form', () => {
@@ -97,16 +98,16 @@ test('a borderline item falls slower than a plain one', () => {
 });
 
 test('an item whose place is not the active one falls slower', () => {
-  const strip = rules.stripForTier(PLACES, d('2026-08-27'), 3);
-  const here = rules.fallDuration({ tier: 3, attrs: [] }, ['glas_weiss'], strip, 'insel');
-  const away = rules.fallDuration({ tier: 3, attrs: [] }, ['glas_weiss'], strip, 'home');
+  const strip = rules.stripForTier(PLACES, d('2026-08-27'), 2);
+  const here = rules.fallDuration({ tier: 2, attrs: [] }, ['glas_weiss'], strip, 'insel');
+  const away = rules.fallDuration({ tier: 2, attrs: [] }, ['glas_weiss'], strip, 'home');
   assert(away > here, 'смена места стоит времени: ' + away + ' vs ' + here);
 });
 
 test('a part falls by its own destination, not the whole item\'s', () => {
-  const strip = rules.stripForTier(PLACES, d('2026-08-27'), 3);
-  const homePart = rules.fallDuration({ tier: 3, attrs: [] }, ['papier'], strip, 'home');
-  const awayPart = rules.fallDuration({ tier: 3, attrs: [] }, ['glas_weiss'], strip, 'home');
+  const strip = rules.stripForTier(PLACES, d('2026-08-27'), 2);
+  const homePart = rules.fallDuration({ tier: 2, attrs: [] }, ['papier'], strip, 'home');
+  const awayPart = rules.fallDuration({ tier: 2, attrs: [] }, ['glas_weiss'], strip, 'home');
   assert(awayPart > homePart, 'часть, лежащая в другом месте, падает дольше');
 });
 
@@ -283,6 +284,100 @@ test('the same sentence is never shown twice', () => {
 test('a missing translation falls back rather than showing nothing', () => {
   same(explain.reasonText({ explanation: { en: 'only english' } }, 'de'), 'only english');
   same(explain.reasonText({}, 'de'), '');
+});
+
+// --- U6, the ladder ---------------------------------------------------------
+// A ladder of four rungs whose third has no items: half-authored content is the
+// normal state of this project for months, and the ladder has to stay walkable
+// through it.
+const LADDER = {
+  places: [
+    { id: 'home', tier: 1, labels: { de: 'Zuhause', en: 'Home' }, containers: [
+      { id: 'restmuell', labels: { de: 'Restmüll', en: 'Residual' } },
+      { id: 'papier', labels: { de: 'Papier', en: 'Paper' } } ] },
+    { id: 'shop', tier: 2, labels: { de: 'Im Laden', en: 'At the shop' }, containers: [
+      { id: 'pfandautomat', labels: { de: 'Pfandautomat', en: 'Deposit machine' } },
+      { id: 'batteriebox', labels: { de: 'Batteriebox', en: 'Battery box' } },
+      { id: 'elektro_ruecknahme', labels: { de: 'Rücknahme Elektro', en: 'Take-back' } } ] },
+    { id: 'insel', tier: 3, labels: { de: 'Insel', en: 'Island' }, containers: [
+      { id: 'glas_weiss', labels: { de: 'Weißglas', en: 'Clear glass' } } ] },
+    { id: 'hof', tier: 4, labels: { de: 'Wertstoffhof', en: 'Recycling centre' }, containers: [
+      { id: 'sperrmuell', labels: { de: 'Sperrmüll', en: 'Bulky waste' } } ] }
+  ],
+  items: [{ id: 'a', tier: 1 }, { id: 'b', tier: 2 }, { id: 'd', tier: 4 }]
+};
+const NOW = d('2026-08-27');
+const places = n => new Set(rules.stripForTier(LADDER.places, NOW, n).map(c => c.placeId)).size;
+
+test('the tab row has nothing to show until a second place opens', () => {
+  same(places(1), 1, 'на первом тире место одно — переключаться не между чем');
+  same(places(2), 2, 'на втором их уже двое, и ряд вкладок появляется');
+});
+
+test('the shop opens as one place with three containers', () => {
+  const opened = progress.placesOpened(LADDER.places, NOW, 1, 2);
+  same(opened.map(p => p.id), ['shop']);
+  same(opened[0].containers.map(c => c.id),
+       ['pfandautomat', 'batteriebox', 'elektro_ruecknahme']);
+});
+
+test('a place unlocked earlier is still on the belt later', () => {
+  const strip = rules.stripForTier(LADDER.places, NOW, 4).map(c => c.id);
+  assert(strip.includes('restmuell'), 'ведро из квартиры никуда не девается');
+  assert(strip.includes('pfandautomat'), 'автомат в магазине тоже остаётся');
+});
+
+test('a tier with no verified items is not on the ladder', () => {
+  same(progress.ladder(LADDER, NOW), [1, 2, 4]);
+  assert(!progress.isPlayable(LADDER, NOW, 3), 'у третьего тира есть место, но нет предметов');
+});
+
+test('clearing a tier advances, and the skipped tier is named', () => {
+  const out = progress.outcome({ content: LADDER, date: NOW, tier: 2, right: 7, answered: 10 });
+  same(out.kind, 'advance');
+  same(out.tier, 4);
+  same(out.skipped, [3], 'прыжок через ступень объясняется, а не молчит');
+  same(out.opened.map(p => p.id), ['insel', 'hof'], 'открываются оба места, включая пропущенное');
+});
+
+test('failing a tier repeats it and never blocks the ladder', () => {
+  const out = progress.outcome({ content: LADDER, date: NOW, tier: 1, right: 6, answered: 10 });
+  same(out.kind, 'retry');
+  same(out.tier, 1);
+});
+
+test('the last playable tier ends in the finale, not in a sixth tier', () => {
+  const out = progress.outcome({ content: LADDER, date: NOW, tier: 4, right: 10, answered: 10 });
+  same(out.kind, 'finale');
+});
+
+test('a retried tier replaces its earlier attempt in the run total', () => {
+  let run = progress.createRun(1);
+  run = progress.recordTier(run, { tier: 1, right: 3, answered: 10, points: -100 });
+  run = progress.recordTier(run, { tier: 1, right: 9, answered: 10, points: 900 });
+  run = progress.recordTier(run, { tier: 2, right: 5, answered: 5, points: 500 });
+  same(run.points, 1400, 'неудачная попытка не тянет прогон вниз второй раз');
+  same(progress.runTotals(run), { right: 14, answered: 15, points: 1400 });
+});
+
+test('a fresh run starts at the first tier and remembers nothing', () => {
+  same(progress.createRun().startedAt, 1);
+  same(progress.createRun().tiers, [], 'ничего не перенесено из прошлого прогона');
+  // R-контракт проверки: полный прогон ничего не оставляет на устройстве. Здесь
+  // проверяется то, что можно проверить без DOM: сами эти функции не пишут.
+  let stored = null;
+  try { stored = localStorage.length + sessionStorage.length; } catch (e) { stored = 0; }
+  progress.recordTier(progress.createRun(), { tier: 1, right: 1, answered: 1, points: 100 });
+  let after = null;
+  try { after = localStorage.length + sessionStorage.length; } catch (e) { after = 0; }
+  same(after, stored, 'лестница не пишет ни в localStorage, ни в sessionStorage');
+  same(document.cookie, '', 'и печенья не ставит');
+});
+
+test('tier order comes from the data, not from a constant', () => {
+  const reordered = LADDER.places.map(p => ({ ...p, tier: 5 - p.tier }));
+  same(progress.tierOrder(reordered, NOW), [1, 2, 3, 4]);
+  same(progress.placesOpened(reordered, NOW, 0, 1).map(p => p.id), ['hof']);
 });
 
 const box = document.getElementById('out');

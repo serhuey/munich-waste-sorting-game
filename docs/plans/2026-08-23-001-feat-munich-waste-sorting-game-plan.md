@@ -265,14 +265,17 @@ dist/                                  build output, committed
 - **Goal.** Five tiers that unlock one place at a time, in the order the city imposes.
 - **Requirements.** R6, R2, F1.
 - **Dependencies.** U3, U5.
-- **Files.** `game/js/progress.js`, `data/places/2026.json`.
+- **Files.** `game/js/progress.js`, `game/js/main.js`, `game/test/tests.js`, `tools/build_data.py`, `tools/test_build_data.py`.
+- **Built. Deviations, each deliberate.** No `data/places/2026.json`: U1 settled on one edition of `data/places.json` for all times, with each container carrying its own window (KTD5), and tier order lives there as data. A per-year places file would put back exactly the yearly deployment the switch was designed to remove. The ladder's shape is enforced at the build gate rather than assumed — one place per rung, rungs contiguous from the first, both fatal — because the tier number is read straight off the data and shown to the player, so a duplicated or skipped rung would reach them as a wrong tier number instead of as a data error. A tier whose place exists but whose items are not verified yet is skipped rather than entered, and the skip is named at the tier break: content is authored for months after the places are complete, and stopping the ladder at the first unauthored rung would make the game unplayable through most of its own construction. Reached directly through `?tier=`, such a tier says it is empty instead of opening a round with nothing in it. A repeated tier replaces its earlier attempt in the run total instead of adding to it — the total should read as what the player can do, and a retry after a bad tier would otherwise be charged twice.
 - **Approach.** Tier order is data: home, the shop, Wertstoffinsel, Wertstoffhof, hazardous drop-off. Unlocking a place appends its group to the belt and its tab to the row; earlier places stay available. Progress is in-memory only (KTD3).
 - **Test scenarios.**
   - Clearing tier one reveals the tab row for the first time, with two places on it.
   - The shop renders as one place with three destinations — deposit machine, battery box, lamps and small electronics.
   - A place unlocked in an earlier tier is still reachable in a later one.
   - Reloading mid-run returns the player to tier one with no stored state.
-- **Verification.** A player can reach the finale from a cold start in one sitting.
+  - A tier with no verified items is skipped by name rather than entered empty.
+  - Two places on one rung, a gap between rungs, or a place without a tier all fail the build.
+- **Verification.** A player can reach the finale from a cold start in one sitting. Done in the running game as far as the content allows: tier 1 shows one place and no tab row, tier 2 shows two places and the row appears, clearing tier 2 names Wertstoffinsel as opening with its six containers, and clearing tier 3 ends the ladder — 3 of 3 for 420 points carried across two tiers. After a full run `localStorage`, `sessionStorage`, cookies and IndexedDB are all empty and a reload starts at tier 1. Not verifiable yet: tiers 4 and 5 have no verified items, so the ladder currently ends at tier 3, and the finale panel says the tree is U7's rather than pretending to be it.
 
 ### U7. The Christmas tree finale
 

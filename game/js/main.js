@@ -7,6 +7,7 @@ import { Fall } from './fall.js';
 import * as rules from './rules.js';
 import * as score from './score.js';
 import * as explain from './explain.js';
+import * as progress from './progress.js';
 
 const el = id => document.getElementById(id);
 
@@ -24,7 +25,10 @@ const slow = Math.max(0.25, Math.min(20, parseFloat(params.get('slow')) || 1));
 const lang = (navigator.language || 'de').slice(0, 2) === 'en' ? 'en' : 'de';
 const state = { content: null, date: asked ? new Date(asked + 'T12:00:00Z') : new Date(),
                 tier: startAt, queue: [], strip: [], activePlace: null,
-                right: 0, answered: 0, points: 0, round: null, flight: null };
+                right: 0, answered: 0, points: 0, round: null, flight: null,
+                // The run outlives a tier: the header counts this tier, the run
+                // carries the ladder. Both die with the tab (KTD3).
+                run: progress.createRun(startAt) };
 
 const belt = new Belt({
   beltEl: el('belt'), trackEl: el('track'), tabsEl: el('tabs'),
@@ -53,6 +57,9 @@ function startTier(tier) {
   state.answered = 0;
   state.points = 0;
   state.round = null;
+  // Every place up to this tier, never only this tier's: what opened earlier
+  // stays on the belt, because the ladder teaches where things go and the flat
+  // does not stop existing once you have found the island (R6).
   state.strip = rules.stripForTier(state.content.places, state.date, tier);
   belt.setStrip(state.strip);
   belt.locked = false;
@@ -62,7 +69,24 @@ function startTier(tier) {
   el('right').textContent = '0';
   el('points').textContent = '0';
   hidePanel();
+  if (!state.queue.length) return emptyTier(tier);
   next();
+}
+
+// A tier whose place exists but whose items are not authored yet. Reachable
+// only through ?tier= while content is being written; it says so plainly rather
+// than opening a round with nothing in it.
+function emptyTier(tier) {
+  belt.locked = true;
+  const ahead = progress.nextPlayable(state.content, state.date, tier);
+  const back = progress.ladder(state.content, state.date)[0] ?? 1;
+  showPanel({
+    title: 'Тир ' + tier + ' пуст',
+    line: 'места есть, сверенных предметов пока нет',
+    note: 'предметы этого тира ещё не прошли ручную сверку',
+    action: () => startTier(ahead ?? back),
+    actionLabel: 'к тиру ' + (ahead ?? back)
+  });
 }
 
 function next() {
@@ -234,21 +258,62 @@ function mark(itemEl, ok) {
   setTimeout(() => itemEl.remove(), 260);
 }
 
+// The rung between tiers: what this tier came to, what the run comes to, and
+// which place opens next. The decision itself is not made here — progress.js
+// answers it from the data, so the same three outcomes hold whatever the ladder
+// is reordered to.
 function finishTier() {
   belt.locked = true;
-  const cleared = score.tierCleared(state.right, state.answered);
+  el('left').textContent = '0';
   const share = score.sharePercent(state.right, state.answered);
-  const more = rules.itemsForTier(state.content.items, state.tier + 1).length > 0;
-  const nextTier = cleared && more;
+  state.run = progress.recordTier(state.run, {
+    tier: state.tier, right: state.right, answered: state.answered, points: state.points
+  });
+  const out = progress.outcome({
+    content: state.content, date: state.date, tier: state.tier,
+    right: state.right, answered: state.answered
+  });
+  const total = progress.runTotals(state.run);
+
+  const lines = [];
+  if (state.run.tiers.length > 1) {
+    lines.push({ text: 'за прогон: ' + total.right + ' из ' + total.answered + ' · ' +
+                       total.points + ' очков', ok: total.points >= 0, quiet: true });
+  }
+  (out.opened || []).forEach(p => {
+    lines.push({ text: 'открывается: ' + p.labels.de + ' — контейнеров: ' +
+                       p.containers.length, ok: true });
+  });
+  (out.skipped || []).forEach(t => {
+    lines.push({ text: 'тир ' + t + ' пропущен: предметы ещё не сверены', ok: false, quiet: true });
+  });
+
+  const titles = {
+    advance: 'Тир ' + state.tier + ' пройден',
+    retry: 'Тир ' + state.tier + ' не пройден',
+    finale: 'Лестница пройдена'
+  };
+  const notes = {
+    advance: 'Дальше: тир ' + out.tier,
+    retry: 'Нужно ' + Math.round(score.CLEAR_SHARE * 100) +
+           '%. Ошибки не блокируют — можно пройти ещё раз',
+    // U7 puts the tree here. Until it exists the ladder says where it ends
+    // rather than pretending to have an ending.
+    finale: 'Дальше — ёлка. Финал ещё не построен (U7)'
+  };
+  const labels = { advance: 'продолжить', retry: 'ещё раз', finale: 'сначала' };
+
   showPanel({
-    title: cleared ? 'Тир ' + state.tier + ' пройден' : 'Тир ' + state.tier + ' не пройден',
+    title: titles[out.kind],
     line: state.right + ' из ' + state.answered + ' — ' + share + '% · ' +
           state.points + ' очков',
-    note: cleared
-      ? (more ? 'Дальше: тир ' + (state.tier + 1) : 'Предметов дальше нет')
-      : 'Нужно ' + Math.round(score.CLEAR_SHARE * 100) + '%. Ошибки не блокируют — можно пройти ещё раз',
-    action: () => startTier(nextTier ? state.tier + 1 : state.tier),
-    actionLabel: nextTier ? 'продолжить' : (cleared ? 'сначала' : 'ещё раз')
+    lines,
+    note: notes[out.kind],
+    action: () => {
+      if (out.kind === 'finale') state.run = progress.createRun(startAt);
+      startTier(out.kind === 'finale' ? (progress.ladder(state.content, state.date)[0] ?? 1) : out.tier);
+    },
+    actionLabel: labels[out.kind]
   });
 }
 
@@ -352,7 +417,7 @@ el('field').addEventListener('pointerup', ev => {
 // console: belt.step(1), state.round, rules.TIMING. Off by default, because a
 // player has no use for it and it would only be one more thing to keep working.
 if (params.has('date') || params.has('tier') || params.has('slow')) {
-  window.__game = { belt, fall, state, rules, startTier, tapItem };
+  window.__game = { belt, fall, state, rules, progress, startTier, tapItem };
 }
 
 boot();
