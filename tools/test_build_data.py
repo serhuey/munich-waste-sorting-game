@@ -29,6 +29,10 @@ PLACES = {
              {"id": "gelbe_tonne", "from": "2027-01-01",
               "labels": {"de": "Gelbe Tonne", "en": "Yellow bin"}},
          ]},
+        {"id": "shop", "tier": 2, "labels": {"de": "Laden", "en": "Shop"},
+         "containers": [
+             {"id": "pfandautomat", "labels": {"de": "Pfandautomat", "en": "Deposit machine"}},
+         ]},
         {"id": "insel", "tier": 3, "labels": {"de": "Insel", "en": "Island"},
          "containers": [
              {"id": "lvp", "until": "2027-01-01",
@@ -405,6 +409,45 @@ class GateTest(unittest.TestCase):
         content, report = self.build()
         self.assertIsNone(content)
         self.assertTrue(any("объявлен дважды" in f for f in report["fatal"]))
+
+    # --- лестница тиров (U6) ------------------------------------------------
+
+    def test_two_places_on_one_tier_are_fatal(self):
+        places = copy.deepcopy(PLACES)
+        places["places"][1]["tier"] = 1
+        self.write("data/places.json", places)
+        content, report = self.build()
+        self.assertIsNone(content)
+        self.assertTrue(any("занят дважды" in f for f in report["fatal"]), report["fatal"])
+
+    def test_a_gap_in_the_tiers_is_fatal(self):
+        places = copy.deepcopy(PLACES)
+        places["places"].pop(1)          # убрали вторую ступень, остались 1 и 3
+        self.write("data/places.json", places)
+        content, report = self.build()
+        self.assertIsNone(content)
+        self.assertTrue(any("с пропусками" in f for f in report["fatal"]), report["fatal"])
+
+    def test_a_place_without_a_tier_is_fatal(self):
+        places = copy.deepcopy(PLACES)
+        places["places"][0].pop("tier")
+        self.write("data/places.json", places)
+        content, report = self.build()
+        self.assertIsNone(content)
+        self.assertTrue(any("tier должен быть" in f for f in report["fatal"]), report["fatal"])
+
+    def test_the_real_ladder_holds(self):
+        """Настоящий data/places.json — те же правила, без временной песочницы.
+
+        Остальные тесты работают на выдуманных данных, и лестница из них ничего
+        не говорит о лестнице, в которую играют. Эта проверка читает файл из
+        репозитория.
+        """
+        repo = os.path.dirname(HERE)
+        places, _, fatal = bd.load_places(repo)
+        self.assertEqual(fatal, [])
+        tiers = sorted(p["tier"] for p in places)
+        self.assertEqual(tiers, list(range(1, len(places) + 1)))
 
 
 if __name__ == "__main__":

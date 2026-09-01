@@ -77,6 +77,23 @@ def load_places(repo):
     places, containers, fatal = data.get("places"), {}, []
     if not isinstance(places, list) or not places:
         return None, {}, ["data/places.json: places должен быть непустым списком"]
+    # Ступени лестницы (U6). Тир — это не порядковый номер в файле, а данные:
+    # именно из него движок собирает, что открывается когда. Поэтому на каждой
+    # ступени ровно одно место (R6: открывается по одному) и ступени идут подряд
+    # с первой — иначе игрок увидит прыжок с тира 2 на тир 4 без объяснения.
+    tiers = {}
+    for p in places:
+        tier = p.get("tier")
+        if not isinstance(tier, int) or isinstance(tier, bool) or tier < 1:
+            fatal.append("%s: tier должен быть целым числом от 1" % (p.get("id"),))
+        elif tier in tiers:
+            fatal.append("тир %d занят дважды: %s и %s — на ступени одно место"
+                         % (tier, tiers[tier], p.get("id")))
+        else:
+            tiers[tier] = p.get("id")
+    if tiers and sorted(tiers) != list(range(1, len(tiers) + 1)):
+        fatal.append("тиры идут с пропусками: %s — лестница поднимается по одной ступени"
+                     % ", ".join(str(t) for t in sorted(tiers)))
     for p in places:
         pid = p.get("id")
         if not isinstance(pid, str) or not ID.match(pid):
