@@ -44,13 +44,35 @@ export function itemsForTier(items, tier) {
   return items.filter(i => i.tier === tier);
 }
 
-// A tier plays a sample, not the whole shelf: ten objects keep a tier near two
-// minutes, and a second run meets different ones. A tier with fewer simply plays
-// all of them.
-export const TIER_SIZE = 10;
+// A tier plays a sample, not the whole shelf. The first tier is ten of its own
+// objects. Every later one opens with five objects of the place it adds, so the
+// player finds their way to the new containers before anything else happens,
+// and then mixes: three more of its own and four from earlier tiers — the
+// flat does not stop existing once you have found the island, and having to
+// switch places is where the game gets lively.
+export const ROUND = { first: 10, intro: 5, own: 3, earlier: 4 };
 
-export function roundForTier(items, tier, size = TIER_SIZE) {
-  return shuffle(itemsForTier(items, tier)).slice(0, size);
+// Objects already met in this run are drawn last, so a run repeats nothing
+// until a pool runs dry. `seen` lives in memory with the run (KTD3).
+function draw(pool, n, seen, taken) {
+  const fresh = shuffle(pool.filter(i => !taken.has(i) && !seen.has(i.id)));
+  const stale = shuffle(pool.filter(i => !taken.has(i) && seen.has(i.id)));
+  const out = fresh.concat(stale).slice(0, n);
+  out.forEach(i => taken.add(i));
+  return out;
+}
+
+export function roundFor(items, tier, seen = new Set()) {
+  const own = itemsForTier(items, tier);
+  const earlier = items.filter(i => i.tier < tier);
+  const taken = new Set();
+  if (!earlier.length) return draw(own, ROUND.first, seen, taken);
+  const intro = draw(own, ROUND.intro, seen, taken);
+  let mix = draw(own, ROUND.own, seen, taken).concat(draw(earlier, ROUND.earlier, seen, taken));
+  // A thin tier borrows from earlier ones rather than playing short.
+  const want = ROUND.intro + ROUND.own + ROUND.earlier;
+  if (intro.length + mix.length < want) mix = mix.concat(draw(earlier, want - intro.length - mix.length, seen, taken));
+  return intro.concat(shuffle(mix));
 }
 
 // Destinations a variant accepts today. A destination may be a bare id or an

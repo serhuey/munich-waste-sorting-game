@@ -610,6 +610,279 @@ S['joghurtbecher:deckel'] = item(p => {
   p.poly([[25, 13], [31, 9], [31, 13], [27, 16]], R.alu);
 });
 
+// ---------------------------------------------------------- second batch
+function receipt(p, ramp, lines) {
+  p.poly([[8, 2], [24, 2], [24, 27], [22, 29], [20, 27], [18, 29], [16, 27], [14, 29], [12, 27], [10, 29], [8, 27]], ramp);
+  for (let y = 6; y < 24; y += 3) p.hl(11, y, y % 2 ? 10 : 7, lines);
+  p.hl(11, 24, 10, INK);
+}
+function sprayCan(p, body, cap) {
+  p.round(10, 9, 12, 21, 2, body, { shade: 'cyl' });
+  p.rect(10, 9, 12, 3, R.alu, { shade: 'cyl' });
+  p.round(11, 3, 10, 7, 3, cap, { shade: 'cyl' });
+}
+Object.assign(S, {
+  kassenbon: item(p => receipt(p, R.paper, R.paper.d)),
+  'kassenbon.blau': item(p => receipt(p, R.sky, R.sky.d)),
+  'kassenbon.weiss': item(p => receipt(p, R.white, R.white.d)),
+  pizzakarton: item(p => {
+    p.poly([[2, 14], [10, 6], [30, 6], [22, 14]], R.card, { shade: 'light' });
+    p.rect(2, 14, 21, 9, R.card);
+    p.poly([[22, 14], [30, 6], [30, 15], [22, 23]], R.card, { shade: 'dark' });
+    p.ell(16, 10, 6, 2.2, R.red, { outline: false, shade: 'flat' });
+    p.dot(13, 10, R.yellow.m).dot(18, 9, R.yellow.m);
+  }),
+  'pizzakarton:karton': item(p => {
+    p.poly([[2, 14], [10, 6], [30, 6], [22, 14]], R.card, { shade: 'light' });
+    p.rect(2, 14, 21, 9, R.card);
+    p.poly([[22, 14], [30, 6], [30, 15], [22, 23]], R.card, { shade: 'dark' });
+    [[12, 9], [18, 8], [16, 11]].forEach(([x, y]) => p.dot(x, y, R.card.d));
+  }),
+  'pizzakarton:reste': item(p => {
+    p.poly([[6, 24], [26, 24], [16, 8]], R.bread);
+    p.poly([[9, 22], [23, 22], [16, 11]], R.red, { outline: false });
+    [[13, 19], [18, 18], [16, 15]].forEach(([x, y]) => p.ell(x, y, 1.6, 1.6, R.yellow, { outline: false }));
+  }),
+  biotuete: item(p => {
+    p.poly([[7, 6], [25, 6], [27, 28], [5, 28]], R.green, { shade: 'auto' });
+    p.path([[7, 6], [10, 3], [13, 6]], INK).path([[19, 6], [22, 3], [25, 6]], INK);
+    p.ell(16, 17, 5, 4, R.white, { shade: 'flat' });
+    p.path([[13, 18], [16, 14], [19, 18]], R.green.d);
+  }),
+  katzenstreu: item(p => {
+    p.rect(6, 6, 20, 23, R.sky);
+    p.rect(9, 10, 14, 10, R.white, { shade: 'flat' });
+    p.poly([[12, 15], [14, 12], [15, 15]], INK).poly([[17, 15], [18, 12], [20, 15]], INK);
+    p.ell(16, 17, 4, 3, R.grey, { outline: false });
+    for (let x = 8; x < 25; x += 3) p.dot(x, 25, R.sky.d);
+  }),
+  kaffeesatz: item(p => {
+    p.ell(16, 22, 12, 6, R.coffee);
+    for (let i = 0; i < 14; i++) p.dot(7 + (i * 7) % 19, 19 + (i * 5) % 6, R.coffee.l);
+    p.round(9, 4, 14, 12, 3, R.white, { shade: 'cyl' });
+    p.ell(16, 6, 6, 1.6, R.coffee, { outline: false });
+  }),
+  fleisch: item(p => {
+    p.poly([[4, 18], [10, 10], [22, 9], [28, 15], [24, 25], [10, 26]], R.red);
+    p.path([[10, 14], [16, 18], [22, 14]], R.pink.l);
+    p.round(18, 18, 12, 4, 2, R.white);
+    p.ell(29, 20, 2.2, 2.6, R.white).ell(19, 20, 2.2, 2.6, R.white);
+  }),
+  einwegbesteck: item(p => {
+    p.round(7, 2, 5, 10, 2, R.white);
+    p.rect(8, 11, 3, 18, R.white);
+    p.rect(20, 2, 2, 8, R.white).rect(23, 2, 2, 8, R.white);
+    p.round(19, 8, 7, 5, 1, R.white);
+    p.rect(21, 12, 3, 17, R.white);
+  }),
+  fotos: item(p => {
+    p.rect(9, 3, 20, 18, R.white);
+    p.rect(3, 9, 20, 20, R.white);
+    p.rect(5, 11, 16, 12, R.sky, { outline: false });
+    p.poly([[5, 23], [10, 16], [14, 20], [17, 17], [21, 23]], R.leaf, { outline: false });
+    p.ell(17, 14, 2, 2, R.yellow, { outline: false });
+  }),
+  umzugskarton: item(p => {
+    p.poly([[3, 11], [9, 5], [29, 5], [23, 11]], R.card, { shade: 'light' });
+    p.rect(3, 11, 21, 18, R.card);
+    p.poly([[23, 11], [29, 5], [29, 23], [23, 29]], R.card, { shade: 'dark' });
+    p.rect(3, 11, 21, 3, R.kraft, { outline: false, shade: 'flat' });
+    p.rect(8, 18, 9, 3, INK, { outline: false });
+  }),
+  briefumschlag: item(p => {
+    p.rect(2, 7, 28, 19, R.white);
+    p.path([[3, 8], [16, 18], [29, 8]], R.white.d);
+    p.rect(5, 17, 13, 6, R.clear, { shade: 'flat' });
+    p.hl(7, 19, 8, R.grey.l).hl(7, 21, 6, R.grey.l);
+  }),
+  servietten: item(p => {
+    p.poly([[4, 12], [16, 6], [28, 12], [16, 18]], R.pink, { shade: 'light' });
+    p.poly([[4, 12], [16, 18], [16, 27], [4, 21]], R.pink);
+    p.poly([[16, 18], [28, 12], [28, 21], [16, 27]], R.pink, { shade: 'dark' });
+    p.ell(12, 14, 2, 1.2, R.brown, { outline: false });
+  }),
+  blumen: item(p => {
+    [[10, 4, R.pink], [17, 3, R.yellow], [22, 7, R.red]].forEach(([x, y, r]) => p.ell(x, y + 3, 3.5, 3.5, r));
+    p.path([[10, 10], [14, 22]], R.leaf.d).path([[17, 9], [16, 22]], R.leaf.d).path([[22, 13], [18, 22]], R.leaf.d);
+    p.poly([[7, 16], [12, 19], [9, 21]], R.leaf, { outline: false });
+    p.round(11, 21, 10, 9, 2, R.wood);
+  }),
+  zigarettenkippen: item(p => {
+    for (const [x, y] of [[4, 18], [14, 22], [19, 12]]) {
+      p.rect(x, y, 6, 4, R.orange);
+      p.rect(x + 6, y, 4, 4, R.white);
+      p.rect(x + 10, y, 1, 4, R.grey, { outline: false });
+    }
+  }),
+  luftpolsterumschlag: item(p => {
+    p.rect(2, 6, 28, 21, R.yellow);
+    p.rect(2, 6, 28, 5, R.yellow, { shade: 'light' });
+    for (let y = 14; y < 25; y += 3) for (let x = 5; x < 28; x += 3) p.dot(x, y, R.yellow.d);
+    p.rect(6, 15, 11, 5, R.white, { shade: 'flat' });
+  }),
+  tapeten: item(p => {
+    p.rect(5, 4, 15, 25, R.paper);
+    for (let y = 7; y < 27; y += 5) for (let x = 7; x < 19; x += 5) p.ell(x + 1, y + 1, 1.4, 1.4, R.leaf, { outline: false });
+    p.ell(22, 26, 6, 4, R.paper, { shade: 'cyl' });
+    p.ring(22, 26, 3, 1.5, R.paper, { shade: 'dark', outline: false });
+  }),
+  elektrorasierer: item(p => {
+    p.round(10, 3, 12, 8, 2, R.alu);
+    for (let x = 12; x < 21; x += 2) p.vl(x, 5, 4, R.alu.d);
+    p.round(9, 10, 14, 20, 4, R.ink, { shade: 'cyl' });
+    p.ell(16, 18, 2.5, 2.5, R.blue);
+  }),
+  taschenrechner: item(p => {
+    p.round(7, 2, 18, 28, 2, R.grey);
+    p.rect(9, 4, 14, 6, R.green, { outline: false, shade: 'flat' });
+    p.hl(15, 7, 6, R.green.d);
+    for (let r = 0; r < 4; r++) for (let c = 0; c < 4; c++) p.rect(9 + c * 4, 12 + r * 4, 3, 3, c === 3 ? R.orange : R.white, { outline: false, shade: 'flat' });
+  }),
+  usb_stick: item(p => {
+    p.rect(12, 2, 8, 8, R.alu);
+    p.rect(14, 4, 1, 2, INK).rect(17, 4, 1, 2, INK);
+    p.round(10, 9, 12, 20, 3, R.blue, { shade: 'cyl' });
+    p.ell(16, 24, 2, 2, R.white, { outline: false });
+  }),
+  e_zigarette: item(p => {
+    p.poly([[5, 26], [9, 30], [27, 12], [23, 8]], R.grey);
+    p.poly([[22, 9], [26, 13], [30, 9], [26, 5]], R.ink);
+    p.line(9, 25, 22, 12, R.grey.l);
+    p.ell(13, 23, 1.5, 1.5, R.sky, { outline: false });
+  }),
+  einweckglas: item(p => {
+    p.round(7, 9, 18, 20, 4, R.clear, { shade: 'cyl' });
+    p.round(8, 4, 16, 6, 1, R.yellow, { shade: 'cyl' });
+    p.round(10, 15, 12, 7, 1, R.paper, { shade: 'flat' });
+    p.ell(16, 25, 5, 2, R.red, { outline: false });
+  }),
+  alufolie: item(p => {
+    p.round(2, 9, 28, 9, 2, R.blue);
+    p.rect(3, 12, 26, 2, R.white, { outline: false, shade: 'flat' });
+    p.poly([[6, 17], [28, 17], [26, 30], [8, 27]], R.alu);
+    p.path([[10, 20], [15, 25], [22, 21]], R.alu.d);
+  }),
+  glasscherben: item(p => {
+    p.poly([[5, 26], [9, 15], [14, 24]], R.clear);
+    p.poly([[13, 27], [18, 12], [23, 18], [21, 28]], R.clear);
+    p.poly([[22, 26], [27, 17], [29, 27]], R.clear);
+    p.line(17, 15, 19, 24, R.clear.h);
+  }),
+  babyflasche: item(p => {
+    p.ell(16, 4, 3, 3, R.yellow);
+    p.round(11, 6, 10, 4, 1, R.sky);
+    p.round(9, 10, 14, 20, 4, R.clear, { shade: 'cyl' });
+    for (let y = 14; y < 27; y += 4) p.hl(19, y, 2, R.blue.m);
+    p.rect(10, 22, 12, 7, R.white, { outline: false, shade: 'flat' });
+  }),
+  geschirr: item(p => {
+    p.ell(16, 18, 14, 9, R.white);
+    p.ell(16, 18, 9, 5.5, R.white, { outline: false, shade: 'dark' });
+    p.ring(16, 18, 12, 11, R.blue, { outline: false, shade: 'flat' });
+    p.path([[16, 9], [14, 15], [18, 20], [15, 27]], INK);
+  }),
+  teekanne: item(p => {
+    p.ring(25, 17, 6, 3.5, R.white);
+    p.poly([[2, 11], [8, 15], [8, 19]], R.white);
+    p.ell(15, 19, 10, 10, R.white);
+    p.round(10, 6, 10, 4, 1, R.white);
+    p.ell(15, 5, 2, 1.5, R.white);
+    p.ring(15, 19, 10, 9, R.blue, { outline: false, shade: 'flat' });
+    p.ell(15, 19, 3, 3, R.blue, { outline: false });
+  }),
+  schuhe: item(p => {
+    p.poly([[3, 14], [11, 10], [17, 16], [29, 19], [29, 25], [3, 25]], R.red);
+    p.rect(3, 24, 27, 4, R.white);
+    p.path([[10, 13], [13, 16]], R.white.l).path([[12, 12], [15, 15]], R.white.l);
+    p.hl(20, 21, 6, R.red.l);
+  }),
+  spielzeug: item(p => {
+    p.round(4, 9, 24, 12, 2, R.red);
+    for (const x of [8, 14, 20]) p.round(x, 5, 4, 4, 1, R.red, { shade: 'light' });
+    p.round(8, 20, 16, 9, 2, R.yellow);
+    for (const x of [11, 17]) p.round(x, 17, 4, 3, 1, R.yellow, { shade: 'light' });
+  }),
+  cds: item(p => {
+    p.ring(16, 16, 13, 2.5, R.alu);
+    p.paint((a, b) => { const d = Math.hypot(a - 16, b - 16); return d < 12 && d > 3 && (a - 16) * 0.6 + (b - 16) < -2 && (a - 16) * 0.6 + (b - 16) > -7; }, R.sky, { outline: false, shade: 'light' });
+    p.paint((a, b) => { const d = Math.hypot(a - 16, b - 16); return d < 12 && d > 3 && (a - 16) + (b - 16) * 0.4 > 3 && (a - 16) + (b - 16) * 0.4 < 7; }, R.pink, { outline: false, shade: 'light' });
+  }),
+  staubsauger: item(p => {
+    p.path([[20, 12], [24, 4], [27, 4]], INK, 2);
+    p.round(4, 13, 20, 14, 6, R.red);
+    p.ell(9, 27, 3, 3, R.ink).ell(20, 27, 3, 3, R.ink);
+    p.round(23, 2, 6, 4, 1, R.grey);
+    p.rect(10, 16, 8, 4, R.grey, { outline: false });
+  }),
+  mikrowelle: item(p => {
+    p.round(1, 6, 30, 21, 2, R.white);
+    p.rect(4, 9, 17, 15, R.ink);
+    p.rect(5, 10, 15, 13, R.grey, { outline: false });
+    p.line(7, 20, 14, 12, R.grey.l);
+    for (let y = 10; y < 23; y += 4) p.ell(26, y + 1, 1.5, 1.5, R.grey, { outline: false });
+  }),
+  buegeleisen: item(p => {
+    p.poly([[3, 23], [10, 13], [29, 13], [29, 23]], R.sky);
+    p.path([[12, 13], [14, 6], [26, 6], [27, 13]], INK, 2);
+    p.rect(3, 22, 27, 4, R.alu);
+    p.ell(20, 18, 2, 2, R.red, { outline: false });
+  }),
+  regal: item(p => {
+    p.rect(5, 2, 3, 28, R.wood).rect(24, 2, 3, 28, R.wood);
+    for (const y of [3, 12, 21]) p.rect(5, y, 22, 3, R.wood, { shade: 'light' });
+    p.rect(9, 6, 3, 6, R.red).rect(12, 7, 3, 5, R.blue).rect(15, 6, 2, 6, R.green);
+    p.round(18, 16, 6, 5, 1, R.yellow);
+  }),
+  kinderwagen: item(p => {
+    p.path([[4, 6], [8, 12]], INK, 2);
+    p.paint((a, b) => a > 7 && a < 27 && b > 9 && b < 23 && (b > 15 || Math.hypot(a - 22, b - 15) < 6 || a > 21), R.blue);
+    p.round(7, 15, 20, 8, 3, R.blue);
+    p.ell(10, 27, 3.5, 3.5, R.ink).ell(24, 27, 3.5, 3.5, R.ink);
+    p.dot(10, 27, R.grey.l).dot(24, 27, R.grey.l);
+  }),
+  lattenrost: item(p => {
+    p.poly([[2, 13], [8, 7], [30, 7], [24, 13]], R.wood, { shade: 'light' });
+    for (let x = 6; x < 28; x += 4) p.line(x, 12, x + 5, 8, R.wood.d);
+    p.rect(2, 13, 23, 4, R.wood);
+    p.poly([[24, 13], [30, 7], [30, 11], [24, 17]], R.wood, { shade: 'dark' });
+    p.rect(3, 17, 2, 6, R.wood).rect(22, 17, 2, 6, R.wood);
+  }),
+  skier: item(p => {
+    p.poly([[4, 27], [6, 29], [26, 6], [24, 3]], R.red);
+    p.poly([[10, 29], [12, 31], [30, 10], [28, 7]], R.blue);
+    p.rect(13, 16, 4, 3, R.ink).rect(18, 19, 4, 3, R.ink);
+  }),
+  backofenreiniger: item(p => sprayCan(p, R.orange, R.ink)),
+  desinfektionsmittel: item(p => {
+    p.round(9, 10, 14, 20, 3, R.white, { shade: 'cyl' });
+    p.rect(13, 6, 6, 5, R.white);
+    p.poly([[13, 2], [23, 2], [23, 5], [13, 6]], R.blue);
+    p.rect(14, 16, 4, 10, R.blue, { outline: false, shade: 'flat' });
+    p.rect(11, 19, 10, 4, R.blue, { outline: false, shade: 'flat' });
+  }),
+  holzschutzmittel: item(p => {
+    p.round(7, 7, 18, 23, 1, R.brown, { shade: 'cyl' });
+    p.round(12, 3, 8, 5, 1, R.ink);
+    p.rect(9, 12, 14, 13, R.paper, { shade: 'flat' });
+    hazard(p, 16, 18, 5);
+  }),
+  insektenspray: item(p => {
+    sprayCan(p, R.yellow, R.red);
+    hazard(p, 16, 21, 5);
+  }),
+  benzin: item(p => {
+    p.round(4, 8, 24, 22, 2, R.red);
+    p.path([[8, 8], [8, 4], [18, 4], [18, 8]], INK, 2);
+    p.round(22, 3, 5, 6, 1, R.ink);
+    p.line(8, 14, 22, 25, R.red.d).line(22, 14, 8, 25, R.red.d);
+  }),
+  mueckenschutz: item(p => {
+    sprayCan(p, R.green, R.white);
+    p.ell(16, 20, 3, 2, R.ink, { outline: false });
+    p.path([[13, 18], [11, 16]], INK).path([[19, 18], [21, 16]], INK);
+  }),
+});
+
 export const ITEMS = S;
 
 // ---------------------------------------------------------------- containers
@@ -834,20 +1107,62 @@ export const ROUTES = {
   }),
 };
 
-// The city behind the falling items: two onion domes are enough to say Munich.
-export const SKYLINE = draw(192, 56, p => {
-  const house = (x, w, h, ramp) => {
-    p.rect(x, 56 - h, w, h, ramp);
-    for (let wx = x + 4; wx < x + w - 4; wx += 7) for (let wy = 56 - h + 5; wy < 52; wy += 8) p.rect(wx, wy, 3, 4, R.sky, { outline: false, shade: 'flat' });
+// The city behind the falling items, read left to right as one walks it: the
+// Olympic tower and BMW's four cylinders in the north, the town hall's tower
+// on Marienplatz, the Frauenkirche's two onion domes in the middle — where a
+// phone's narrow crop lands — then the yellow Theatinerkirche and, far out, the
+// Allianz Arena.
+export const SKYLINE = draw(256, 64, p => {
+  const H = 64;
+  const house = (x, w, h, ramp, roof) => {
+    p.rect(x, H - h, w, h, ramp);
+    if (roof) p.poly([[x, H - h + 1], [x + w / 2, H - h - 6], [x + w, H - h + 1]], R.red);
+    for (let wx = x + 3; wx < x + w - 3; wx += 6) for (let wy = H - h + 5; wy < H - 4; wy += 7) p.rect(wx, wy, 2, 3, R.sky, { outline: false, shade: 'flat' });
   };
-  house(0, 28, 24, R.white); house(24, 20, 32, R.alu); house(112, 24, 26, R.white);
-  house(132, 28, 20, R.alu); house(156, 36, 28, R.white);
-  for (const x of [56, 84]) {
-    p.rect(x, 16, 16, 40, R.bglass);
-    p.round(x + 5, 24, 6, 8, 3, R.ink, { outline: false });
-    p.ell(x + 8, 11, 8, 8, R.gglass);
-    p.rect(x + 7, 0, 2, 4, R.ink, { outline: false });
+  // Olympiaturm
+  p.vl(19, 0, 6, INK);
+  p.rect(17, 5, 5, 59, R.alu, { shade: 'cyl' });
+  p.round(12, 12, 15, 4, 1, R.alu);
+  p.round(13, 16, 13, 5, 1, R.ink, { shade: 'flat' });
+  p.hl(14, 18, 11, R.sky.m);
+  // Olympic roof, a tent of tiles
+  p.poly([[0, 52], [10, 44], [26, 48], [36, 58], [0, 58]], R.clear, { tex: TEX.checks, texColor: R.clear.l });
+  // BMW-Vierzylinder and the museum's bowl
+  for (const [x, top] of [[40, 22], [46, 18], [52, 22]]) {
+    p.round(x, top, 9, H - top, 4, R.alu, { shade: 'cyl' });
+    for (let y = top + 6; y < H; y += 6) p.hl(x + 1, y, 7, R.alu.d);
   }
-  p.rect(70, 32, 16, 24, R.bglass);
-  p.round(74, 38, 8, 12, 4, R.ink, { outline: false });
+  p.paint((a, b) => b > 50 && b < 60 && Math.abs(a - 66) < 8 - (b - 50) * 0.3, R.alu, { shade: 'cyl' });
+  house(74, 18, 26, R.white, true);
+  // Neues Rathaus: dark Gothic front, gables, the tower with its spire
+  p.rect(92, 34, 34, 30, R.grey);
+  for (let x = 94; x < 124; x += 6) p.poly([[x, 35], [x + 3, 29], [x + 6, 35]], R.grey);
+  p.rect(105, 12, 9, 52, R.grey);
+  p.poly([[104, 13], [109.5, 1], [115, 13]], R.leaf);
+  p.ell(109.5, 20, 2.5, 2.5, R.paper, { outline: false });
+  for (let x = 95; x < 124; x += 5) if (x < 104 || x > 114) p.rect(x, 42, 2, 5, R.sky, { outline: false, shade: 'flat' });
+  // Frauenkirche: two brick towers, green onion domes
+  for (const x of [132, 152]) {
+    p.rect(x, 16, 14, 48, R.bglass);
+    p.round(x + 4, 22, 6, 9, 3, R.ink, { outline: false });
+    p.paint((a, b) => {
+      const cx = x + 7, t = (b - 2) / 15;
+      if (t < 0 || t > 1) return false;
+      const w = t < 0.35 ? t / 0.35 * 3 : 3 + Math.sin((t - 0.35) / 0.65 * Math.PI) * 5;
+      return Math.abs(a - cx) <= Math.max(1, w);
+    }, R.gglass);
+    p.vl(x + 7, 0, 3, INK);
+  }
+  p.rect(144, 30, 10, 34, R.bglass);
+  p.round(147, 38, 4, 10, 2, R.ink, { outline: false });
+  house(168, 16, 22, R.white, false);
+  // Theatinerkirche: yellow, two towers and a dome
+  p.rect(186, 30, 30, 34, R.duvet);
+  for (const x of [184, 210]) { p.rect(x, 18, 8, 46, R.duvet); p.ell(x + 4, 17, 4, 4, R.gglass); }
+  p.ell(201, 28, 7, 7, R.gglass);
+  p.vl(201, 18, 4, INK);
+  p.round(196, 44, 10, 20, 4, R.wood);
+  // Allianz Arena, low on the edge of the city
+  p.ell(240, 56, 15, 7, R.white, { tex: (x, y) => (x + 2 * y) % 6 === 0, texColor: R.white.d });
+  p.hl(227, 57, 27, R.red.m);
 });

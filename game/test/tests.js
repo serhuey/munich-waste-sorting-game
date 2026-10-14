@@ -482,13 +482,39 @@ test('without a share sheet the result goes to the clipboard', async () => {
   same(copied, 'a b');
 });
 
-test('a tier plays at most ten objects, and all of them when it has fewer', () => {
-  const items = Array.from({ length: 14 }, (_, i) => ({ id: 'x' + i, tier: 3 }));
-  same(rules.roundForTier(items, 3).length, 10);
-  same(rules.roundForTier(items.slice(0, 4), 3).length, 4);
-  same(new Set(rules.roundForTier(items, 3).map(i => i.id)).size, 10, 'без повторов');
+test('the first tier plays ten of its own objects', () => {
+  const items = Array.from({ length: 14 }, (_, i) => ({ id: 'a' + i, tier: 1 }));
+  const round = rules.roundFor(items, 1);
+  same(round.length, 10);
+  same(new Set(round.map(i => i.id)).size, 10, 'без повторов');
 });
 
+const SHELF = [...Array.from({ length: 12 }, (_, i) => ({ id: 'h' + i, tier: 1 })),
+               ...Array.from({ length: 10 }, (_, i) => ({ id: 's' + i, tier: 2 }))];
+
+test('a new tier opens with its own objects, then mixes in earlier ones', () => {
+  const round = rules.roundFor(SHELF, 2);
+  same(round.length, 12);
+  assert(round.slice(0, 5).every(i => i.tier === 2), 'первые пять — с нового места');
+  const tail = round.slice(5);
+  same(tail.filter(i => i.tier === 1).length, 4, 'в смеси четыре предмета прошлых уровней');
+  same(tail.filter(i => i.tier === 2).length, 3);
+  same(new Set(round.map(i => i.id)).size, 12, 'без повторов внутри раунда');
+});
+
+test('objects already met in this run come last', () => {
+  const seen = new Set(['h0', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'h7']);
+  const round = rules.roundFor(SHELF, 2, seen);
+  const earlier = round.filter(i => i.tier === 1).map(i => i.id).sort();
+  same(earlier, ['h10', 'h11', 'h8', 'h9'], 'из прошлого уровня берутся невиденные');
+});
+
+test('a thin tier borrows from earlier ones instead of playing short', () => {
+  const thin = SHELF.filter(i => i.tier === 1 || i.id === 's0' || i.id === 's1');
+  const round = rules.roundFor(thin, 2);
+  same(round.length, 12);
+  same(round.slice(0, 2).map(i => i.tier), [2, 2]);
+});
 await Promise.all(pending);
 const box = document.getElementById('out');
 const bad = results.filter(r => !r.ok);

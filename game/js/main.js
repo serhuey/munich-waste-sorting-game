@@ -37,7 +37,9 @@ const state = { content: null, date: asked ? new Date(asked + 'T12:00:00Z') : ne
                 right: 0, answered: 0, points: 0, round: null, flight: null,
                 // The run outlives a tier: the header counts this tier, the run
                 // carries the ladder. Both die with the tab (KTD3).
-                run: progress.createRun(1), finalePoints: 0, reached: 0 };
+                run: progress.createRun(1), finalePoints: 0, reached: 0,
+                // Objects met in this run, so the next tier prefers new ones.
+                seen: new Set() };
 let i18n = null;
 const t = (k, v) => i18n.t(k, v);
 const pick = m => (i18n ? i18n.pick(m) : (m && m.de) || '');
@@ -161,6 +163,7 @@ function showTitle() {
 function startRun() {
   const first = progress.ladder(state.content, state.date)[0] ?? 1;
   state.run = progress.createRun(first);
+  state.seen = new Set();
   state.finalePoints = 0;
   state.reached = 0;
   startTier(first);
@@ -180,7 +183,8 @@ function startTier(tier) {
   state.strip = rules.stripForTier(state.content.places, state.date, tier);
   belt.setStrip(state.strip);
   belt.locked = true;
-  state.queue = rules.roundForTier(state.content.items, tier);
+  state.queue = rules.roundFor(state.content.items, tier, state.seen);
+  state.queue.forEach(i => state.seen.add(i.id));
   el('tier').textContent = tier;
   el('total').textContent = state.queue.length;
   el('left').textContent = state.queue.length;
