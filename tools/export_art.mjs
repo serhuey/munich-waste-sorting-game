@@ -1,35 +1,36 @@
 #!/usr/bin/env node
-// Export every drawn sprite as a 1× PNG, plus the palette, as a starting point
-// for redrawing by hand.
+// Export every drawn sprite as a 1× PNG, plus the palette, to draw over.
 //
-//     node tools/export_art.mjs
+//     node tools/export_art.mjs           # never overwrites a file you have edited
+//     node tools/export_art.mjs --force   # start again from the drawings in code
 //
-// Writes art/originals/<kind>/<name>.png and art/palette.gpl. Nothing here is
-// used by the game: open a file in Pixelorama, redraw it, and save it under the
-// same name into game/art/<kind>/ — from then on the game shows your file
-// instead of the drawing in game/js/sprites.js. Keep the size: objects are
-// 32×32, containers 48×48; a test refuses anything else.
+// Writes art/originals/<kind>/<name>.png and art/palette.gpl. Draw over any of
+// the files in place, then run `node tools/collect_art.mjs`: it finds what you
+// changed and hands it to the game. Keep the size — objects 32×32, containers
+// 48×48 — and export at 100 %.
 
 import fs from 'node:fs';
 import path from 'node:path';
 import { encode } from './png.mjs';
-import { ITEMS, CONTAINERS, ROUTES, DECOR, TREE, SKYLINE } from '../game/js/sprites.js';
+import { root, KINDS, fileName, differs } from './art_common.mjs';
 
-const root = path.resolve(path.dirname(new URL(import.meta.url).pathname), '..');
+const force = process.argv.includes('--force');
 const out = path.join(root, 'art', 'originals');
-export const KINDS = { items: ITEMS, containers: CONTAINERS, routes: ROUTES, decor: DECOR,
-                       scenery: { tree: TREE, skyline: SKYLINE } };
-// A part's key carries a colon, which Finder shows as a slash; in a file name
-// it is written as a double dash.
-export const fileName = key => key.replace(/:/g, '--') + '.png';
-
 const colours = new Map();
 let written = 0;
+const kept = [];
 for (const [kind, set] of Object.entries(KINDS)) {
   fs.mkdirSync(path.join(out, kind), { recursive: true });
   for (const [key, sprite] of Object.entries(set)) {
-    fs.writeFileSync(path.join(out, kind, fileName(key)), encode(sprite));
     sprite.px.forEach(c => c && colours.set(c, (colours.get(c) || 0) + 1));
+    const file = path.join(out, kind, fileName(key));
+    // A file whose pixels differ from the code is someone's drawing; an export
+    // that replaced it would erase their work without a word.
+    if (!force && fs.existsSync(file)) {
+      const d = differs(file, sprite);
+      if (d.error || d.pixels) { kept.push(`${kind}/${fileName(key)}`); continue; }
+    }
+    fs.writeFileSync(file, encode(sprite));
     written++;
   }
 }
@@ -56,3 +57,4 @@ sorted.forEach(hex => {
 });
 fs.writeFileSync(path.join(root, 'art', 'palette.gpl'), lines.join('\n') + '\n');
 console.log(`${written} sprites → art/originals/, ${sorted.length} colours → art/palette.gpl`);
+if (kept.length) console.log(`kept ${kept.length} edited file(s), use --force to overwrite: ${kept.join(', ')}`);

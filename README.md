@@ -115,23 +115,27 @@ node game/test/run.mjs
 ## Drawing by hand
 
 Every picture is drawn in code (`game/js/sprites.js`), and any of them can be
-replaced by a PNG drawn in a pixel editor:
+redrawn by hand in a pixel editor:
 
 ```bash
 node tools/export_art.mjs      # every sprite as a 1× PNG in art/originals/, the palette in art/palette.gpl
+node tools/collect_art.mjs     # copy what you redrew into game/art/, where it replaces the code
+python3 tools/build_data.py --fixtures
 ```
 
-Open a file from `art/originals/<kind>/` in Pixelorama (or any pixel editor),
-redraw it, and save it under the same name into `game/art/<kind>/` — `items`,
-`containers`, `routes`, `decor` or `scenery`. Keep the size: objects are 32×32,
-containers and routes 48×48, the tree 64×88, the skyline 320×96, and export at
-100 %, not scaled. A part is written with a double dash, `pizzakarton--reste.png`;
-a variant with a dot, `glasflasche.gruen.png`, and a variant or part can be drawn
-this way even if the code has no drawing for it. Rebuild, and the game shows
-your file; `game/test/sprites.html` marks hand-drawn sprites in yellow.
-`node game/test/run.mjs` refuses a file whose name matches no sprite or whose
-size is wrong, so a typo does not quietly fall back to the drawing in code.
-Import `art/palette.gpl` into Pixelorama to draw with the colours already in use.
+Open any file in `art/originals/<kind>/` in Pixelorama, draw over it and save
+it in place — export at 100 %, keep the size: objects 32×32, containers and
+routes 48×48, the tree 64×88, the skyline 320×96. `collect_art` compares every
+file with the drawing in code pixel by pixel, so a file the editor merely
+re-saved is left alone, and copies the ones you changed into
+`game/art/<kind>/`, which is what the game reads and what is committed.
+`export_art` never overwrites a file you edited unless given `--force`.
+
+A part is named with a double dash, `pizzakarton--reste.png`, a variant with a
+dot, `glasflasche.gruen.png`. `game/test/sprites.html` outlines hand-drawn
+sprites in yellow, and `node game/test/run.mjs` refuses a file in `game/art/`
+whose name matches no sprite or whose size is wrong. Import `art/palette.gpl`
+into Pixelorama to draw with the colours already in use.
 
 Further handles: `?finale=1` goes straight to the tree, `?lang=en` picks a
 language, `?slow=4` stretches every fall.

@@ -49,3 +49,53 @@ export function size(buf) {
   if (!buf.subarray(0, 8).equals(SIGNATURE)) return null;
   return { w: buf.readUInt32BE(16), h: buf.readUInt32BE(20) };
 }
+
+// Pixels of an 8-bit, non-interlaced PNG — truecolour, truecolour with alpha,
+// greyscale or indexed — as '#rrggbb' or null for transparent, the same shape
+// the sprites use. Pixel editors write all of these, and comparing pixels is the
+// only way to tell an edited file from one that is merely re-saved.
+export function decode(buf) {
+  if (!buf.subarray(0, 8).equals(SIGNATURE)) throw new Error('not a PNG');
+  let pos = 8, w = 0, h = 0, depth = 0, type = 0, interlace = 0, plte = null, trns = null;
+  const idat = [];
+  while (pos < buf.length) {
+    const len = buf.readUInt32BE(pos), kind = buf.toString('ascii', pos + 4, pos + 8);
+    const data = buf.subarray(pos + 8, pos + 8 + len);
+    if (kind === 'IHDR') { w = data.readUInt32BE(0); h = data.readUInt32BE(4); depth = data[8]; type = data[9]; interlace = data[12]; }
+    else if (kind === 'PLTE') plte = data;
+    else if (kind === 'tRNS') trns = data;
+    else if (kind === 'IDAT') idat.push(data);
+    else if (kind === 'IEND') break;
+    pos += 12 + len;
+  }
+  if (depth !== 8 || interlace) throw new Error(`unsupported PNG: ${depth}-bit${interlace ? ', interlaced' : ''}`);
+  const channels = { 0: 1, 2: 3, 3: 1, 4: 2, 6: 4 }[type];
+  if (!channels) throw new Error('unsupported colour type ' + type);
+  const raw = zlib.inflateSync(Buffer.concat(idat));
+  const stride = w * channels, out = Buffer.alloc(stride * h);
+  for (let y = 0; y < h; y++) {
+    const f = raw[y * (stride + 1)], line = raw.subarray(y * (stride + 1) + 1, (y + 1) * (stride + 1));
+    for (let x = 0; x < stride; x++) {
+      const a = x >= channels ? out[y * stride + x - channels] : 0;
+      const b = y ? out[(y - 1) * stride + x] : 0;
+      const c = y && x >= channels ? out[(y - 1) * stride + x - channels] : 0;
+      let v = line[x];
+      if (f === 1) v += a; else if (f === 2) v += b; else if (f === 3) v += (a + b) >> 1;
+      else if (f === 4) { const p = a + b - c, pa = Math.abs(p - a), pb = Math.abs(p - b), pc = Math.abs(p - c); v += pa <= pb && pa <= pc ? a : pb <= pc ? b : c; }
+      out[y * stride + x] = v & 255;
+    }
+  }
+  const hex = (r, g, b) => '#' + [r, g, b].map(v => v.toString(16).padStart(2, '0')).join('');
+  const px = new Array(w * h);
+  for (let i = 0; i < w * h; i++) {
+    const o = i * channels;
+    let r, g, b, al = 255;
+    if (type === 6) { [r, g, b, al] = out.subarray(o, o + 4); }
+    else if (type === 2) { [r, g, b] = out.subarray(o, o + 3); }
+    else if (type === 0) { r = g = b = out[o]; }
+    else if (type === 4) { r = g = b = out[o]; al = out[o + 1]; }
+    else { const k = out[o]; [r, g, b] = plte.subarray(k * 3, k * 3 + 3); al = trns && k < trns.length ? trns[k] : 255; }
+    px[i] = al < 128 ? null : hex(r, g, b);
+  }
+  return { w, h, px };
+}
