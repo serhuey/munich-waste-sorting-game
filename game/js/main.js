@@ -47,7 +47,13 @@ const belt = new Belt({
   beltEl: el('belt'), trackEl: el('track'), tabsEl: el('tabs'), label: pick,
   onPlaceChange: p => { state.activePlace = p; el('app').dataset.place = p || ''; }
 });
-const fall = new Fall({ fieldEl: el('field'), onLanded: landed });
+// The answer is the container under the frame at the instant the object is let
+// go; the belt is locked for the short flight into the bin, so nothing done
+// during that flight can change it.
+const fall = new Fall({
+  fieldEl: el('field'), onLanded: landed,
+  onRelease: () => { state.released = belt.activeContainer(); belt.locked = true; }
+});
 
 async function boot() {
   const res = await fetch('content.json', { cache: 'no-store' });
@@ -265,6 +271,7 @@ function spawnWhole() {
   const shown = rules.visibleLabel(item, variant, examined, pick);
   const destinations = rules.answerSlots(variant, state.date).flatMap(s => s.destinations);
   state.flight = { kind: 'whole' };
+  belt.locked = false;
   fall.spawn({
     item, variant,
     duration: rules.fallDuration(item, destinations, state.strip, state.activePlace) * slow,
@@ -285,8 +292,13 @@ function spawnPart(slot) {
     detail: pick(item.labels), legible: true,
     borderline: (item.attrs || []).includes('borderline'),
     hint: '', part: true,
-    sprite: itemSprite(item, variant, slot.id)
+    sprite: itemSprite(item, variant, slot.id),
+    from: state.round.from || 0
   });
+  // Only the first part continues from where the object broke; the rest fall
+  // from the top like anything else.
+  state.round.from = 0;
+  belt.locked = false;
 }
 
 // A tap on the object examines it, then takes it apart, and otherwise does
@@ -323,17 +335,64 @@ function examine() {
   });
 }
 
+// Taking apart, shown: the object swells and breaks, its parts spread out side
+// by side with their names, then the first one falls on from the same height
+// and the others rise away to wait their turn. The fall clock is stopped while
+// it plays — the object is off the field, nothing is falling.
 function split() {
   const round = state.round;
   round.split = true;
   round.slots = rules.answerSlots(round.variant, state.date);
+  // Broken high up, the object would come apart above the edge of the field,
+  // out of sight. The break is pulled down into view, and the first part goes
+  // on falling from exactly where it is shown — never lower than halfway.
+  const field = el('field'), travel = field.clientHeight - 60;
+  const box = fall.box() || { x: field.clientWidth / 2, y: 0 };
+  const lowest = -140 + 0.5 * travel + 70;
+  const y = Math.min(Math.max(box.y, 110), lowest);
+  round.from = Math.min(0.5, Math.max(0, (y - 70 + 140) / travel));
   fall.clear();
-  next();
+  burst(round, { x: box.x, y }, next);
+}
+
+function burst(round, box, done) {
+  if (matchMedia('(prefers-reduced-motion: reduce)').matches || document.hidden) return done();
+  const field = el('field');
+  const layer = make('div', 'burst');
+  layer.style.left = box.x + 'px';
+  layer.style.top = box.y + 'px';
+  const whole = img(itemSprite(round.item, round.variant), 'burst-whole');
+  layer.append(whole);
+  const gap = Math.min(116, (field.clientWidth - 120) / 2);
+  const shards = round.slots.map((slot, i) => {
+    const shard = make('div', 'shard');
+    shard.append(img(itemSprite(round.item, round.variant, slot.id), 'shard-sprite'),
+                 make('div', 'shard-label', pick(slot.labels) || slot.id));
+    layer.append(shard);
+    // The first part keeps the object's place — it is the one that falls on —
+    // and the others step out to either side of it.
+    const side = Math.ceil(i / 2) * (i % 2 ? 1 : -1);
+    return { shard, dx: side * gap };
+  });
+  field.append(layer);
+  requestAnimationFrame(() => requestAnimationFrame(() => {
+    whole.classList.add('crack');
+    shards.forEach(({ shard, dx }) => { shard.style.transform = `translate(calc(-50% + ${dx}px), -50%) scale(1)`; shard.style.opacity = 1; });
+  }));
+  setTimeout(() => {
+    shards.forEach(({ shard, dx }, i) => {
+      if (i === 0) { shard.remove(); return; }
+      shard.style.transform = `translate(calc(-50% + ${dx}px), ${-box.y - 120}px) scale(.6)`;
+      shard.style.opacity = 0;
+    });
+    done();
+    setTimeout(() => layer.remove(), 400);
+  }, 720);
 }
 
 function landed({ item, variant, el: itemEl, early, remaining }) {
   const round = state.round;
-  const chosen = belt.activeContainer();
+  const chosen = state.released;
   const flight = state.flight;
 
   // A composite object cannot be sent anywhere whole; landing it undivided is

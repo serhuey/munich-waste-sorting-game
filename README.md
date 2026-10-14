@@ -74,8 +74,13 @@ Start with `docs/SPEC.md`. It is a requirements document, not an architecture do
 
 ```bash
 python3 tools/build_data.py --fixtures     # build dist/ from drafts, for development
-python3 -m http.server 8080 --directory dist
+python3 tools/serve.py                     # http://127.0.0.1:8799, --lan to reach it from a phone
 ```
+
+`tools/serve.py` serves `dist/` with caching switched off. The stock
+`python3 -m http.server` lets the browser keep old copies of the engine's
+modules, so after a rebuild a page can run a new `main.js` against an old
+`fall.js` and fail as if the code were broken.
 
 `--fixtures` includes items nobody has verified yet, marks every one of them
 `unverified`, stamps the build as a stand and makes `tools/publish.py` refuse to

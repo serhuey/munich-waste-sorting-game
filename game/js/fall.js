@@ -2,9 +2,12 @@
 // what a landing means is decided by the caller.
 
 export class Fall {
-  constructor({ fieldEl, onLanded }) {
+  constructor({ fieldEl, onLanded, onRelease }) {
     this.field = fieldEl;
     this.onLanded = onLanded;
+    // Called the moment an object is let go — before it flies into the bin — so
+    // the caller can fix the answer then and there.
+    this.onRelease = onRelease || (() => {});
     this.current = null;
     this.raf = null;
     this.paused = false;
@@ -21,7 +24,9 @@ export class Fall {
     this.paused = false;
   }
 
-  spawn({ item, variant, duration, label, detail, legible, borderline, hint, sprite, part }) {
+  // from: how much of the fall is already behind it, 0 at the top. A part split
+  // off an object falls on from the height the object had reached.
+  spawn({ item, variant, duration, label, detail, legible, borderline, hint, sprite, part, from = 0 }) {
     this.clear();
     const el = document.createElement('div');
     el.className = 'item' + (borderline ? ' borderline' : '') + (part ? ' part' : '');
@@ -55,7 +60,7 @@ export class Fall {
       el.append(tip);
     }
     this.field.append(el);
-    this.current = { item, variant, el, started: performance.now(), duration };
+    this.current = { item, variant, el, started: performance.now() - from * duration, duration };
     this.el = el;
     this._tick();
   }
@@ -69,8 +74,18 @@ export class Fall {
   }
 
   drop() {
-    if (!this.current || this.paused) return;
-    this._land(true);
+    if (!this.current || this.paused || this.leaving) return;
+    this._release(true);
+  }
+
+  // How far the object has fallen, 0 at the top and 1 at the belt.
+  progress() { return 1 - this.remaining(); }
+
+  // Where the card is inside the field, for whatever wants to take its place.
+  box() {
+    if (!this.el) return null;
+    const f = this.field.getBoundingClientRect(), r = this.el.getBoundingClientRect();
+    return { x: r.left - f.left + r.width / 2, y: r.top - f.top + r.height / 2 };
   }
 
   // A tap that has nothing to answer gets a shrug rather than silence: the
@@ -105,6 +120,7 @@ export class Fall {
     if (this.el && this.el.parentNode) this.el.remove();
     this.current = null;
     this.el = null;
+    this.leaving = false;
   }
 
   _tick() {
@@ -112,17 +128,39 @@ export class Fall {
     if (!this.current) return;
     if (this.paused) { this.pausedAt = this.pausedAt || performance.now(); return; }
     this.pausedAt = 0;
+    if (this.leaving) return;
     const k = (performance.now() - this.current.started) / this.current.duration;
-    const travel = this.field.clientHeight + 40;
-    this.current.el.style.transform = 'translate(-50%,' + (-140 + k * travel) + 'px)';
-    if (k >= 1) this._land(false);
+    const travel = this.field.clientHeight - 60;
+    this.y = -140 + Math.min(1, k) * travel;
+    this.current.el.style.transform = 'translate(-50%,' + this.y + 'px)';
+    if (k >= 1) this._release(false);
   }
 
-  _land(early) {
+  // Letting go. The answer and the reward are fixed at this instant; the flight
+  // into the bin that follows is only for the eye, so a fast drop is seen
+  // landing rather than vanishing into a dialog. It accelerates and shrinks
+  // toward the bin under the aim frame, quicker for an object that was already
+  // at the belt.
+  _release(early) {
     const remaining = this.remaining();
     const { item, variant, el } = this.current;
+    this.leaving = true;
     cancelAnimationFrame(this.raf);
-    this.current = null;
-    this.onLanded({ item, variant, el, early, remaining });
+    this.onRelease();
+    const done = () => {
+      this.current = null;
+      this.leaving = false;
+      this.onLanded({ item, variant, el, early, remaining });
+    };
+    const still = typeof matchMedia !== 'undefined' && matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (still || (typeof document !== 'undefined' && document.hidden)) return done();
+    const from = this.y, to = this.field.clientHeight + 10, ms = early ? 280 : 170, t0 = performance.now();
+    const step = () => {
+      const t = Math.min(1, (performance.now() - t0) / ms), e = t * t;
+      el.style.transform = 'translate(-50%,' + (from + (to - from) * e) + 'px) scale(' + (1 - 0.45 * e) + ')';
+      if (t < 1) this.raf = requestAnimationFrame(step);
+      else done();
+    };
+    this.raf = requestAnimationFrame(step);
   }
 }

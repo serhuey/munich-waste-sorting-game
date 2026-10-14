@@ -70,6 +70,16 @@ img, canvas { image-rendering: pixelated; image-rendering: crisp-edges; }
 }
 @keyframes nudge-ring { from { opacity: .9; } to { opacity: 0; } }
 
+.burst { position: absolute; width: 0; height: 0; pointer-events: none; z-index: 3; }
+.burst-whole { position: absolute; width: 80px; height: 80px; transform: translate(-50%, -50%);
+  transition: transform .22s ease-out, opacity .22s ease-out; }
+.burst-whole.crack { transform: translate(-50%, -50%) scale(1.35) rotate(-6deg); opacity: 0; }
+.shard { position: absolute; display: flex; flex-direction: column; align-items: center; width: 110px;
+  transform: translate(-50%, -50%) scale(.4); opacity: 0;
+  transition: transform .3s cubic-bezier(.2, 1.4, .4, 1), opacity .25s; }
+.shard-sprite { width: 64px; height: 64px; filter: drop-shadow(3px 3px 0 rgba(26,28,44,.25)); }
+.shard-label { font-size: 14px; font-weight: 700; padding: 2px 6px; background: var(--paper);
+  border: 2px solid var(--ink); box-shadow: 2px 2px 0 var(--ink); white-space: nowrap; }
 .pop { position: absolute; left: 50%; bottom: 14px; transform: translateX(-50%); font-weight: 900;
   font-size: 22px; padding: 2px 8px; color: #fff; border: 2px solid var(--ink); animation: pop .9s ease-out both;
   pointer-events: none; }
