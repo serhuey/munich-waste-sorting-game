@@ -1,0 +1,75 @@
+{
+  "_todo": [
+    "это черновик, написанный машиной (Claude) по записи лексикона/странице AWM; человек его не сверял",
+    "открыть source.url и прочитать запись целиком",
+    "проверить destinations, пояснения и labels",
+    "поставить source.verified_by и source.verified_on",
+    "перенести: python3 tools/drafts.py promote <id>"
+  ],
+  "_drafted_by": "claude",
+  "_awm_term": "Lametta",
+  "_awm_tip": null,
+  "_awm_notes": {
+    "wertstoffhof": "Bitte beachten Sie die Annahmezeiten für Problemstoffe!",
+    "restmuell": "Alle Abfälle, die Sie in der Restmülltonne entsorgen, landen in der Müllverbrennungsanlage. Entsorgen Sie deshalb in der Restmülltonne bitte nur die Abfälle, die nicht mehr recycelt werden können.",
+    "problemabfall": "Sie können beim Giftmobil Abfälle mit problematischen Inhaltsstoffen kostenlos abgeben."
+  },
+  "id": "lametta",
+  "tier": 5,
+  "attrs": [
+    "examine"
+  ],
+  "labels": {
+    "de": "Lametta",
+    "en": "Tinsel"
+  },
+  "source": {
+    "authority": "awm",
+    "key": "lametta",
+    "url": "https://www.awm-muenchen.de/abfall-entsorgen/abfalllexikon/detailansicht-lexikoneintrag/lametta",
+    "destinations_at_verification": [
+      "problemabfall",
+      "restmuell",
+      "wertstoffhof"
+    ],
+    "verified_by": "",
+    "verified_on": ""
+  },
+  "variants": [
+    {
+      "id": "modern",
+      "kind": "simple",
+      "labels": {
+        "de": "Kunststoff oder Alu",
+        "en": "Plastic or aluminium"
+      },
+      "destinations": [
+        "restmuell"
+      ],
+      "explanation": {
+        "de": "Heutiges Lametta aus Kunststoff oder Aluminium gehört in den Restmüll.",
+        "en": "Today's tinsel, made of plastic or aluminium, goes in the residual bin."
+      }
+    },
+    {
+      "id": "blei",
+      "kind": "simple",
+      "labels": {
+        "de": "Alt, aus Blei",
+        "en": "Old, made of lead"
+      },
+      "destinations": [
+        "giftmobil",
+        "problemstoffannahme"
+      ],
+      "explanation": {
+        "de": "Altes Bleilametta ist giftig und gehört zum Giftmobil oder zum Wertstoffhof.",
+        "en": "Old lead tinsel is toxic and goes to the hazardous-waste van or the recycling centre."
+      }
+    }
+  ],
+  "explanation": {
+    "de": "Lametta nie am Christbaum hängen lassen – es landet sonst im Kompost.",
+    "en": "Never leave tinsel on the Christmas tree – otherwise it ends up in the compost."
+  }
+}

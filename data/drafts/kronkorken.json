@@ -1,0 +1,64 @@
+{
+  "_todo": [
+    "это черновик, написанный машиной (Claude) по записи лексикона/странице AWM; человек его не сверял",
+    "открыть source.url и прочитать запись целиком",
+    "проверить destinations, пояснения и labels",
+    "поставить source.verified_by и source.verified_on",
+    "перенести: python3 tools/drafts.py promote <id>"
+  ],
+  "_drafted_by": "claude",
+  "_awm_term": "Kronkorken",
+  "_awm_tip": null,
+  "_awm_notes": {},
+  "id": "kronkorken",
+  "tier": 3,
+  "attrs": [],
+  "labels": {
+    "de": "Kronkorken",
+    "en": "Bottle cap"
+  },
+  "source": {
+    "authority": "awm",
+    "key": "kronkorken",
+    "url": "https://www.awm-muenchen.de/abfall-entsorgen/abfalllexikon",
+    "destinations_at_verification": [
+      "wertstoffhof",
+      "wertstoffinsel"
+    ],
+    "verified_by": "",
+    "verified_on": ""
+  },
+  "variants": [
+    {
+      "id": "standard",
+      "kind": "simple",
+      "labels": {
+        "de": "",
+        "en": ""
+      },
+      "destinations": [
+        {
+          "id": "metall",
+          "until": "2027-01-01"
+        },
+        {
+          "id": "gelbe_tonne",
+          "from": "2027-01-01"
+        }
+      ]
+    }
+  ],
+  "explanation": {
+    "de": "Kronkorken und Schraubverschlüsse sind Metall – sie kommen nicht mit der Flasche ins Glas.",
+    "en": "Crown caps and screw caps are metal – they do not go into the glass with the bottle."
+  },
+  "sources": [
+    {
+      "authority": "page",
+      "reference": "Wertstoffinseln: Das können Sie abgeben",
+      "url": "https://www.awm-muenchen.de/abfall-entsorgen/abgabestellen/wertstoffinseln",
+      "verified_by": "",
+      "verified_on": ""
+    }
+  ]
+}

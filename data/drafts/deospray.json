@@ -1,0 +1,63 @@
+{
+  "_todo": [
+    "это черновик, написанный машиной (Claude) по записи лексикона/странице AWM; человек его не сверял",
+    "открыть source.url и прочитать запись целиком",
+    "проверить destinations, пояснения и labels",
+    "поставить source.verified_by и source.verified_on",
+    "перенести: python3 tools/drafts.py promote <id>"
+  ],
+  "_drafted_by": "claude",
+  "_awm_term": "Deospray",
+  "_awm_tip": null,
+  "_awm_notes": {},
+  "id": "deospray",
+  "tier": 3,
+  "attrs": [],
+  "labels": {
+    "de": "Deospray, leer",
+    "en": "Deodorant spray, empty"
+  },
+  "source": {
+    "authority": "awm",
+    "key": "deospray",
+    "url": "https://www.awm-muenchen.de/abfall-entsorgen/abfalllexikon",
+    "destinations_at_verification": [
+      "wertstoffinsel"
+    ],
+    "verified_by": "",
+    "verified_on": ""
+  },
+  "variants": [
+    {
+      "id": "standard",
+      "kind": "simple",
+      "labels": {
+        "de": "",
+        "en": ""
+      },
+      "destinations": [
+        {
+          "id": "metall",
+          "until": "2027-01-01"
+        },
+        {
+          "id": "gelbe_tonne",
+          "from": "2027-01-01"
+        }
+      ]
+    }
+  ],
+  "explanation": {
+    "de": "Eine leere Spraydose ist Metall und gehört in den Metall-Container.",
+    "en": "An empty spray can is metal and goes in the metal container."
+  },
+  "sources": [
+    {
+      "authority": "page",
+      "reference": "Wertstoffinseln: Das können Sie abgeben",
+      "url": "https://www.awm-muenchen.de/abfall-entsorgen/abgabestellen/wertstoffinseln",
+      "verified_by": "",
+      "verified_on": ""
+    }
+  ]
+}

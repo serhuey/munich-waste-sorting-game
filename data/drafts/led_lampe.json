@@ -1,32 +1,34 @@
 {
   "_todo": [
+    "это черновик, написанный машиной (Claude) по записи лексикона/странице AWM; человек его не сверял",
     "открыть source.url и прочитать запись целиком",
-    "вписать destinations в каждом варианте — это адресаты игры, а не AWM",
-    "написать explanation: почему так, на de и en",
-    "заполнить labels.en",
+    "проверить destinations, пояснения и labels",
     "поставить source.verified_by и source.verified_on",
     "перенести: python3 tools/drafts.py promote <id>"
   ],
+  "_drafted_by": "claude",
   "_awm_term": "LED-Lampen",
   "_awm_tip": null,
   "_awm_notes": {
     "problemabfall": "Sie können beim Giftmobil Abfälle mit problematischen Inhaltsstoffen kostenlos abgeben.",
     "wertstoffmobil": "Sie wollen Haushaltsgegenstände, Batterien, Energiesparlampen oder Elektrokleingeräte entsorgen?Das Wertstoffmobil hält ganz in Ihrer Nähe …"
   },
+  "_hint": "у предмета два источника: запись AWM и норма закона для возврата в магазин — оба нужно подписать",
+  "_destinations_proposed": "подставлено машиной из снимка; подтвердить, открыв source.url; не отображены: wertstoffhof, wertstoffmobil",
   "id": "led_lampe",
   "tier": 2,
   "attrs": [],
   "labels": {
-    "de": "LED-Lampen",
-    "en": ""
+    "de": "LED-Lampe",
+    "en": "LED bulb"
   },
   "source": {
     "authority": "awm",
     "key": "led-lampen",
     "url": "https://www.awm-muenchen.de/abfall-entsorgen/abfalllexikon/detailansicht-lexikoneintrag/led-lampen",
     "destinations_at_verification": [
-      "wertstoffhof",
       "problemabfall",
+      "wertstoffhof",
       "wertstoffmobil"
     ],
     "verified_by": "",
@@ -41,13 +43,15 @@
         "en": ""
       },
       "destinations": [
+        "elektro_ruecknahme",
+        "elektroschrott",
         "giftmobil"
       ]
     }
   ],
   "explanation": {
-    "de": "",
-    "en": ""
+    "de": "LED-Lampen enthalten Elektronik und dürfen nicht in den Restmüll. Der Elektrohandel nimmt sie zurück.",
+    "en": "LED bulbs contain electronics and must not go in the residual bin. Electronics shops take them back."
   },
   "sources": [
     {
@@ -57,7 +61,5 @@
       "verified_by": "",
       "verified_on": ""
     }
-  ],
-  "_hint": "у предмета два источника: запись AWM и норма закона для возврата в магазин — оба нужно подписать",
-  "_destinations_proposed": "подставлено машиной из снимка; подтвердить, открыв source.url; не отображены: wertstoffhof, wertstoffmobil"
+  ]
 }

@@ -1,23 +1,24 @@
 {
   "_todo": [
+    "это черновик, написанный машиной (Claude) по записи лексикона/странице AWM; человек его не сверял",
     "открыть source.url и прочитать запись целиком",
-    "вписать destinations в каждом варианте — это адресаты игры, а не AWM",
-    "написать explanation: почему так, на de и en",
-    "заполнить labels.en",
+    "проверить destinations, пояснения и labels",
     "поставить source.verified_by и source.verified_on",
     "перенести: python3 tools/drafts.py promote <id>"
   ],
+  "_drafted_by": "claude",
   "_awm_term": "Elektrokabel, Ladekabel",
   "_awm_tip": null,
   "_awm_notes": {
     "wertstoffmobil": "Sie wollen Haushaltsgegenstände, Batterien, Energiesparlampen oder Elektrokleingeräte entsorgen?Das Wertstoffmobil hält ganz in Ihrer Nähe …"
   },
+  "_hint": "у предмета два источника: запись AWM и норма закона для возврата в магазин — оба нужно подписать",
   "id": "ladekabel",
   "tier": 2,
   "attrs": [],
   "labels": {
-    "de": "Elektrokabel, Ladekabel",
-    "en": ""
+    "de": "Ladekabel",
+    "en": "Charging cable"
   },
   "source": {
     "authority": "awm",
@@ -38,12 +39,15 @@
         "de": "",
         "en": ""
       },
-      "destinations": []
+      "destinations": [
+        "elektro_ruecknahme",
+        "elektroschrott"
+      ]
     }
   ],
   "explanation": {
-    "de": "",
-    "en": ""
+    "de": "Kabel enthalten Kupfer und gehören nicht in den Restmüll. Geräte bis 25 cm nimmt jeder Laden mit mehr als 400 m² Elektro-Verkaufsfläche zurück – ohne dass du etwas Neues kaufst.",
+    "en": "Cables contain copper and do not belong in the residual bin. Any shop with more than 400 m² of electronics floor space takes back devices up to 25 cm – no purchase needed."
   },
   "sources": [
     {
@@ -53,6 +57,5 @@
       "verified_by": "",
       "verified_on": ""
     }
-  ],
-  "_hint": "у предмета два источника: запись AWM и норма закона для возврата в магазин — оба нужно подписать"
+  ]
 }

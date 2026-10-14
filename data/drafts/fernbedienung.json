@@ -1,0 +1,106 @@
+{
+  "_todo": [
+    "это черновик, написанный машиной (Claude) по записи лексикона/странице AWM; человек его не сверял",
+    "открыть source.url и прочитать запись целиком",
+    "проверить destinations, пояснения и labels",
+    "поставить source.verified_by и source.verified_on",
+    "перенести: python3 tools/drafts.py promote <id>"
+  ],
+  "_drafted_by": "claude",
+  "_awm_term": "Elektro-/Elektronikschrott",
+  "_awm_tip": null,
+  "_awm_notes": {
+    "weiternutzen": "Verschenken, tauschen, kaufen, finden, reparieren... zu schade zum Wegwerfen!",
+    "wertstoffmobil": "Sie wollen Haushaltsgegenstände, Batterien, Energiesparlampen oder Elektrokleingeräte entsorgen?Das Wertstoffmobil hält ganz in Ihrer Nähe …",
+    "halle2": "Gut erhaltenes für die Halle 2"
+  },
+  "id": "fernbedienung",
+  "tier": 2,
+  "attrs": [
+    "separable"
+  ],
+  "labels": {
+    "de": "Fernbedienung",
+    "en": "Remote control"
+  },
+  "source": {
+    "authority": "awm",
+    "key": "elektro-elektronikschrott",
+    "url": "https://www.awm-muenchen.de/abfall-entsorgen/abfalllexikon/detailansicht-lexikoneintrag/elektro-elektronikschrott",
+    "destinations_at_verification": [
+      "halle2",
+      "weiternutzen",
+      "wertstoffhof",
+      "wertstoffmobil"
+    ],
+    "verified_by": "",
+    "verified_on": ""
+  },
+  "variants": [
+    {
+      "id": "standard",
+      "kind": "composite",
+      "labels": {
+        "de": "",
+        "en": ""
+      },
+      "parts": [
+        {
+          "id": "batterien",
+          "labels": {
+            "de": "Batterien",
+            "en": "Batteries"
+          },
+          "destinations": [
+            "batteriebox",
+            "batterien",
+            "giftmobil"
+          ],
+          "explanation": {
+            "de": "Batterien kommen vorher heraus und in die Sammelbox.",
+            "en": "The batteries come out first and go in the collection box."
+          }
+        },
+        {
+          "id": "geraet",
+          "labels": {
+            "de": "Gerät",
+            "en": "Device"
+          },
+          "destinations": [
+            "elektro_ruecknahme",
+            "elektroschrott"
+          ],
+          "explanation": {
+            "de": "Das leere Gerät ist Elektroschrott unter 25 cm.",
+            "en": "The empty device is e-waste under 25 cm."
+          }
+        }
+      ]
+    }
+  ],
+  "explanation": {
+    "de": "Batterien, die sich herausnehmen lassen, nimmst du vor der Abgabe heraus: Gerät und Batterie gehen getrennte Wege.",
+    "en": "Batteries that can be removed come out before you hand the device in: device and battery go separate ways."
+  },
+  "sources": [
+    {
+      "authority": "awm",
+      "key": "batterien-knopfzellen",
+      "url": "https://www.awm-muenchen.de/abfall-entsorgen/abfalllexikon/detailansicht-lexikoneintrag/batterien-knopfzellen",
+      "destinations_at_verification": [
+        "problemabfall",
+        "wertstoffhof"
+      ],
+      "verified_by": "",
+      "verified_on": ""
+    },
+    {
+      "authority": "law",
+      "reference": "ElektroG § 17",
+      "url": "https://www.gesetze-im-internet.de/elektrog_2015/__17.html",
+      "verified_by": "",
+      "verified_on": ""
+    }
+  ]
+}

@@ -79,11 +79,35 @@ skip is the snapshot comparison, because a page is not an entry with a key.
 
 ## Sources that are not AWM
 
-Take-back at shops rests on federal law, not on the city: the Batteriegesetz
+Take-back at shops rests on federal law, not on the city: the battery law
 obliges every retailer selling batteries to accept them back, and the ElektroG
 obliges retailers above a sales-floor threshold to accept lamps and small
 electronics under 25 cm. Those items carry `"authority": "law"` with the norm in
 `source.reference` and no lexicon key, and are verified against the legislation.
+
+Two of the norms this project first cited have since been replaced by laws
+implementing EU regulations, and their old addresses on gesetze-im-internet.de
+return 404 (checked 14 October 2026): the Batteriegesetz by the
+Batterierecht-Durchführungsgesetz — retailer take-back is now **BattDG § 14** —
+and the Verpackungsgesetz by the Verpackungsrecht-Durchführungsgesetz — the
+deposit on single-use drinks packaging is now **VerpackDG § 46**. New drafts cite
+the new norms. Signed items that still cite `VerpackG § 31` need a person to
+re-read the new paragraph and re-sign; the build cannot see a dead link.
+
+## Drafts written by machine
+
+A draft with `"_drafted_by": "claude"` was written from the lexicon snapshot,
+AWM's own pages and the norms above, so that the game could be played end to end
+before the content is verified. It names its source and fills in what the source
+says, and it is wrong in the way any draft can be wrong: nobody has read the page
+on its behalf. Treat it exactly like a draft you created yourself — open the
+source, check every destination and sentence, then sign. Where a person had
+already signed a source and the machine added to the draft afterwards, the draft
+says so in `_changed_after_signature`.
+
+The finale (`data/finale/christbaum.json`) and the 2027 notice
+(`data/notices.json`) follow the same rule: unsigned, they appear only in a
+`--fixtures` build.
 
 ## When AWM changes something
 

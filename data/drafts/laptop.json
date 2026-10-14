@@ -1,0 +1,56 @@
+{
+  "_todo": [
+    "это черновик, написанный машиной (Claude) по записи лексикона/странице AWM; человек его не сверял",
+    "открыть source.url и прочитать запись целиком",
+    "проверить destinations, пояснения и labels",
+    "поставить source.verified_by и source.verified_on",
+    "перенести: python3 tools/drafts.py promote <id>"
+  ],
+  "_drafted_by": "claude",
+  "_awm_term": "Computer, Laptop, Notebook, Tablet",
+  "_awm_tip": null,
+  "_awm_notes": {
+    "weiternutzen": "Verschenken, tauschen, kaufen, finden, reparieren... zu schade zum Wegwerfen!",
+    "wertstoffmobil": "Sie wollen Haushaltsgegenstände, Batterien, Energiesparlampen oder Elektrokleingeräte entsorgen?Das Wertstoffmobil hält ganz in Ihrer Nähe …",
+    "sperrmuell": "Haben Sie sperrige Gegenstände, die Sie schon lange loswerden wollten? Dann sind Sie beim Sperrmüllabholdienst des AWM richtig.Die Sperrmüllabfuhr des Abfallwirtschaftsbetriebes entsorgt auch den Sperrmüll von Vereinen, Institutionen und Gewerbebetrieben.",
+    "halle2": "Gut erhaltenes für die Halle 2"
+  },
+  "id": "laptop",
+  "tier": 4,
+  "attrs": [],
+  "labels": {
+    "de": "Laptop",
+    "en": "Laptop"
+  },
+  "source": {
+    "authority": "awm",
+    "key": "computer-laptop-notebook-tablet",
+    "url": "https://www.awm-muenchen.de/abfall-entsorgen/abfalllexikon/detailansicht-lexikoneintrag/computer-laptop-notebook-tablet",
+    "destinations_at_verification": [
+      "halle2",
+      "sperrmuell",
+      "weiternutzen",
+      "wertstoffhof",
+      "wertstoffmobil"
+    ],
+    "verified_by": "",
+    "verified_on": ""
+  },
+  "variants": [
+    {
+      "id": "standard",
+      "kind": "simple",
+      "labels": {
+        "de": "",
+        "en": ""
+      },
+      "destinations": [
+        "elektroschrott"
+      ]
+    }
+  ],
+  "explanation": {
+    "de": "Computer enthalten Edelmetalle und Schadstoffe. Lösche vorher deine Daten; was noch funktioniert, nimmt die Halle 2 gern.",
+    "en": "Computers contain precious metals and pollutants. Wipe your data first; if it still works, the AWM second-hand store Halle 2 will take it."
+  }
+}

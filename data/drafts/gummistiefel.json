@@ -1,0 +1,58 @@
+{
+  "_todo": [
+    "это черновик, написанный машиной (Claude) по записи лексикона/странице AWM; человек его не сверял",
+    "открыть source.url и прочитать запись целиком",
+    "проверить destinations, пояснения и labels",
+    "поставить source.verified_by и source.verified_on",
+    "перенести: python3 tools/drafts.py promote <id>"
+  ],
+  "_drafted_by": "claude",
+  "_awm_term": "Gummihandschuhe, Gummistiefel",
+  "_awm_tip": null,
+  "_awm_notes": {},
+  "id": "gummistiefel",
+  "tier": 3,
+  "attrs": [
+    "borderline"
+  ],
+  "labels": {
+    "de": "Gummistiefel",
+    "en": "Rubber boots"
+  },
+  "source": {
+    "authority": "awm",
+    "key": "gummihandschuhe-gummistiefel",
+    "url": "https://www.awm-muenchen.de/abfall-entsorgen/abfalllexikon",
+    "destinations_at_verification": [
+      "restmuell"
+    ],
+    "verified_by": "",
+    "verified_on": ""
+  },
+  "variants": [
+    {
+      "id": "standard",
+      "kind": "simple",
+      "labels": {
+        "de": "",
+        "en": ""
+      },
+      "destinations": [
+        "restmuell"
+      ]
+    }
+  ],
+  "explanation": {
+    "de": "Schuhe ja, Gummistiefel nein: Sie dürfen nicht in den Altkleidercontainer und gehören in den Restmüll.",
+    "en": "Shoes yes, rubber boots no: they are not allowed in the textile container and go in the residual bin."
+  },
+  "sources": [
+    {
+      "authority": "page",
+      "reference": "Altkleidercontainer: Was gehört hinein",
+      "url": "https://www.awm-muenchen.de/abfall-entsorgen/abgabestellen/altkleidercontainer",
+      "verified_by": "",
+      "verified_on": ""
+    }
+  ]
+}

@@ -1,23 +1,26 @@
 {
   "_todo": [
+    "это черновик, написанный машиной (Claude) по записи лексикона/странице AWM; человек его не сверял",
     "открыть source.url и прочитать запись целиком",
-    "вписать destinations в каждом варианте — это адресаты игры, а не AWM",
-    "написать explanation: почему так, на de и en",
-    "заполнить labels.en",
+    "проверить destinations, пояснения и labels",
     "поставить source.verified_by и source.verified_on",
     "перенести: python3 tools/drafts.py promote <id>"
   ],
+  "_drafted_by": "claude",
   "_awm_term": "elektrische Zahnbürste",
   "_awm_tip": null,
   "_awm_notes": {
     "wertstoffmobil": "Sie wollen Haushaltsgegenstände, Batterien, Energiesparlampen oder Elektrokleingeräte entsorgen?Das Wertstoffmobil hält ganz in Ihrer Nähe …"
   },
+  "_hint": "у предмета два источника: запись AWM и норма закона для возврата в магазин — оба нужно подписать",
   "id": "elektrozahnbuerste",
   "tier": 2,
-  "attrs": [],
+  "attrs": [
+    "borderline"
+  ],
   "labels": {
-    "de": "elektrische Zahnbürste",
-    "en": ""
+    "de": "Elektrische Zahnbürste",
+    "en": "Electric toothbrush"
   },
   "source": {
     "authority": "awm",
@@ -38,12 +41,15 @@
         "de": "",
         "en": ""
       },
-      "destinations": []
+      "destinations": [
+        "elektro_ruecknahme",
+        "elektroschrott"
+      ]
     }
   ],
   "explanation": {
-    "de": "",
-    "en": ""
+    "de": "Mit Akku und Motor ist sie ein Elektrogerät – anders als die normale Zahnbürste, die in den Restmüll darf.",
+    "en": "With a battery and a motor it is an electrical device – unlike an ordinary toothbrush, which may go in the residual bin."
   },
   "sources": [
     {
@@ -53,6 +59,5 @@
       "verified_by": "",
       "verified_on": ""
     }
-  ],
-  "_hint": "у предмета два источника: запись AWM и норма закона для возврата в магазин — оба нужно подписать"
+  ]
 }

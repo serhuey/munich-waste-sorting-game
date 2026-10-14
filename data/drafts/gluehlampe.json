@@ -1,23 +1,24 @@
 {
   "_todo": [
+    "это черновик, написанный машиной (Claude) по записи лексикона/странице AWM; человек его не сверял",
     "открыть source.url и прочитать запись целиком",
-    "вписать destinations в каждом варианте — это адресаты игры, а не AWM",
-    "написать explanation: почему так, на de и en",
-    "заполнить labels.en",
+    "проверить destinations, пояснения и labels",
     "поставить source.verified_by и source.verified_on",
     "перенести: python3 tools/drafts.py promote <id>"
   ],
+  "_drafted_by": "claude",
   "_awm_term": "Glühlampen, Glühbirnen",
   "_awm_tip": null,
   "_awm_notes": {},
+  "_destinations_proposed": "подставлено машиной из снимка; подтвердить, открыв source.url",
   "id": "gluehlampe",
   "tier": 2,
   "attrs": [
     "borderline"
   ],
   "labels": {
-    "de": "Glühlampen, Glühbirnen",
-    "en": ""
+    "de": "Glühbirne",
+    "en": "Incandescent bulb"
   },
   "source": {
     "authority": "awm",
@@ -43,8 +44,7 @@
     }
   ],
   "explanation": {
-    "de": "",
-    "en": ""
-  },
-  "_destinations_proposed": "подставлено машиной из снимка; подтвердить, открыв source.url"
+    "de": "Die alte Glühbirne ist weder Elektroschrott noch Altglas: Sie gehört in den Restmüll. LED- und Energiesparlampen dagegen nicht.",
+    "en": "The old incandescent bulb is neither e-waste nor bottle glass: it goes in the residual bin. LED and energy-saving bulbs do not."
+  }
 }

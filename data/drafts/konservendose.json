@@ -1,0 +1,63 @@
+{
+  "_todo": [
+    "это черновик, написанный машиной (Claude) по записи лексикона/странице AWM; человек его не сверял",
+    "открыть source.url и прочитать запись целиком",
+    "проверить destinations, пояснения и labels",
+    "поставить source.verified_by и source.verified_on",
+    "перенести: python3 tools/drafts.py promote <id>"
+  ],
+  "_drafted_by": "claude",
+  "_awm_term": "Konservendosen, Blechdosen",
+  "_awm_tip": null,
+  "_awm_notes": {},
+  "id": "konservendose",
+  "tier": 3,
+  "attrs": [],
+  "labels": {
+    "de": "Konservendose",
+    "en": "Tin can"
+  },
+  "source": {
+    "authority": "awm",
+    "key": "konservendosen-blechdosen",
+    "url": "https://www.awm-muenchen.de/abfall-entsorgen/abfalllexikon",
+    "destinations_at_verification": [
+      "wertstoffinsel"
+    ],
+    "verified_by": "",
+    "verified_on": ""
+  },
+  "variants": [
+    {
+      "id": "standard",
+      "kind": "simple",
+      "labels": {
+        "de": "",
+        "en": ""
+      },
+      "destinations": [
+        {
+          "id": "metall",
+          "until": "2027-01-01"
+        },
+        {
+          "id": "gelbe_tonne",
+          "from": "2027-01-01"
+        }
+      ]
+    }
+  ],
+  "explanation": {
+    "de": "Leere Konservendosen sind Metall. Ab 2027 kommen sie in die Gelbe Tonne.",
+    "en": "Empty tins are metal. From 2027 they go in the yellow bin."
+  },
+  "sources": [
+    {
+      "authority": "page",
+      "reference": "Wertstoffinseln: Das können Sie abgeben",
+      "url": "https://www.awm-muenchen.de/abfall-entsorgen/abgabestellen/wertstoffinseln",
+      "verified_by": "",
+      "verified_on": ""
+    }
+  ]
+}

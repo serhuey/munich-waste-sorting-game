@@ -1,0 +1,49 @@
+{
+  "_todo": [
+    "это черновик, написанный машиной (Claude) по записи лексикона/странице AWM; человек его не сверял",
+    "открыть source.url и прочитать запись целиком",
+    "проверить destinations, пояснения и labels",
+    "поставить source.verified_by и source.verified_on",
+    "перенести: python3 tools/drafts.py promote <id>"
+  ],
+  "_drafted_by": "claude",
+  "_awm_term": "Laborglas, Rauchglas, Bleiglas, Kristallglas",
+  "_awm_tip": "Nicht im Glascontainer entsorgen. Das sind spezielle Glassorten, die sich mit Normalglas nicht recyclen lassen",
+  "_awm_notes": {},
+  "id": "kristallglas",
+  "tier": 3,
+  "attrs": [
+    "borderline"
+  ],
+  "labels": {
+    "de": "Kristallglas",
+    "en": "Crystal glass"
+  },
+  "source": {
+    "authority": "awm",
+    "key": "laborglas-rauchglas-bleiglas-kristallglas",
+    "url": "https://www.awm-muenchen.de/abfall-entsorgen/abfalllexikon",
+    "destinations_at_verification": [
+      "restmuell"
+    ],
+    "verified_by": "",
+    "verified_on": ""
+  },
+  "variants": [
+    {
+      "id": "standard",
+      "kind": "simple",
+      "labels": {
+        "de": "",
+        "en": ""
+      },
+      "destinations": [
+        "restmuell"
+      ]
+    }
+  ],
+  "explanation": {
+    "de": "Kristall- und Bleiglas schmilzt anders als Flaschenglas und verdirbt die Schmelze. Es gehört in den Restmüll, nie in den Glascontainer.",
+    "en": "Crystal and lead glass melts differently from bottle glass and spoils the batch. It goes in the residual bin, never in the glass container."
+  }
+}

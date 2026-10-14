@@ -1,26 +1,24 @@
 {
   "_todo": [
+    "это черновик, написанный машиной (Claude) по записи лексикона/странице AWM; человек его не сверял",
     "открыть source.url и прочитать запись целиком",
-    "вписать destinations в каждом варианте — это адресаты игры, а не AWM",
-    "написать explanation: почему так, на de и en",
-    "заполнить labels.en",
+    "проверить destinations, пояснения и labels",
     "поставить source.verified_by и source.verified_on",
     "перенести: python3 tools/drafts.py promote <id>"
   ],
+  "_drafted_by": "claude",
   "_hint": "источник — норма закона; в лексиконе AWM такой записи нет",
   "id": "pfandflasche_einweg",
   "tier": 2,
-  "attrs": [
-    "examine"
-  ],
+  "attrs": [],
   "labels": {
-    "de": "Einwegflasche mit Pfand (PET)",
-    "en": ""
+    "de": "Plastikflasche mit Pfand",
+    "en": "Plastic bottle with deposit"
   },
   "source": {
     "authority": "law",
-    "reference": "VerpackG § 31",
-    "url": "https://www.gesetze-im-internet.de/verpackg/__31.html",
+    "reference": "VerpackDG § 46",
+    "url": "https://www.gesetze-im-internet.de/verpackdg/__46.html",
     "verified_by": "",
     "verified_on": ""
   },
@@ -32,11 +30,13 @@
         "de": "",
         "en": ""
       },
-      "destinations": []
+      "destinations": [
+        "pfandautomat"
+      ]
     }
   ],
   "explanation": {
-    "de": "",
-    "en": ""
+    "de": "Das Pfandzeichen bedeutet mindestens 25 Cent. Jeder Laden, der Einwegflaschen aus diesem Material führt, muss sie zurücknehmen – auch wenn du sie woanders gekauft hast. Kleine Läden unter 200 m² nur die Marken, die sie selbst verkaufen.",
+    "en": "The deposit logo means at least 25 cents. Any shop that sells single-use bottles of that material must take them back – even if you bought yours elsewhere. Small shops under 200 m² only take the brands they sell."
   }
 }

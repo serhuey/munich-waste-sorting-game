@@ -1,0 +1,86 @@
+{
+  "_todo": [
+    "это черновик, написанный машиной (Claude) по записи лексикона/странице AWM; человек его не сверял",
+    "открыть source.url и прочитать запись целиком",
+    "проверить destinations, пояснения и labels",
+    "поставить source.verified_by и source.verified_on",
+    "перенести: python3 tools/drafts.py promote <id>"
+  ],
+  "_drafted_by": "claude",
+  "_awm_term": "Lacke",
+  "_awm_tip": null,
+  "_awm_notes": {
+    "wertstoffhof": "Bitte beachten Sie die Annahmezeiten für Problemstoffe!",
+    "problemabfall": "Sie können beim Giftmobil Abfälle mit problematischen Inhaltsstoffen kostenlos abgeben."
+  },
+  "id": "farbeimer",
+  "tier": 5,
+  "attrs": [
+    "examine"
+  ],
+  "labels": {
+    "de": "Farbeimer",
+    "en": "Paint tin"
+  },
+  "source": {
+    "authority": "awm",
+    "key": "lacke",
+    "url": "https://www.awm-muenchen.de/abfall-entsorgen/abfalllexikon/detailansicht-lexikoneintrag/lacke",
+    "destinations_at_verification": [
+      "problemabfall",
+      "wertstoffhof"
+    ],
+    "verified_by": "",
+    "verified_on": ""
+  },
+  "variants": [
+    {
+      "id": "dispersion",
+      "kind": "simple",
+      "labels": {
+        "de": "Wandfarbe, eingetrocknet",
+        "en": "Wall paint, dried out"
+      },
+      "destinations": [
+        "restmuell"
+      ],
+      "explanation": {
+        "de": "Eingetrocknete Wandfarbe bis 2 kg darf in den Restmüll.",
+        "en": "Dried-out wall paint up to 2 kg may go in the residual bin."
+      }
+    },
+    {
+      "id": "lack",
+      "kind": "simple",
+      "labels": {
+        "de": "Lack, lösemittelhaltig",
+        "en": "Lacquer, contains solvents"
+      },
+      "destinations": [
+        "giftmobil",
+        "problemstoffannahme"
+      ],
+      "explanation": {
+        "de": "Lack kann brennbare oder giftige Lösemittel enthalten – nur für Fachleute: Giftmobil oder Problemstoffannahme.",
+        "en": "Lacquer can contain flammable or toxic solvents – experts only: the hazardous-waste van or desk."
+      }
+    }
+  ],
+  "explanation": {
+    "de": "Was auf dem Eimer steht, entscheidet: Wandfarbe ist kein Problemstoff, Lack schon.",
+    "en": "What the label says decides: wall paint is not hazardous, lacquer is."
+  },
+  "sources": [
+    {
+      "authority": "awm",
+      "key": "dispersionsfarben-wandfarben",
+      "url": "https://www.awm-muenchen.de/abfall-entsorgen/abfalllexikon/detailansicht-lexikoneintrag/dispersionsfarben",
+      "destinations_at_verification": [
+        "restmuell",
+        "wertstoffhof"
+      ],
+      "verified_by": "",
+      "verified_on": ""
+    }
+  ]
+}

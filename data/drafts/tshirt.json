@@ -1,0 +1,84 @@
+{
+  "_todo": [
+    "это черновик, написанный машиной (Claude) по записи лексикона/странице AWM; человек его не сверял",
+    "открыть source.url и прочитать запись целиком",
+    "проверить destinations, пояснения и labels",
+    "поставить source.verified_by и source.verified_on",
+    "перенести: python3 tools/drafts.py promote <id>"
+  ],
+  "_drafted_by": "claude",
+  "_awm_term": "Altkleider, Schuhe, Textilien",
+  "_awm_tip": null,
+  "_awm_notes": {
+    "weiternutzen": "Verschenken, tauschen, kaufen, finden, reparieren... zu schade zum Wegwerfen!",
+    "altkleider": "Die Altkleidercontainer des AWM stehen im ganzen Stadtgebiet. Die Erlöse aus der Verwertung stabilisieren die Müllgebühren und kommen somit den Gebührenzahlern zugute.",
+    "sperrmuell": "Haben Sie sperrige Gegenstände, die Sie schon lange loswerden wollten? Dann sind Sie beim Sperrmüllabholdienst des AWM richtig.Die Sperrmüllabfuhr des Abfallwirtschaftsbetriebes entsorgt auch den Sperrmüll von Vereinen, Institutionen und Gewerbebetrieben."
+  },
+  "id": "tshirt",
+  "tier": 3,
+  "attrs": [
+    "examine"
+  ],
+  "labels": {
+    "de": "T-Shirt",
+    "en": "T-shirt"
+  },
+  "source": {
+    "authority": "awm",
+    "key": "altkleider-schuhe-textilien",
+    "url": "https://www.awm-muenchen.de/abfall-entsorgen/abfalllexikon/detailansicht-lexikoneintrag/altkleider-schuhe-textilien",
+    "destinations_at_verification": [
+      "altkleider",
+      "sperrmuell",
+      "weiternutzen",
+      "wertstoffhof"
+    ],
+    "verified_by": "",
+    "verified_on": ""
+  },
+  "variants": [
+    {
+      "id": "tragbar",
+      "kind": "simple",
+      "labels": {
+        "de": "Sauber und tragbar",
+        "en": "Clean and wearable"
+      },
+      "destinations": [
+        "altkleider"
+      ],
+      "explanation": {
+        "de": "Gut erhaltene, saubere Kleidung kommt in Tüten verpackt in den Altkleidercontainer.",
+        "en": "Clean clothes in good condition go into the textile container, packed in a bag."
+      }
+    },
+    {
+      "id": "kaputt",
+      "kind": "simple",
+      "labels": {
+        "de": "Zerrissen und verschmutzt",
+        "en": "Torn and stained"
+      },
+      "destinations": [
+        "restmuell"
+      ],
+      "explanation": {
+        "de": "Kaputte und stark verschmutzte Textilien gehören in den Restmüll.",
+        "en": "Torn and heavily soiled textiles go in the residual bin."
+      }
+    }
+  ],
+  "explanation": {
+    "de": "Der Altkleidercontainer ist für Kleidung, die noch jemand tragen kann. Was nur noch Lumpen ist, ist Restmüll.",
+    "en": "The textile container is for clothes someone can still wear. What is only rags is residual waste."
+  },
+  "sources": [
+    {
+      "authority": "page",
+      "reference": "Altkleidercontainer: Was gehört hinein",
+      "url": "https://www.awm-muenchen.de/abfall-entsorgen/abgabestellen/altkleidercontainer",
+      "verified_by": "",
+      "verified_on": ""
+    }
+  ]
+}
