@@ -78,8 +78,12 @@ class GateTest(unittest.TestCase):
         self.repo = tempfile.mkdtemp(prefix="awm-test-")
         os.makedirs(os.path.join(self.repo, "data", "items"))
         os.makedirs(os.path.join(self.repo, "data", "verified"))
+        os.makedirs(os.path.join(self.repo, "data", "i18n"))
+        os.makedirs(os.path.join(self.repo, "data", "finale"))
         self.write("data/places.json", PLACES)
         self.write("data/verified/lexikon-2026-08-23.json", SNAPSHOT)
+        self.write("data/i18n/de.json", {"play": "Spielen", "tier": "Stufe {n}"})
+        self.write("data/i18n/en.json", {"play": "Play", "tier": "Level {n}"})
 
     def tearDown(self):
         shutil.rmtree(self.repo, ignore_errors=True)
@@ -448,6 +452,78 @@ class GateTest(unittest.TestCase):
         self.assertEqual(fatal, [])
         tiers = sorted(p["tier"] for p in places)
         self.assertEqual(tiers, list(range(1, len(places) + 1)))
+
+    # --- языки, финал, сообщения --------------------------------------------
+
+    def test_a_missing_interface_key_is_fatal(self):
+        self.write("data/i18n/en.json", {"play": "Play"})
+        content, report = self.build()
+        self.assertIsNone(content)
+        self.assertTrue(any("нет ключа tier" in f for f in report["fatal"]), report["fatal"])
+
+    def test_a_third_language_needs_only_a_file(self):
+        self.write("data/i18n/fr.json", {"play": "Jouer", "tier": "Niveau {n}"})
+        content, _ = self.build()
+        self.assertEqual(sorted(content["i18n"]), ["de", "en", "fr"])
+
+    def test_a_placeholder_that_differs_between_languages_is_fatal(self):
+        self.write("data/i18n/en.json", {"play": "Play", "tier": "Level {level}"})
+        content, report = self.build()
+        self.assertIsNone(content)
+        self.assertTrue(any("подстановки" in f for f in report["fatal"]), report["fatal"])
+
+    def finale(self, signed=True, year_round=True):
+        src = {"authority": "page", "reference": "x", "url": "https://example.invalid",
+               "verified_by": "test" if signed else "", "verified_on": "2026-08-20"}
+        text = {"de": "x", "en": "x"}
+        routes = [{"id": "hof", "labels": text, "rule": text,
+                   **({"year_round": True} if year_round else {"windows": [{"from": "2026-01-07", "until": "2026-02-05"}]})},
+                  {"id": "strasse", "illegal": True, "labels": text, "rule": text}]
+        self.write("data/finale/christbaum.json", {"sources": [src], "routes": routes,
+                   "decorations": [], "strip_reason": text, "scenes": ["2026-01-08"]})
+
+    def test_a_signed_finale_ships(self):
+        self.finale()
+        content, _ = self.build()
+        self.assertEqual([r["id"] for r in content["finale"]["routes"]], ["hof", "strasse"])
+
+    def test_an_unsigned_finale_stays_on_the_stand(self):
+        self.finale(signed=False)
+        content, report = self.build()
+        self.assertIsNone(content["finale"])
+        self.assertTrue(any(name == "финал" for name, _ in report["excluded"]))
+        content, _ = bd.build(self.repo, TODAY, today=TODAY, fixtures=True)
+        self.assertTrue(content["finale"]["unverified"])
+
+    def test_a_finale_without_a_year_round_route_is_refused(self):
+        self.finale(year_round=False)
+        content, report = self.build()
+        self.assertIsNone(content["finale"])
+        problems = dict(report["excluded"])["финал"]
+        self.assertTrue(any("круглогодичного" in p for p in problems), problems)
+
+    def test_the_intro_must_not_outlive_the_rules_it_describes(self):
+        text = {"de": "x", "en": "x"}
+        src = {"authority": "page", "reference": "x", "url": "https://example.invalid",
+               "verified_by": "test", "verified_on": "2026-08-20"}
+        self.write("data/notices.json", {"_source": src, "intro": [{"text": text}], "notices": []})
+        _, report = self.build()
+        self.assertFalse(any(name == "сообщения" for name, _ in report["excluded"]))
+        self.write("data/notices.json", {"_source": src, "intro": [{"until": "2027-01-01", "text": text}],
+                                         "notices": []})
+        content, report = self.build()
+        self.assertIsNone(content["notices"])
+        problems = dict(report["excluded"])["сообщения"]
+        self.assertTrue(any("ровно одна" in p for p in problems), problems)
+
+    def test_the_real_languages_and_finale_hold(self):
+        repo = os.path.dirname(HERE)
+        _, fatal = bd.load_i18n(repo)
+        self.assertEqual(fatal, [])
+        _, problems = bd.load_finale(repo)
+        self.assertEqual(problems, [])
+        _, problems = bd.load_notices(repo, TODAY)
+        self.assertEqual(problems, [])
 
 
 if __name__ == "__main__":

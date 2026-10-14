@@ -111,6 +111,128 @@ def load_places(repo):
     return places, containers, fatal
 
 
+PLACEHOLDER = re.compile(r"\{(\w+)\}")
+
+
+def load_i18n(repo):
+    """Строки интерфейса: data/i18n/<язык>.json. -> (словарь языков, фатальные ошибки)
+
+    Эталон — немецкий: на нём пишется первым и он длиннее. Третий язык
+    добавляется одним файлом, без правки кода (R21), но только полным: ключ,
+    которого нет в одном из файлов, — это экран, где игрок увидит идентификатор
+    вместо слова, и сборка его не пропускает.
+    """
+    d = os.path.join(repo, "data", "i18n")
+    if not os.path.isdir(d):
+        return {}, ["нет data/i18n/ — строк интерфейса нет"]
+    bundle, fatal = {}, []
+    for name in sorted(os.listdir(d)):
+        if not name.endswith(".json"):
+            continue
+        try:
+            bundle[name[:-5]] = load_json(os.path.join(d, name))
+        except ValueError as ex:
+            fatal.append("data/i18n/%s не разбирается: %s" % (name, ex))
+    if "de" not in bundle:
+        fatal.append("нет data/i18n/de.json — эталонного языка")
+        return bundle, fatal
+    ref = bundle["de"]
+    for lang, strings in bundle.items():
+        for key in sorted(set(ref) - set(strings)):
+            fatal.append("data/i18n/%s.json: нет ключа %s" % (lang, key))
+        for key in sorted(set(strings) - set(ref)):
+            fatal.append("data/i18n/%s.json: лишний ключ %s, которого нет в de" % (lang, key))
+        for key in set(ref) & set(strings):
+            a, b = set(PLACEHOLDER.findall(str(ref[key]))), set(PLACEHOLDER.findall(str(strings[key])))
+            if a != b:
+                fatal.append("data/i18n/%s.json: %s — подстановки {%s}, а в de {%s}"
+                             % (lang, key, ",".join(sorted(b)), ",".join(sorted(a))))
+            if not str(strings[key]).strip():
+                fatal.append("data/i18n/%s.json: %s пуст" % (lang, key))
+    return bundle, fatal
+
+
+def signed(sources):
+    return bool(sources) and all((s.get("verified_by") or "").strip() for s in sources)
+
+
+def check_window(w, where, problems):
+    try:
+        f = iso(w["from"]) if w.get("from") else None
+        u = iso(w["until"]) if w.get("until") else None
+    except (ValueError, TypeError) as ex:
+        problems.append("%s: некорректная дата: %s" % (where, ex))
+        return
+    if f and u and f >= u:
+        problems.append("%s: from %s не раньше until %s" % (where, f, u))
+
+
+def load_finale(repo, langs=LANGS):
+    """Ёлка (R7). Маршрут — отдельное измерение данных: у каждого либо окно
+    дат, либо круглый год, либо пометка, что так нельзя. Финал обязан быть
+    доступен круглый год — значит, хотя бы один маршрут круглогодичный."""
+    path = os.path.join(repo, "data", "finale", "christbaum.json")
+    if not os.path.exists(path):
+        return None, []
+    try:
+        data = load_json(path)
+    except ValueError as ex:
+        return None, ["data/finale/christbaum.json не разбирается: %s" % ex]
+    problems = []
+    routes = data.get("routes") or []
+    if not routes:
+        problems.append("финал: нет маршрутов")
+    for r in routes:
+        where = "финал, маршрут %s" % r.get("id")
+        kinds = [k for k in ("year_round", "windows", "illegal") if r.get(k)]
+        if len(kinds) != 1:
+            problems.append("%s: нужен ровно один из year_round, windows, illegal" % where)
+        for i, w in enumerate(r.get("windows") or []):
+            check_window(w, "%s, окно %d" % (where, i), problems)
+        check_text_map(r.get("labels"), where + " labels", problems, langs)
+        check_text_map(r.get("rule"), where + " rule", problems, langs)
+    if not any(r.get("year_round") for r in routes):
+        problems.append("финал: нет круглогодичного маршрута — в июле ёлку было бы некуда деть")
+    for d in data.get("decorations") or []:
+        check_text_map(d.get("labels"), "финал, украшение %s" % d.get("id"), problems, langs)
+    check_text_map(data.get("strip_reason"), "финал strip_reason", problems, langs)
+    for scene in data.get("scenes") or []:
+        try:
+            day = iso(scene)
+        except ValueError:
+            problems.append("финал: сцена %r — не дата" % scene)
+            continue
+        legal = [r for r in routes if not r.get("illegal") and (r.get("year_round") or any(
+            in_window(w, day) for w in r.get("windows") or []))]
+        if not legal:
+            problems.append("финал: в сцене %s не открыт ни один законный маршрут" % scene)
+    data = {k: v for k, v in data.items() if not k.startswith("_")}
+    return data, problems
+
+
+def load_notices(repo, date, langs=LANGS):
+    path = os.path.join(repo, "data", "notices.json")
+    if not os.path.exists(path):
+        return None, []
+    try:
+        data = load_json(path)
+    except ValueError as ex:
+        return None, ["data/notices.json не разбирается: %s" % ex]
+    problems = []
+    for group in ("intro", "notices"):
+        for i, n in enumerate(data.get(group) or []):
+            check_window(n, "%s[%d]" % (group, i), problems)
+            check_text_map(n.get("text"), "%s[%d] text" % (group, i), problems, langs)
+    # Вступление не должно пережить правила, которые описывает (R20): на любую
+    # дату действует ровно одна его редакция.
+    for probe in (date, iso(FUTURE_PROBE)):
+        live = [n for n in data.get("intro") or [] if in_window(n, probe)]
+        if len(live) != 1:
+            problems.append("intro: на %s действует редакций: %d, нужна ровно одна" % (probe, len(live)))
+    data = {k: v for k, v in data.items() if not k.startswith("_") or k == "_source"}
+    return data, problems
+
+
 def normalise_destinations(raw):
     """'papier' и {'id': 'papier', 'until': ...} приводим к одному виду."""
     out = []
@@ -436,12 +558,46 @@ def build(repo, date, today=None, langs=LANGS, fixtures=False):
             items.append(raw)
             report["included"].append(stem + " (черновик)")
 
+    i18n, fatal = load_i18n(repo)
+    report["fatal"].extend(fatal)
+
+    # Финал и сообщения подписываются так же, как предметы: без подписи они
+    # попадают только на стенд. В выпуск без них игра заканчивается после
+    # пятой ступени, а не показывает непроверенные даты.
+    finale, problems = load_finale(repo, langs)
+    if problems:
+        report["excluded"].append(("финал", problems))
+        finale = None
+    elif finale is not None and not signed(finale.get("sources")):
+        if fixtures:
+            finale["unverified"] = True
+            report["included"].append("финал (черновик)")
+        else:
+            report["excluded"].append(("финал", ["источники финала никем не подписаны"]))
+            finale = None
+
+    notices, problems = load_notices(repo, date, langs)
+    if problems:
+        report["excluded"].append(("сообщения", problems))
+        notices = None
+    elif notices is not None and not signed([notices.get("_source") or {}]) and not fixtures:
+        report["excluded"].append(("сообщения", ["источник сообщений никем не подписан"]))
+        notices = None
+    if notices is not None:
+        notices.pop("_source", None)
+
+    if report["fatal"]:
+        return None, report
+
     content = {
         "built": today.isoformat(),
         "source_snapshot": os.path.basename(snap_path),
         "fixture": bool(fixtures),
         "places": places,
         "items": items,
+        "i18n": i18n,
+        "finale": finale,
+        "notices": notices,
     }
     return content, report
 

@@ -1,0 +1,37 @@
+{
+  "_comment": "Сообщения со своим окном действия (R19, R20). intro — вступительный текст, который меняется вместе с правилами; notices — то, что открывается в начале каждой сессии внутри окна. Ничего не записывается на устройство.",
+  "_source": {
+    "authority": "page",
+    "reference": "Wertstoffinseln: Ab 2027 Gelbe Tonne für Kunststoff, Verbund und Metall; Glas bleibt",
+    "url": "https://www.awm-muenchen.de/abfall-entsorgen/abgabestellen/wertstoffinseln",
+    "verified_by": "",
+    "verified_on": ""
+  },
+  "intro": [
+    {
+      "until": "2027-01-01",
+      "text": {
+        "de": "Zu Hause trennst du Restmüll, Papier und Bio. Glas, Kunststoff und Metall bringst du zur Wertstoffinsel. Ab 1. Januar 2027 kommen Kunststoff, Verbund und Metall in die Gelbe Tonne zu Hause.",
+        "en": "At home you separate residual waste, paper and organic waste. Glass, plastic and metal go to the recycling island. From 1 January 2027 plastic, composites and metal go into the yellow bin at home."
+      }
+    },
+    {
+      "from": "2027-01-01",
+      "text": {
+        "de": "Zu Hause trennst du Restmüll, Papier, Bio und – in der Gelben Tonne – Verpackungen aus Kunststoff, Verbund und Metall. Glas bringst du weiterhin zur Wertstoffinsel.",
+        "en": "At home you separate residual waste, paper, organic waste and – in the yellow bin – packaging made of plastic, composites and metal. Glass still goes to the recycling island."
+      }
+    }
+  ],
+  "notices": [
+    {
+      "id": "gelbe_tonne_2027",
+      "from": "2027-01-01",
+      "until": "2027-04-01",
+      "text": {
+        "de": "Verpackungen aus Kunststoff, Verbund und Metall gehören jetzt in die Gelbe Tonne bei dir zu Hause. Die Kunststoff- und Metall-Container an den Wertstoffinseln gibt es nicht mehr; Glas und Altkleider bleiben dort. Steht die Gelbe Tonne bei dir noch nicht im Hof, frag deine Hausverwaltung.",
+        "en": "Packaging made of plastic, composites and metal now goes into the yellow bin at home. The plastic and metal containers at the recycling islands are gone; glass and textiles stay there. If your yellow bin is not in the courtyard yet, ask your building management."
+      }
+    }
+  ]
+}
