@@ -534,7 +534,7 @@ function startFinale() {
       const [x, y] = positions[d.id] || [50, 50];
       b.style.left = x + '%';
       b.style.top = y + '%';
-      b.append(img(draw(DECOR[d.id] || DECOR.kugel, 1).toDataURL(), 'decor-sprite'));
+      b.append(img(draw(DECOR[d.id] || DECOR.kugel, 3).toDataURL(), 'decor-sprite'));
       b.onclick = () => {
         removed.add(d.id);
         b.classList.add('gone');

@@ -3,7 +3,7 @@
 <style>
 body{font:13px system-ui;margin:16px;background:#e9edf1;color:#222}
 .sheet{display:flex;flex-wrap:wrap;gap:10px}
-figure{margin:0;background:#fff;padding:6px;border-radius:6px;text-align:center;width:104px}
+figure{margin:0;background:#fff;padding:6px;border-radius:6px;text-align:center;min-width:104px}
 figure.dark{background:#20242a;color:#ddd}
 img,canvas{image-rendering:pixelated}
 figcaption{font-size:11px;word-break:break-all}
@@ -26,12 +26,12 @@ function section(title, set, scale) {
     sheet.append(f);
   }
 }
-section('Items', S.ITEMS, 4);
-section('Containers', S.CONTAINERS, 4);
-section('Routes', S.ROUTES, 3);
-section('Tree', { tree: S.TREE }, 3);
-section('Decorations', S.DECOR, 5);
-section('Skyline', { sky: S.SKYLINE }, 3);
+section('Items', S.ITEMS, 3);
+section('Containers', S.CONTAINERS, 2);
+section('Routes', S.ROUTES, 2);
+section('Tree', { tree: S.TREE }, 2);
+section('Decorations', S.DECOR, 4);
+section('Skyline', { sky: S.SKYLINE }, 2);
 const h = document.createElement('h2'); h.textContent = 'Type'; out.append(h);
 out.append(P.pixelText('Münchner Mülltrennung 2026', { scale: 3, shadow: '#94b0c2' }));
 out.append(document.createElement('br'));

@@ -3,20 +3,25 @@
 // nearest-neighbour (image-rendering: pixelated), so a 16-pixel sprite stays
 // crisp at any size.
 
-import { PALETTE, ITEMS, CONTAINERS, ROUTES, TREE, SKYLINE } from './sprites.js';
+import { ITEMS, CONTAINERS, ROUTES, TREE, SKYLINE } from './sprites.js';
 
 const cache = new Map();
 
-export function draw(rows, scale = 1) {
-  const h = rows.length, w = rows[0].length;
+// A sprite is { w, h, px } with one colour (or null) per pixel; the fallback box
+// below is still written as rows of letters, which this also reads.
+const LETTERS = { k: '#1a1c2c', T: '#f0d2a2', t: '#d09a5c', n: '#9a6038' };
+export function draw(sprite, scale = 1) {
+  const s = Array.isArray(sprite)
+    ? { w: sprite[0].length, h: sprite.length, px: sprite.join('').split('').map(ch => ch === '.' ? null : LETTERS[ch] || '#f0f') }
+    : sprite;
   const canvas = document.createElement('canvas');
-  canvas.width = w * scale; canvas.height = h * scale;
+  canvas.width = s.w * scale; canvas.height = s.h * scale;
   const ctx = canvas.getContext('2d');
-  rows.forEach((row, y) => [...row].forEach((ch, x) => {
-    if (ch === '.') return;
-    ctx.fillStyle = PALETTE[ch] || '#f0f';
-    ctx.fillRect(x * scale, y * scale, scale, scale);
-  }));
+  s.px.forEach((c, i) => {
+    if (!c) return;
+    ctx.fillStyle = c;
+    ctx.fillRect((i % s.w) * scale, Math.floor(i / s.w) * scale, scale, scale);
+  });
   return canvas;
 }
 

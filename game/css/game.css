@@ -1,7 +1,7 @@
 /* Pixel look, legible text. The art is pixels; the prose is not — a newcomer
    reading why the carton is not paper must not also be decoding a typeface.
-   Colour never carries meaning alone (R12): every container has a drawing, a
-   glyph and a name. Container labels are 14px at the smallest, tabs 16px (R22). */
+   Colour never carries meaning alone (R12): every container has a drawing with
+   its own icon, a texture where two colours share a grey, and a name. Container labels are 14px at the smallest, tabs 16px (R22). */
 :root {
   --ink: #1a1c2c; --navy: #29366f; --slate: #333c57; --grey: #566c86; --mist: #94b0c2;
   --paper: #f4f4f4; --cream: #fff7e6; --sun: #ffcd75; --ok: #2f9e57; --bad: #b13e53;
@@ -55,7 +55,7 @@ img, canvas { image-rendering: pixelated; image-rendering: crisp-edges; }
 /* A borderline object carries a shape, not only a colour. */
 .item .mark { position: absolute; top: 0; right: 18px; width: 24px; height: 24px; line-height: 20px;
   font-weight: 900; font-size: 15px; background: var(--sun); border: 2px dashed var(--ink); }
-.item.part .sprite { width: 72px; height: 72px; }
+.item.part .sprite { width: 64px; height: 64px; }
 .item.landed-ok { opacity: 0; transition: opacity .25s; }
 .item.landed-bad { opacity: 0; transition: opacity .25s; }
 
@@ -99,7 +99,7 @@ img, canvas { image-rendering: pixelated; image-rendering: crisp-edges; }
 
 /* ------------------------------------------------------------------ belt */
 /* The aim frame is fixed and the belt travels under it. */
-#belt { flex: 0 0 auto; height: 156px; position: relative; overflow: hidden; touch-action: none;
+#belt { flex: 0 0 auto; height: 164px; position: relative; overflow: hidden; touch-action: none;
   background:
     repeating-linear-gradient(90deg, #262b3d 0 12px, #2d3346 12px 24px) bottom / 100% 14px no-repeat,
     var(--slate); }
@@ -115,8 +115,6 @@ img, canvas { image-rendering: pixelated; image-rendering: crisp-edges; }
 .bin { position: relative; width: 98px; display: flex; flex-direction: column; align-items: center;
   text-align: center; transition: transform .12s; padding-top: 2px; }
 .bin-sprite { width: 72px; height: 72px; }
-.bin .sym { position: absolute; top: 0; left: 4px; font-size: 14px; line-height: 20px; width: 20px; height: 20px;
-  background: var(--paper); color: var(--ink); border: 2px solid var(--ink); }
 .bin .bin-label { font-size: 14px; font-weight: 700; color: var(--paper); line-height: 1.12; margin-top: 2px;
   min-height: 32px; max-width: 98px; overflow-wrap: anywhere; hyphens: auto; }
 .bin.aimed { transform: translateY(-4px); }
@@ -135,11 +133,10 @@ img, canvas { image-rendering: pixelated; image-rendering: crisp-edges; }
 .panel-card { position: relative; background: var(--cream); border: 3px solid var(--ink);
   box-shadow: 6px 6px 0 var(--ink); padding: 20px 18px 18px; max-width: 380px; width: 100%;
   max-height: 100%; overflow-y: auto; text-align: center; }
-.panel-card h2 { margin: 0 0 6px; font-size: 20px; line-height: 1.2; padding: 0 64px; }
-.panel-card h2:has(.pheading) { padding: 0; }
+.panel-card h2 { margin: 0 0 6px; font-size: 20px; line-height: 1.2; overflow-wrap: anywhere; hyphens: auto; }
 .panel-card h2.ok { color: var(--ok); } .panel-card h2.bad { color: var(--bad); }
-.badge { position: absolute; top: 10px; right: 10px; padding: 4px 6px; border: 3px solid var(--ink);
-  box-shadow: 3px 3px 0 var(--ink); }
+.panel-head { display: flex; flex-direction: column; align-items: center; gap: 8px; }
+.badge { display: inline-block; padding: 4px 8px; border: 3px solid var(--ink); box-shadow: 3px 3px 0 var(--ink); }
 .badge.ok { background: var(--ok); } .badge.bad { background: var(--bad); }
 .badge[hidden] { display: none; }
 #panel-extra:empty { display: none; }
@@ -157,7 +154,7 @@ img, canvas { image-rendering: pixelated; image-rendering: crisp-edges; }
 #panel-note .reason b { font-weight: 700; }
 .flag { font-size: 12px; color: var(--grey); margin: 0; }
 .mid-sprite { width: 64px; height: 64px; }
-.big-sprite { width: 112px; height: 112px; }
+.big-sprite { width: 96px; height: 96px; }
 .answer-pic, .examine-pic { margin: 0 0 4px; }
 
 .pbtn { font: inherit; font-size: 17px; font-weight: 800; margin-top: 12px; padding: 10px 22px;
@@ -205,9 +202,8 @@ img, canvas { image-rendering: pixelated; image-rendering: crisp-edges; }
 .tree-sprite { width: 192px; height: 264px; }
 .decor { position: absolute; transform: translate(-50%, 0); padding: 4px; border: 0; background: transparent;
   cursor: pointer; transition: transform .18s, opacity .18s; }
-.decor-sprite { width: 36px; height: 36px; display: block; }
-.decor-netz .decor-sprite { width: 120px; height: 66px; opacity: .85; }
-.decor-lametta .decor-sprite { width: 42px; height: 36px; }
+.decor-sprite { display: block; }
+.decor-netz .decor-sprite { opacity: .85; }
 .decor:hover .decor-sprite { filter: drop-shadow(0 0 0 #fff) drop-shadow(2px 2px 0 var(--sun)); }
 .decor.gone { opacity: 0; transform: translate(-50%, -60px) rotate(25deg); }
 .screen-finale .status { font-weight: 700; min-height: 22px; }

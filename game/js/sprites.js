@@ -1,1488 +1,853 @@
-// Pixel art for every object on the belt and every container under it. Each
-// sprite is a grid of palette letters, drawn once at boot into a canvas and
-// scaled with nearest-neighbour, so the whole game's art is this one file and
-// no request leaves the page for it.
+// Pixel art for every object on the belt and every container under it. Objects
+// are 32×32, containers 48×48. Each picture is painted from a few shapes by a
+// tiny rasteriser — fill, a one-pixel ink outline, light from the top left, and
+// a cylinder ramp for bottles and cans — so a hundred sprites stay one coherent
+// style and the whole game's art is this one file. No request leaves the page.
 //
 // A sprite never gives away what the object's label decides: a deposit can and
 // a deposit-free can share one picture, because telling them apart is what
 // examining is for (R4). Variants get their own picture only where the eye is
 // the honest cue — the colour of glass, a torn shirt.
 
-export const PALETTE = {
-  k: '#1a1c2c', K: '#333c57', g: '#566c86', G: '#94b0c2', w: '#f4f4f4', W: '#d6dde4',
-  r: '#b13e53', R: '#e8574a', o: '#ef7d57', y: '#ffcd75', Y: '#f4c20d', l: '#a7f070',
-  e: '#38b764', E: '#257179', b: '#3b5dc9', B: '#29366f', c: '#41a6f6', C: '#73eff7',
-  n: '#9a6038', N: '#5d3a24', t: '#d09a5c', T: '#f0d2a2', p: '#5d275d', P: '#e86a92',
-  s: '#f6b98c', a: '#c46b2a', m: '#b8c4cf', d: '#2b2f3a',
+export const INK = '#1a1c2c';
+
+// Colour ramps: outline, dark, mid, light, highlight.
+const R = {
+  ink: { d: '#14161f', m: '#2b2f3a', l: '#454b5c' },
+  white: { d: '#c3ccd6', m: '#e7ecf1', l: '#f8fafc', h: '#ffffff' },
+  paper: { d: '#cfc6b4', m: '#eee7d8', l: '#fbf7ee', h: '#ffffff' },
+  pulp: { d: '#9b9384', m: '#c4bcae', l: '#ddd6ca' },
+  card: { d: '#94622f', m: '#c58e55', l: '#ddae78' },
+  kraft: { d: '#a6733b', m: '#cf9c5e', l: '#e6bd83' },
+  bread: { d: '#93521f', m: '#c4843f', l: '#e0ac66', h: '#f3d39a' },
+  banana: { d: '#b8870f', m: '#f0c419', l: '#f9e27a' },
+  egg: { d: '#c9a57b', m: '#e8cfac', l: '#f7e8d2' },
+  coffee: { d: '#2e1a0e', m: '#4a2c17', l: '#6b4426' },
+  steel: { d: '#69768a', m: '#a3afbd', l: '#d0d8e2', h: '#ffffff' },
+  alu: { d: '#8592a3', m: '#bcc6d1', l: '#e3e9ef', h: '#ffffff' },
+  red: { d: '#8f2737', m: '#c9364a', l: '#ec6a6a', h: '#ffb0a8' },
+  blue: { d: '#243a8f', m: '#3b5dc9', l: '#6f8fe8', h: '#c2d2ff' },
+  sky: { d: '#3b7bb0', m: '#5aa9e6', l: '#9fd3f7', h: '#e2f4ff' },
+  screen: { d: '#1d2f6b', m: '#2c4a9e', l: '#4f78cc', h: '#9fc2ff' },
+  clear: { d: '#7fb0c4', m: '#bde0ec', l: '#e3f4fa', h: '#ffffff' },
+  milk: { d: '#c9c4d6', m: '#ebe8f2', l: '#f8f6fc', h: '#ffffff' },
+  gglass: { d: '#1c6436', m: '#2e9a55', l: '#6dcf8a', h: '#c8f2d4' },
+  bglass: { d: '#6b3a12', m: '#a35a1e', l: '#d0873e', h: '#f0c08a' },
+  blglass: { d: '#1d2f80', m: '#3654c4', l: '#6f8ff0', h: '#cdd8ff' },
+  yellow: { d: '#c08f06', m: '#f2bf0f', l: '#ffde5e', h: '#fff2b0' },
+  green: { d: '#21703a', m: '#38b764', l: '#7fe08f', h: '#c9f5d2' },
+  pink: { d: '#a8406a', m: '#e86a92', l: '#f7a8c2', h: '#ffe0ea' },
+  orange: { d: '#b4532a', m: '#ef7d57', l: '#f9ad8a' },
+  grey: { d: '#333c57', m: '#4b5671', l: '#6b7792' },
+  wood: { d: '#663b1c', m: '#955c33', l: '#bd7f4c' },
+  brown: { d: '#4a2c16', m: '#7a4a26', l: '#a06a3c' },
+  purple: { d: '#3d1a3d', m: '#6a2f6a', l: '#9a5a9a', h: '#d6a8d6' },
+  beige: { d: '#ad9c7c', m: '#d4c4a0', l: '#e8dcbf', h: '#f6efe0' },
+  pet: { d: '#79a9c4', m: '#b4dbec', l: '#dff1f8', h: '#ffffff' },
+  duvet: { d: '#c79a3a', m: '#f0cd70', l: '#fbe6a8' },
+  mattress: { d: '#9fb2c8', m: '#d3dfec', l: '#eef4fa' },
+  leaf: { d: '#1d5c33', m: '#2e8a4c', l: '#4fb36a', h: '#8fdc9f' },
 };
 
-// Shapes shared by several objects, filled in by palette swaps below.
-const BOTTLE = [
-  '......kkkk......',
-  '......kGGk......',
-  '......kXHk......',
-  '......kXXk......',
-  '.....kXHXXk.....',
-  '....kXHXXXXk....',
-  '...kXHXXXXXXk...',
-  '...kXHXXXXXXk...',
-  '...kXHwwwwwXk...',
-  '...kXHwLLLwXk...',
-  '...kXHwwwwwXk...',
-  '...kXHXXXXXXk...',
-  '...kXHXXXXXXk...',
-  '...kXXXXXXXXk...',
-  '....kkkkkkkk....',
-  '................',
-];
+class Painter {
+  constructor(w, h) { this.w = w; this.h = h; this.px = new Array(w * h).fill(null); }
+  in(x, y) { return x >= 0 && y >= 0 && x < this.w && y < this.h; }
+  set(x, y, c) { x = Math.round(x); y = Math.round(y); if (this.in(x, y)) this.px[y * this.w + x] = c; }
+  get(x, y) { return this.in(x, y) ? this.px[y * this.w + x] : null; }
 
+  // Fill a shape given as a test on pixel centres. The shape's own rim is inked,
+  // its inside lit from the top left — or, for cylinders, shaded across each row.
+  paint(test, ramp, o = {}) {
+    const { w, h } = this;
+    const m = new Uint8Array(w * h);
+    for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) if (test(x + 0.5, y + 0.5)) m[y * w + x] = 1;
+    const at = (x, y) => this.in(x, y) && m[y * w + x] === 1;
+    const ink = o.outline === false ? null : (o.ink || INK);
+    const shade = o.shade || 'auto';
+    for (let y = 0; y < h; y++) {
+      let lx = -1, rx = -1;
+      for (let x = 0; x < w; x++) if (at(x, y)) { if (lx < 0) lx = x; rx = x; }
+      for (let x = 0; x < w; x++) {
+        if (!at(x, y)) continue;
+        const edge = !at(x - 1, y) || !at(x + 1, y) || !at(x, y - 1) || !at(x, y + 1);
+        if (edge && ink) { this.set(x, y, ink); continue; }
+        let c = ramp.m;
+        if (shade === 'cyl') {
+          const t = (x - lx) / Math.max(1, rx - lx);
+          c = t < 0.16 ? ramp.l : t < 0.3 && ramp.h ? ramp.h : t > 0.74 ? ramp.d : ramp.m;
+        } else if (shade === 'auto') {
+          const k = ink ? 2 : 1;
+          if (!at(x - k, y) || !at(x, y - k)) c = ramp.l;
+          if (!at(x + k, y) || !at(x, y + k)) c = ramp.d;
+        } else if (shade === 'light') c = ramp.l;
+        else if (shade === 'dark') c = ramp.d;
+        if (o.tex && o.tex(x, y)) c = o.texColor || ramp.d;
+        this.set(x, y, c);
+      }
+    }
+    return this;
+  }
+  rect(x, y, w, h, ramp, o) { return this.paint((a, b) => a >= x && a < x + w && b >= y && b < y + h, ramp, o); }
+  round(x, y, w, h, r, ramp, o) {
+    return this.paint((a, b) => {
+      if (a < x || a >= x + w || b < y || b >= y + h) return false;
+      const cx = Math.min(Math.max(a, x + r), x + w - r), cy = Math.min(Math.max(b, y + r), y + h - r);
+      return (a - cx) ** 2 + (b - cy) ** 2 <= r * r;
+    }, ramp, o);
+  }
+  ell(cx, cy, rx, ry, ramp, o) { return this.paint((a, b) => ((a - cx) / rx) ** 2 + ((b - cy) / ry) ** 2 <= 1, ramp, o); }
+  ring(cx, cy, r1, r2, ramp, o) {
+    return this.paint((a, b) => { const d = (a - cx) ** 2 + (b - cy) ** 2; return d <= r1 * r1 && d >= r2 * r2; }, ramp, o);
+  }
+  poly(pts, ramp, o) {
+    return this.paint((a, b) => {
+      let inside = false;
+      for (let i = 0, j = pts.length - 1; i < pts.length; j = i++) {
+        const [xi, yi] = pts[i], [xj, yj] = pts[j];
+        if ((yi > b) !== (yj > b) && a < (xj - xi) * (b - yi) / (yj - yi) + xi) inside = !inside;
+      }
+      return inside;
+    }, ramp, o);
+  }
+  line(x0, y0, x1, y1, c, wd = 1) {
+    const n = Math.max(Math.abs(x1 - x0), Math.abs(y1 - y0), 1);
+    for (let i = 0; i <= n; i++) {
+      const x = x0 + (x1 - x0) * i / n, y = y0 + (y1 - y0) * i / n;
+      for (let k = 0; k < wd; k++) this.set(Math.floor(x) + (Math.abs(x1 - x0) < Math.abs(y1 - y0) ? k : 0),
+                                         Math.floor(y) + (Math.abs(x1 - x0) >= Math.abs(y1 - y0) ? k : 0), c);
+    }
+    return this;
+  }
+  path(pts, c, wd = 1) { for (let i = 1; i < pts.length; i++) this.line(...pts[i - 1], ...pts[i], c, wd); return this; }
+  hl(x, y, n, c) { for (let i = 0; i < n; i++) this.set(x + i, y, c); return this; }
+  vl(x, y, n, c) { for (let i = 0; i < n; i++) this.set(x, y + i, c); return this; }
+  dot(x, y, c) { this.set(x, y, c); return this; }
+  clear(test) { for (let y = 0; y < this.h; y++) for (let x = 0; x < this.w; x++) if (test(x, y)) this.px[y * this.w + x] = null; return this; }
+  out() { return { w: this.w, h: this.h, px: this.px }; }
+}
+
+const draw = (w, h, fn) => { const p = new Painter(w, h); fn(p); return p.out(); };
+const item = fn => draw(32, 32, fn);
+
+// Textures that carry a colour for anyone who cannot see it (R12, AE11):
+// green-versus-brown glass is exactly the pair a colour-blind player loses.
+const TEX = {
+  diag: (x, y) => (x + y) % 4 === 0,
+  dots: (x, y) => x % 3 === 0 && y % 3 === 0,
+  bars: x => x % 3 === 0,
+  checks: (x, y) => (Math.floor(x / 2) + Math.floor(y / 2)) % 2 === 0,
+};
+
+// ------------------------------------------------------------------- shapes
+function bottle(p, ramp, tex) {
+  p.poly([[14, 2], [18, 2], [18, 9], [23, 14], [23, 30], [9, 30], [9, 14], [14, 9]], ramp,
+    { shade: 'cyl', tex: tex && TEX[tex], texColor: ramp.d });
+  p.rect(13, 2, 6, 3, R.alu);
+  p.rect(11, 18, 10, 7, R.paper, { shade: 'flat' });
+  p.hl(13, 21, 6, R.paper.d);
+}
+function battery(p, x, band, mark) {
+  p.rect(x + 2, 3, 4, 3, R.steel);
+  p.round(x, 5, 8, 24, 2, R.ink, { shade: 'cyl' });
+  p.rect(x, 8, 8, 12, band, { shade: 'cyl' });
+  if (mark === 'plus') { p.hl(x + 2, 13, 4, '#ffffff'); p.vl(x + 3, 11, 5, '#ffffff'); p.vl(x + 4, 11, 5, '#ffffff'); }
+  if (mark === 'bolt') p.path([[x + 5, 9], [x + 2, 14], [x + 5, 14], [x + 2, 19]], '#ffffff');
+  p.rect(x, 26, 8, 3, R.steel, { shade: 'flat' });
+}
+function screwBase(p, y) {
+  p.rect(12, y, 8, 6, R.alu, { shade: 'cyl' });
+  for (let i = 1; i < 6; i += 2) p.hl(13, y + i, 6, R.alu.d);
+  p.round(14, y + 5, 4, 3, 1, R.ink);
+}
+function hazard(p, cx, cy, s = 5) {
+  p.poly([[cx, cy - s], [cx + s, cy], [cx, cy + s], [cx - s, cy]], R.white, { ink: '#c9364a', shade: 'flat' });
+  p.vl(cx, cy - 2, 3, INK).dot(cx, cy + 2, INK);
+}
+function remote(p, open) {
+  p.round(10, 2, 12, 28, 3, R.ink);
+  p.ell(16, 6, 2, 2, R.red);
+  for (let r = 0; r < 4; r++) for (let c = 0; c < 3; c++) p.rect(12 + c * 3, 11 + r * 3, 2, 2, R.grey, { outline: false, shade: 'light' });
+  if (open) p.rect(12, 23, 8, 5, R.grey, { shade: 'dark' });
+  else p.hl(12, 24, 8, R.ink.l);
+}
+function drill(p, withPack) {
+  p.rect(0, 11, 4, 2, R.steel, { outline: false });
+  p.rect(3, 9, 6, 6, R.ink);
+  p.round(8, 6, 19, 10, 4, R.yellow);
+  p.rect(22, 8, 3, 2, R.ink, { outline: false });
+  p.poly([[14, 15], [22, 15], [21, 24], [15, 24]], R.yellow);
+  p.rect(13, 16, 2, 3, R.ink);
+  if (withPack) {
+    p.round(10, 23, 16, 7, 1, R.ink);
+    p.rect(20, 25, 2, 2, R.green, { outline: false, shade: 'light' });
+  }
+}
+
+// ------------------------------------------------------------------- objects
 const S = {
-  // ------------------------------------------------------------- tier 1
-  backpapier: [
-    '................',
-    '................',
-    '..kkkkkkkkkkkk..',
-    '.kTwwwwwwwwwwTk.',
-    '.kTwWwWwWwWwwTk.',
-    '.kkkkkkkkkkkkkk.',
-    '.kTWwwwwwwwwwWk.',
-    '.kTWwwwwwwwwwWk.',
-    '.kTWWWWWWWWWWWk.',
-    '.kkkkkkkkkkkkkk.',
-    '..kwwwwwwwk.....',
-    '...kwWwWwwwk....',
-    '....kwwwWwwwk...',
-    '.....kkkkkkkk...',
-    '................',
-    '................',
-  ],
-  bananenschalen: [
-    '................',
-    '..........kk....',
-    '.........kNNk...',
-    '........kYYk....',
-    '.......kYYYk....',
-    '......kYyYYk....',
-    '.....kYyYYk.....',
-    '....kYyYnYk.....',
-    '...kYyYYYk......',
-    '..kYyYYYYkkk....',
-    '.kYYYnYYYYYYk...',
-    'kYyk.kYYnYYYYk..',
-    'kYk...kkYYYYYYk.',
-    '.k.......kkYYk..',
-    '...........kk...',
-    '................',
-  ],
-  brot: [
-    '................',
-    '................',
-    '................',
-    '....kkkkkkkk....',
-    '..kkttttttttkk..',
-    '.ktTtnTtnTtnttk.',
-    'ktTTtnTTnTTnTTtk',
-    'ktTTTTTTTTTTTTtk',
-    'kttTTTTTTTTTTttk',
-    'kntttttttttttttk',
-    'knnttttttttttnnk',
-    '.knnnnnnnnnnnnk.',
-    '..kkkkkkkkkkkk..',
-    '................',
-    '................',
-    '................',
-  ],
-  coffeebecher: [
-    '................',
-    '...kkkkkkkkkk...',
-    '..kgGGGGGGGGgk..',
-    '..kkkkkkkkkkkk..',
-    '...kwwwwwwwWk...',
-    '...kwwwwwwwWk...',
-    '...knnnnnnnNk...',
-    '...kntttttnNk...',
-    '...kntNNNtnNk...',
-    '...knnnnnnnNk...',
-    '....kwwwwwWk....',
-    '....kwwwwwWk....',
-    '....kwwwwwWk....',
-    '....kwwwwwWk....',
-    '.....kkkkkk.....',
-    '................',
-  ],
-  eierkarton: [
-    '................',
-    '................',
-    '................',
-    '..kkkkkkkkkkkk..',
-    '.kGGGGGGGGGGGGk.',
-    '.kGgGGgGGgGGgGk.',
-    '.kkkkkkkkkkkkkk.',
-    'kGGkGGkGGkGGkGGk',
-    'kGWGGWGGWGGWGGGk',
-    'kGWGGWGGWGGWGGGk',
-    'kgGGgGGgGGgGGGgk',
-    '.kggkggkggkggkk.',
-    '..kk.kk.kk.kk...',
-    '................',
-    '................',
-    '................',
-  ],
-  eierschalen: [
-    '................',
-    '................',
-    '................',
-    '................',
-    '..k.k.k...k.k...',
-    '.kTkTkTk.kTkTk..',
-    '.kTTTTTk.kTTTTk.',
-    '.kTyTTTk.kTTyTk.',
-    '.kwTTTTk.kTTTwk.',
-    '.kwwTTTk.kTTwwk.',
-    '..kwwwk...kwwk..',
-    '...kkk.....kk...',
-    '................',
-    '................',
-    '................',
-    '................',
-  ],
-  kaffeefilter: [
-    '................',
-    '................',
-    '.kkkkkkkkkkkkkk.',
-    '.kTNNNNNNNNNNTk.',
-    '.kTNnNNnNNNnNTk.',
-    '..kTNNNnNNNNTk..',
-    '..kTTNNNNNNTTk..',
-    '...kTTTTTTTTk...',
-    '...kTtTTtTTTk...',
-    '....kTTTTTTk....',
-    '....kTtTTTTk....',
-    '.....kTTTTk.....',
-    '.....kkkkkk.....',
-    '................',
-    '................',
-    '................',
-  ],
-  papiertaschentuch: [
-    '................',
-    '................',
-    '.....kkk.kk.....',
-    '...kkwwwkwwk....',
-    '..kwwWwwwwwWk...',
-    '.kwwWWwwwwWwwk..',
-    '.kwwwwwWwwwwwk..',
-    'kwWwwwwWWwwwWwk.',
-    'kwwWwwwwwwwWwwk.',
-    '.kwwwWwwwWwwwwk.',
-    '.kwwwwWwwwwwWk..',
-    '..kwWwwwwWwwk...',
-    '...kkwwwwwkk....',
-    '.....kkkkk......',
-    '................',
-    '................',
-  ],
-  papiertuete: [
-    '................',
-    '....k......k....',
-    '...k.k....k.k...',
-    '...k..k..k..k...',
-    '..kkkkkkkkkkkk..',
-    '..ktttttttttnk..',
-    '..ktnTtttttTnk..',
-    '..kttttttttTnk..',
-    '..ktTttttttTnk..',
-    '..ktttttttttnk..',
-    '..ktttttttttnk..',
-    '..ktTttttttttnk.',
-    '..kttttttttttnk.',
-    '..knnnnnnnnnnnk.',
-    '..kkkkkkkkkkkkk.',
-    '................',
-  ],
-  thermosflasche: [
-    '.....kkkkkk.....',
-    '.....kKKKKk.....',
-    '.....kkkkkk.....',
-    '....kGGmmGgk....',
-    '....kGwmmmgk....',
-    '....kGwmmmgk....',
-    '....kGwmmmgk....',
-    '....kGwmmmgk....',
-    '....kGwmmmgk....',
-    '....kKKKKKKk....',
-    '....kGwmmmgk....',
-    '....kGwmmmgk....',
-    '....kGwmmmgk....',
-    '....kGGmmmgk....',
-    '.....kkkkkk.....',
-    '................',
-  ],
-  windeln: [
-    '................',
-    '................',
-    '................',
-    '.kkkkkkkkkkkkkk.',
-    'kcwwwwwwwwwwwwck',
-    'kcwwwwwwwwwwwwck',
-    '.kWwwPwwwwPwwWk.',
-    '..kWwwwwwwwwWk..',
-    '...kWwwwwwwWk...',
-    '....kWwwwwWk....',
-    '.....kWwwWk.....',
-    '......kkkk......',
-    '................',
-    '................',
-    '................',
-    '................',
-  ],
-  zahnbuerste: [
-    '................',
-    '...........kk...',
-    '..........kwWk..',
-    '.........kwwWk..',
-    '.........kkkk...',
-    '........kck.....',
-    '.......kck......',
-    '......kck.......',
-    '.....kck........',
-    '....kck.........',
-    '...kcbk.........',
-    '..kcbk..........',
-    '..kbk...........',
-    '..kk............',
-    '................',
-    '................',
-  ],
-  zeitung: [
-    '................',
-    '................',
-    '.kkkkkkkkkkkkk..',
-    '.kwwwwwwwwwwWk..',
-    '.kwkkkkkkkkwWk..',
-    '.kwwwwwwwwwwWk..',
-    '.kwGGGw.GGGGWk..',
-    '.kwGGGw.wwwwWk..',
-    '.kwGGGw.GGGGWk..',
-    '.kwwwww.wwwwWkk.',
-    '.kwGGGG.GGGGWWk.',
-    '.kwwwww.wwwwWWk.',
-    '.kwGGGG.GGGGWWk.',
-    '.kkkkkkkkkkkkkk.',
-    '................',
-    '................',
-  ],
-  zigarettenschachtel: [
-    '................',
-    '................',
-    '....kkkkkkkk....',
-    '....kwwwwwwk....',
-    '....kkkkkkkk....',
-    '....kRRRRRRk....',
-    '....kRwwwwRk....',
-    '....kRwrrwRk....',
-    '....kRwwwwRk....',
-    '....kwwwwwwk....',
-    '....kwGGGGwk....',
-    '....kwwwwwwk....',
-    '....kwwwwwwk....',
-    '....kkkkkkkk....',
-    '................',
-    '................',
-  ],
-  // ------------------------------------------------------------- tier 2
-  batterien: [
-    '................',
-    '................',
-    '...kk.....kk....',
-    '..kGGk...kGGk...',
-    '.kkkkkk.kkkkkk..',
-    '.kYYYYk.kYYYYk..',
-    '.kYwYYk.kYwYYk..',
-    '.kYYYYk.kYYYYk..',
-    '.kkkkkk.kkkkkk..',
-    '.kkgkkk.kkgkkk..',
-    '.kkgkkk.kkgkkk..',
-    '.kkkkkk.kkkkkk..',
-    '.kGGGGk.kGGGGk..',
-    '.kkkkkk.kkkkkk..',
-    '................',
-    '................',
-  ],
-  akkus: [
-    '................',
-    '................',
-    '...kk.....kk....',
-    '..kGGk...kGGk...',
-    '.kkkkkk.kkkkkk..',
-    '.keeeek.keeeek..',
-    '.kelleek.kleeek.',
-    '.keeeek.keeeek..',
-    '.kElllk.kElllk..',
-    '.keeeek.keeeek..',
-    '.kEEEEk.kEEEEk..',
-    '.keeeek.keeeek..',
-    '.kGGGGk.kGGGGk..',
-    '.kkkkkk.kkkkkk..',
-    '................',
-    '................',
-  ],
-  ladekabel: [
-    '................',
-    '.....kkkk.......',
-    '.....kwwk.......',
-    '....kkwwkk......',
-    '....kwwwwk......',
-    '....kkkkkk......',
-    '......kk........',
-    '......kk..kkkk..',
-    '.....kk..kk..kk.',
-    '....kk..kk....k.',
-    '...kk..kk...kkk.',
-    '...k..kk..kkk...',
-    '...kkkk..kk.....',
-    '........kGGk....',
-    '........kGGk....',
-    '.........kk.....',
-  ],
-  handy: [
-    '................',
-    '.....kkkkkk.....',
-    '....kKKKKKKk....',
-    '....kKkkkkKk....',
-    '....kKcCCcKk....',
-    '....kKcCccKk....',
-    '....kKCccCKk....',
-    '....kKccCcKk....',
-    '....kKcccCKk....',
-    '....kKcCccKk....',
-    '....kKkkkkKk....',
-    '....kKKggKKk....',
-    '.....kkkkkk.....',
-    '................',
-    '................',
-    '................',
-  ],
-  elektrozahnbuerste: [
-    '.......kk.......',
-    '......kwWk......',
-    '......kwWk......',
-    '......kkkk......',
-    '.......kk.......',
-    '......kwwk......',
-    '......kwWk......',
-    '......kwWk......',
-    '.....kwwwWk.....',
-    '.....kwbbWk.....',
-    '.....kwbbWk.....',
-    '.....kwwwWk.....',
-    '.....kwwwWk.....',
-    '...kkkkkkkkkk...',
-    '...kGGGGGGGGk...',
-    '....kkkkkkkk....',
-  ],
-  led_lampe: [
-    '................',
-    '.....kkkkkk.....',
-    '....kwwwwwwk....',
-    '...kwwwwwwWWk...',
-    '...kwwYYYYwWk...',
-    '...kwwwwwwwWk...',
-    '...kwwwwwwwWk...',
-    '....kwwwwwWk....',
-    '.....kWWWWk.....',
-    '.....kkkkkk.....',
-    '.....kGgGgk.....',
-    '.....kgGgGk.....',
-    '.....kGgGgk.....',
-    '......kggk......',
-    '.......kk.......',
-    '................',
-  ],
-  gluehlampe: [
-    '................',
-    '.....kkkkkk.....',
-    '....kCCCCCCk....',
-    '...kCwCCCCCCk...',
-    '...kCwCkCkCCk...',
-    '...kCCCkCkCCk...',
-    '...kCCCCkCCCk...',
-    '....kCCCkCCk....',
-    '.....kCCCCk.....',
-    '.....kkkkkk.....',
-    '.....kGgGgk.....',
-    '.....kgGgGk.....',
-    '.....kGgGgk.....',
-    '......kggk......',
-    '.......kk.......',
-    '................',
-  ],
-  pfandflasche_einweg: [
-    '......kkkk......',
-    '......kbbk......',
-    '......kkkk......',
-    '......kCck......',
-    '.....kCwcck.....',
-    '....kCwcccck....',
-    '....kCwcccck....',
-    '....kkkkkkkk....',
-    '....kwRRRRwk....',
-    '....kwRwwRwk....',
-    '....kkkkkkkk....',
-    '....kCwcccck....',
-    '....kCcccCck....',
-    '....kCwcccck....',
-    '.....kkkkkk.....',
-    '................',
-  ],
-  pfandflasche_mehrweg: BOTTLE,
-  fernbedienung: [
-    '................',
-    '.....kkkkkk.....',
-    '....kKKKKKKk....',
-    '....kKkRRkKk....',
-    '....kKKKKKKk....',
-    '....kKGkGkKk....',
-    '....kKKKKKKk....',
-    '....kKGkGkKk....',
-    '....kKKKKKKk....',
-    '....kKGkGkKk....',
-    '....kKKKKKKk....',
-    '....kKkkkkKk....',
-    '....kKKKKKKk....',
-    '.....kkkkkk.....',
-    '................',
-    '................',
-  ],
-  // ------------------------------------------------------------- tier 3
-  aludose: [
-    '................',
-    '.....kkkkkk.....',
-    '....kGwGGGGk....',
-    '....kkkkkkkk....',
-    '....krRRRRrk....',
-    '....kRwRRRRk....',
-    '....kRwwwRRk....',
-    '....kRwRRwRk....',
-    '....kRwRRwRk....',
-    '....kRwRRRRk....',
-    '....kRwRRRRk....',
-    '....krRRRRrk....',
-    '....kkkkkkkk....',
-    '....kGwGGGGk....',
-    '.....kkkkkk.....',
-    '................',
-  ],
-  glasflasche: BOTTLE,
-  opalglas: [
-    '................',
-    '................',
-    '................',
-    '....kkkkkkkk....',
-    '...kGGGGGGGGk...',
-    '...kkkkkkkkkk...',
-    '..kwwwwwwwwwWk..',
-    '..kwWwwwwwwwWk..',
-    '..kwWwwPPwwwWk..',
-    '..kwWwPwwPwwWk..',
-    '..kwWwwPPwwwWk..',
-    '..kwwwwwwwwwWk..',
-    '..kWWWWWWWWWWk..',
-    '...kkkkkkkkkk...',
-    '................',
-    '................',
-  ],
-  kristallglas: [
-    '................',
-    '...kkkkkkkkkk...',
-    '...kCwCCCwCCk...',
-    '...kCwCwCCwCk...',
-    '...kCCwCCwCCk...',
-    '....kCwCCwCk....',
-    '.....kCCCCk.....',
-    '......kCCk......',
-    '.......kk.......',
-    '.......kk.......',
-    '.......kk.......',
-    '.......kk.......',
-    '.....kkkkkk.....',
-    '....kCwCCCCk....',
-    '....kkkkkkkk....',
-    '................',
-  ],
-  spiegel: [
-    '................',
-    '...kkkkkkkkkk...',
-    '..knnnnnnnnnNk..',
-    '..knkkkkkkkknk..',
-    '..knkCwCCCCknk..',
-    '..knkwCCCCCknk..',
-    '..knkCCCCwCknk..',
-    '..knkCCCwCCknk..',
-    '..knkCCwCCCknk..',
-    '..knkCwCCCCknk..',
-    '..knkCCCCCCknk..',
-    '..knkkkkkkkknk..',
-    '..kNnnnnnnnnNk..',
-    '...kkkkkkkkkk...',
-    '................',
-    '................',
-  ],
-  joghurtbecher: [
-    '................',
-    '................',
-    '..kkkkkkkkkkkk..',
-    '..kmGmGmGmGmGk..',
-    '..kkkkkkkkkkkk..',
-    '...kwwwwwwwWk...',
-    '...kwPPPPPwWk...',
-    '...kwPwwwPwWk...',
-    '...kwPPPPPwWk...',
-    '....kwwwwwWk....',
-    '....kwbbbbWk....',
-    '....kwwwwwWk....',
-    '.....kwwwWk.....',
-    '.....kkkkkk.....',
-    '................',
-    '................',
-  ],
-  getraenkekarton: [
-    '................',
-    '.......kk.......',
-    '......kwWk......',
-    '.....kwwWWk.....',
-    '....kkkkkkkk....',
-    '....kYYYYYYk....',
-    '....kYwYYYYk....',
-    '....kYYYoYYk....',
-    '....kYYooYYk....',
-    '....kYYYoYYk....',
-    '....kwwwwwwk....',
-    '....kweeeeWk....',
-    '....kwwwwwWk....',
-    '....kWWWWWWk....',
-    '....kkkkkkkk....',
-    '................',
-  ],
-  konservendose: [
-    '................',
-    '................',
-    '....kkkkkkkk....',
-    '...kGwGGGGGgk...',
-    '...kkkkkkkkkk...',
-    '...kGwGGGGGgk...',
-    '...kkkkkkkkkk...',
-    '...koyoooooRk...',
-    '...koeeeoooRk...',
-    '...koeeeyyoRk...',
-    '...kooooyyoRk...',
-    '...kkkkkkkkkk...',
-    '...kGwGGGGGgk...',
-    '....kkkkkkkk....',
-    '................',
-    '................',
-  ],
-  deospray: [
-    '......kkk.......',
-    '.....kKKKk......',
-    '.....kKKKkk.....',
-    '....kkkkkkkk....',
-    '....kGwGGGgk....',
-    '....kkkkkkkk....',
-    '....kbwbbbBk....',
-    '....kbwbbbBk....',
-    '....kbwCCbBk....',
-    '....kbwCCbBk....',
-    '....kbwbbbBk....',
-    '....kbwbbbBk....',
-    '....kbwbbbBk....',
-    '....kGwGGGgk....',
-    '.....kkkkkk.....',
-    '................',
-  ],
-  kronkorken: [
-    '................',
-    '................',
-    '.....k.kk.k.....',
-    '....kRkRRkRk....',
-    '...kRRRRRRRRk...',
-    '..kkRRwwRRRRkk..',
-    '..kRRwRRRRRRRk..',
-    '...kRRRYYRRRk...',
-    '..kRRRYrrYRRRk..',
-    '..kRRRYYYYRRRk..',
-    '...kRRRRRRRRk...',
-    '..kkRRRRRRRrkk..',
-    '...kRrRRRRrRk...',
-    '....kRkrrkRk....',
-    '.....k.kk.k.....',
-    '................',
-  ],
-  shampooflasche: [
-    '................',
-    '......kkkk......',
-    '......kPPk......',
-    '.....kkkkkk.....',
-    '....kPPPPPPk....',
-    '...kPwPPPPPPk...',
-    '...kPwPPPPPPk...',
-    '...kPwwwwwwPk...',
-    '...kPwPPPPwPk...',
-    '...kPwwwwwwPk...',
-    '...kPwPPPPPPk...',
-    '...kPwPPPPPPk...',
-    '...kPPPPPPPPk...',
-    '....kkkkkkkk....',
-    '................',
-    '................',
-  ],
-  plastiktuete: [
-    '................',
-    '...kkk....kkk...',
-    '..kw.wk..kw.wk..',
-    '..kw.wk..kw.wk..',
-    '..kwwwkkkkwwwk..',
-    '.kwwwwwwwwwwwWk.',
-    '.kwWwwwwwwwwwWk.',
-    '.kwwwwwwwwwWwWk.',
-    '.kwwwRRRRwwwwWk.',
-    '.kwwwRwwRwwwwWk.',
-    '.kwWwRRRRwwwwWk.',
-    '.kwwwwwwwwwWwWk.',
-    '.kwwwwwwwwwwwWk.',
-    '..kkkkkkkkkkkk..',
-    '................',
-    '................',
-  ],
-  styropor: [
-    '................',
-    '................',
-    '................',
-    '.....kkkkkkkkkk.',
-    '....kwwwwwwwwWk.',
-    '...kwWwWwwWwWWk.',
-    '..kkkkkkkkkkWWk.',
-    '..kwwWwwWwwkWWk.',
-    '..kwWwwwwWwkWWk.',
-    '..kwwwWwwwwkWWk.',
-    '..kwWwwWwWwkWk..',
-    '..kwwwwwwwwkk...',
-    '..kkkkkkkkkk....',
-    '................',
-    '................',
-    '................',
-  ],
-  kaffeekapsel: [
-    '................',
-    '................',
-    '................',
-    '...kkkkkkkkkk...',
-    '..kGwGGGGGGGgk..',
-    '..kkkkkkkkkkkk..',
-    '...kpPppppppk...',
-    '...kpPppppppk...',
-    '....kpPpppk.....',
-    '....kpPpppk.....',
-    '.....kpppk......',
-    '......kkk.......',
-    '................',
-    '................',
-    '................',
-    '................',
-  ],
-  tshirt: [
-    '................',
-    '................',
-    '...kkkk..kkkk...',
-    '..kbbbbkkbbbbk..',
-    '.kbbbbbbbbbbbbk.',
-    'kbbbbbbbbbbbbbbk',
-    'kbbkbbbbbbbbkbbk',
-    '.kk.kbbbbbbk.kk.',
-    '....kbbbbbbk....',
-    '....kbcbbbbk....',
-    '....kbbbbbbk....',
-    '....kbbbbbbk....',
-    '....kbbbbbbk....',
-    '....kkkkkkkk....',
-    '................',
-    '................',
-  ],
-  'tshirt.kaputt': [
-    '................',
-    '................',
-    '...kkkk..kkkk...',
-    '..kggggkkggggk..',
-    '.kggggggggnggk..',
-    'kggnggggggggggk.',
-    'kggkggggggggkggk',
-    '.kk.kggk.ggk.kk.',
-    '....kgg.kggk....',
-    '....kggggnngk...',
-    '....kgnnggggk...',
-    '....kgggg.ggk...',
-    '....kgggk.kggk..',
-    '....kkkk...kkk..',
-    '................',
-    '................',
-  ],
-  bettwaesche: [
-    '................',
-    '................',
-    '................',
-    '..kkkkkkkkkkkk..',
-    '.kwwwwwwwwwwwWk.',
-    '.kwcwwcwwcwwwWk.',
-    '.kkkkkkkkkkkkkk.',
-    '.kccccccccccccCk',
-    '.kcwccwccwcccCk.',
-    '.kkkkkkkkkkkkkk.',
-    '.kwwwwwwwwwwwWk.',
-    '.kwcwwcwwcwwwWk.',
-    '.kkkkkkkkkkkkkk.',
-    '................',
-    '................',
-    '................',
-  ],
-  gummistiefel: [
-    '................',
-    '....kkkkkk......',
-    '....keeeeEk.....',
-    '....kellleEk....',
-    '....keleeeEk....',
-    '....keleeeEk....',
-    '....keleeeEk....',
-    '....keleeeEk....',
-    '....keleeeEk....',
-    '....keleeeEkk...',
-    '....keleeeeeEk..',
-    '...keleeeeeeeEk.',
-    '...keeeeeeeeeEk.',
-    '...kKKKKKKKKKKk.',
-    '...kkkkkkkkkkkk.',
-    '................',
-  ],
-  teelicht: [
-    '................',
-    '................',
-    '................',
-    '.......kk.......',
-    '......kYYk......',
-    '......kyok......',
-    '.......kk.......',
-    '.......kk.......',
-    '..kkkkkkkkkkkk..',
-    '.kGwwwwwwwwwwGk.',
-    '.kgkkkkkkkkkkgk.',
-    '.kGmGmGmGmGmGgk.',
-    '.kgGmGmGmGmGmgk.',
-    '..kkkkkkkkkkkk..',
-    '................',
-    '................',
-  ],
-  // ------------------------------------------------------------- tier 4
-  toaster: [
-    '................',
-    '................',
-    '....kk....kk....',
-    '...kttk..kttk...',
-    '..kkkkkkkkkkkk..',
-    '.kGwwGkkkGwwGgk.',
-    '.kGwkkGGGkkGGgk.',
-    '.kGGGGGGGGGGGgk.',
-    '.kGwGGGGGGGGGgkk',
-    '.kGGGGGGGGGGGgKk',
-    '.kGGGGGGGGGGGgk.',
-    '.kggggggggggggk.',
-    '..kkkkkkkkkkkk..',
-    '..kk........kk..',
-    '................',
-    '................',
-  ],
-  wasserkocher: [
-    '................',
-    '.....kkkkkk.....',
-    '....kKKKKKKk....',
-    '...kkkkkkkkkk...',
-    'kk.kGwGGGGGgkkk.',
-    'kGkkGwGGGGGgkKk.',
-    '.kGkGwGGCGGgkKk.',
-    '..kkGwGGCGGgkKk.',
-    '...kGwGGCGGgkKk.',
-    '...kGwGGGGGgkKk.',
-    '...kGwGGGGGgkk..',
-    '...kGGGGGGGgk...',
-    '..kkkkkkkkkkkk..',
-    '..kKKKKKKKKKKk..',
-    '..kkkkkkkkkkkk..',
-    '................',
-  ],
-  laptop: [
-    '................',
-    '................',
-    '...kkkkkkkkkk...',
-    '...kKKKKKKKKk...',
-    '...kKccCcccKk...',
-    '...kKcCcccCKk...',
-    '...kKccccCcKk...',
-    '...kKcccCccKk...',
-    '...kKKKKKKKKk...',
-    '..kkkkkkkkkkkk..',
-    '.kGGGGGGGGGGGGk.',
-    '.kGkGkGkGkGkGGk.',
-    'kGGGGGkkkkGGGGGk',
-    'kkkkkkkkkkkkkkkk',
-    '................',
-    '................',
-  ],
-  fernseher: [
-    '................',
-    '................',
-    'kkkkkkkkkkkkkkkk',
-    'kKKKKKKKKKKKKKKk',
-    'kKbbbbbbbbbbbcKk',
-    'kKbbbbbbbbbbcbKk',
-    'kKbbbbbbbbbcbbKk',
-    'kKbbbbbbbbcbbbKk',
-    'kKbbbbbbbcbbbbKk',
-    'kKbbbbbbbbbbbbKk',
-    'kKKKKKKKKKKKKKKk',
-    'kkkkkkkkkkkkkkkk',
-    '......kKKk......',
-    '....kkkkkkkk....',
-    '....kKKKKKKk....',
-    '....kkkkkkkk....',
-  ],
-  kuehlschrank: [
-    '...kkkkkkkkkk...',
-    '...kwwwwwwwWk...',
-    '...kwwwwwwkWk...',
-    '...kwwwwwwkWk...',
-    '...kwwwwwwwWk...',
-    '...kkkkkkkkkk...',
-    '...kwwwwwwwWk...',
-    '...kwwwwwwkWk...',
-    '...kwwwwwwkWk...',
-    '...kwwwwwwkWk...',
-    '...kwwwwwwwWk...',
-    '...kwwwwwwwWk...',
-    '...kwwwwwwwWk...',
-    '...kWWWWWWWWk...',
-    '...kkkkkkkkkk...',
-    '...kk......kk...',
-  ],
-  matratze: [
-    '................',
-    '................',
-    '................',
-    '................',
-    '..kkkkkkkkkkkkk.',
-    '.kwwwwwwwwwwwwWk',
-    'kwcwwcwwcwwcwwWk',
-    'kwwwwwwwwwwwwWWk',
-    'kwcwwcwwcwwcwWWk',
-    'kwwwwwwwwwwwwWk.',
-    'kccccccccccccCk.',
-    'kkkkkkkkkkkkkkk.',
-    '................',
-    '................',
-    '................',
-    '................',
-  ],
-  sofa: [
-    '................',
-    '................',
-    '................',
-    '...kkkkkkkkkk...',
-    '..kRRRRkRRRRRk..',
-    '..kRrRRkRrRRRk..',
-    '.kkRRRRkRRRRRkk.',
-    'kRRkkkkkkkkkkRRk',
-    'kRrkRRRRkRRRRRrk',
-    'kRrkrrrrkrrrrRrk',
-    'kRRkkkkkkkkkkRRk',
-    'krrrrrrrrrrrrrrk',
-    'kkkkkkkkkkkkkkkk',
-    '.kNk........kNk.',
-    '.kkk........kkk.',
-    '................',
-  ],
-  stuhl: [
-    '................',
-    '....kkkkkkkk....',
-    '....knnnnnnk....',
-    '....knNNNNnk....',
-    '....knnnnnnk....',
-    '....knNNNNnk....',
-    '....knnnnnnk....',
-    '....knkkkknk....',
-    '...kkkkkkkkkk...',
-    '...ktttttttttk..',
-    '...kkkkkkkkkkk..',
-    '...knk....knk...',
-    '...knk....knk...',
-    '...knk....knk...',
-    '...kkk....kkk...',
-    '................',
-  ],
-  bettdecke: [
-    '................',
-    '................',
-    '................',
-    '..kkkkkkkkkkkk..',
-    '.kyyyyyyyyyyyyk.',
-    '.kywyyywyyywyYk.',
-    'kyyyyyyyyyyyyyYk',
-    'kyyykyyykyyykyYk',
-    'kyyyyyyyyyyyyyYk',
-    'kywyyywyyywyyyYk',
-    'kyyyyyyyyyyyyYYk',
-    '.kYYYYYYYYYYYYk.',
-    '..kkkkkkkkkkkk..',
-    '................',
-    '................',
-    '................',
-  ],
-  bohrmaschine: [
-    '................',
-    '................',
-    '....kkkkkkkk....',
-    '...kYYYYYYYYkkk.',
-    'kkkYwYYYYYYYkGGk',
-    'kGGYYYYYYYYYkkkk',
-    'kkkYYYYYYYYYk...',
-    '...kkkkYYYkk....',
-    '.......kYYk.....',
-    '.......kKKk.....',
-    '.......kKKk.....',
-    '......kkkkkk....',
-    '......kKKKKk....',
-    '......kKggKk....',
-    '......kkkkkk....',
-    '................',
-  ],
-  // ------------------------------------------------------------- tier 5
-  farbeimer: [
-    '................',
-    '....kkkkkkkk....',
-    '...k........k...',
-    '..k..........k..',
-    '..kkkkkkkkkkkk..',
-    '..kGwGGGGGGGgk..',
-    '..kkkkkkkkkkkk..',
-    '..kwwwwwwwwwWk..',
-    '..kwkkkkkkkwWk..',
-    '..kwkGGGGGkwWk..',
-    '..kwkkkkkkkwWk..',
-    '..kwwwwwwwwwWk..',
-    '..kwwwwwwwwwWk..',
-    '..kWWWWWWWWWWk..',
-    '...kkkkkkkkkk...',
-    '................',
-  ],
-  nagellack: [
-    '................',
-    '.......kk.......',
-    '......kKKk......',
-    '......kKKk......',
-    '......kKKk......',
-    '.....kkkkkk.....',
-    '....kPwPPPPk....',
-    '...kPwPPPPPPk...',
-    '...kPwPPPPPPk...',
-    '...kPwPPPPPPk...',
-    '...kPPPPPPPPk...',
-    '....kkkkkkkk....',
-    '................',
-    '................',
-    '................',
-    '................',
-  ],
-  rohrreiniger: [
-    '................',
-    '......kkkk......',
-    '......kRRk......',
-    '.....kkkkkk.....',
-    '....kYYYYYYk....',
-    '...kYwYYYYYYk...',
-    '...kYwkkkkYYk...',
-    '...kYwkoRkYYk...',
-    '...kYwkRokYYk...',
-    '...kYwkkkkYYk...',
-    '...kYwYYYYYYk...',
-    '...kYYYYYYYYk...',
-    '...kYYYYYYYYk...',
-    '....kkkkkkkk....',
-    '................',
-    '................',
-  ],
-  pflanzenschutz: [
-    '................',
-    '......kkkk......',
-    '......kKKk......',
-    '.....kkkkkk.....',
-    '....keeeeeek....',
-    '...keleeeeeek...',
-    '...kelkkkkeek...',
-    '...kelkokkeek...',
-    '...kelkkokeek...',
-    '...kelkkkkeek...',
-    '...keleeeeeek...',
-    '...keeeeeeeek...',
-    '...kEEEEEEEEk...',
-    '....kkkkkkkk....',
-    '................',
-    '................',
-  ],
-  medikamente: [
-    '................',
-    '................',
-    '..kkkkkkkkkkkk..',
-    '..kwwwwwwwwwWk..',
-    '..kwwwRRwwwwWk..',
-    '..kwwRRRRwwwWk..',
-    '..kwwwRRwwwwWk..',
-    '..kkkkkkkkkkkk..',
-    '..kGkGkGkGkGgk..',
-    '..kmwmwmwmwmgk..',
-    '..kmPmPmwmwmgk..',
-    '..kmwmwmwmwmgk..',
-    '..kGGGGGGGGGgk..',
-    '..kkkkkkkkkkkk..',
-    '................',
-    '................',
-  ],
-  thermometer: [
-    '................',
-    '..........kk....',
-    '.........kwWk...',
-    '........kwGWk...',
-    '.......kwGwk....',
-    '......kwGwk.....',
-    '.....kwGwk......',
-    '....kwGwk.......',
-    '...kwGwk........',
-    '..kwRwk.........',
-    '.kRRRk..........',
-    '.kRRRk..........',
-    '..kkk...........',
-    '................',
-    '................',
-    '................',
-  ],
-  energiesparlampe: [
-    '.....kk..kk.....',
-    '....kwWkkwWk....',
-    '....kwWkkwWk....',
-    '....kwWkkwWk....',
-    '....kwWkkwWk....',
-    '....kwWkkwWk....',
-    '....kwWWWWWk....',
-    '.....kwwwwk.....',
-    '....kkkkkkkk....',
-    '....kwwwwwWk....',
-    '....kkkkkkkk....',
-    '.....kGgGgk.....',
-    '.....kgGgGk.....',
-    '......kggk......',
-    '.......kk.......',
-    '................',
-  ],
-  lametta: [
-    '................',
-    '..kkkkkkkkkkkk..',
-    '..kKKKKKKKKKKk..',
-    '..kmGmGmGmGmGk..',
-    '..kGmGmGmGmGmk..',
-    '..kmkmkGkmkmGk..',
-    '..kGkGkmkGkGmk..',
-    '..kmkmkGkmkmGk..',
-    '..kGkGkmkGkGmk..',
-    '...kk.kmk.kkmk..',
-    '......kGk..kGk..',
-    '......kmk..kmk..',
-    '.......k...kk...',
-    '................',
-    '................',
-    '................',
-  ],
-  verduenner: [
-    '................',
-    '......kkkk......',
-    '......kKKk......',
-    '....kkkkkkkk....',
-    '...kGGGGGGGGk...',
-    '...kGwGGGGGGk...',
-    '...kGwwwwwwGk...',
-    '...kGwRRRRwGk...',
-    '...kGwRkkRwGk...',
-    '...kGwRRRRwGk...',
-    '...kGwwwwwwGk...',
-    '...kGwGGGGGGk...',
-    '...kggggggggk...',
-    '....kkkkkkkk....',
-    '................',
-    '................',
-  ],
+  // tier 1 ------------------------------------------------------------------
+  backpapier: item(p => {
+    p.round(2, 9, 28, 12, 2, R.white);
+    p.rect(3, 12, 26, 3, R.red, { outline: false, shade: 'flat' });
+    p.hl(6, 17, 10, R.white.d);
+    p.poly([[15, 19], [30, 19], [28, 29], [12, 29]], R.paper);
+    p.hl(16, 23, 10, R.paper.d).hl(15, 26, 10, R.paper.d);
+  }),
+  bananenschalen: item(p => {
+    p.poly([[13, 9], [19, 9], [12, 28], [4, 25]], R.banana);
+    p.poly([[13, 9], [19, 9], [27, 28], [18, 29]], R.banana);
+    p.poly([[14, 9], [19, 9], [30, 17], [28, 24]], R.banana);
+    p.rect(13, 9, 6, 4, R.paper, { outline: false, shade: 'flat' });
+    p.rect(14, 3, 4, 7, R.brown);
+    [[10, 20], [11, 23], [21, 23], [24, 18], [26, 21]].forEach(([x, y]) => p.dot(x, y, R.brown.m));
+  }),
+  brot: item(p => {
+    p.round(2, 10, 28, 15, 7, R.bread);
+    [[8, 12], [14, 12], [20, 12]].forEach(([x, y]) => p.line(x, y, x + 4, y + 6, R.bread.d).line(x + 1, y, x + 5, y + 6, R.bread.h));
+    [[7, 20], [13, 21], [22, 20], [25, 17]].forEach(([x, y]) => p.dot(x, y, R.bread.h));
+  }),
+  coffeebecher: item(p => {
+    p.poly([[9, 9], [23, 9], [21, 30], [11, 30]], R.white, { shade: 'cyl' });
+    p.poly([[9.4, 14], [22.6, 14], [21.8, 23], [10.2, 23]], R.card, { shade: 'cyl' });
+    p.ell(16, 18.5, 2.5, 2.5, R.brown, { outline: false });
+    p.round(7, 5, 18, 5, 2, R.alu);
+    p.hl(12, 6, 4, INK);
+  }),
+  eierkarton: item(p => {
+    p.rect(2, 16, 28, 6, R.pulp);
+    for (let i = 0; i < 4; i++) p.ell(6.5 + i * 6.3, 23, 3.4, 4.5, R.pulp);
+    p.round(2, 7, 28, 11, 3, R.pulp);
+    for (let i = 1; i < 4; i++) p.vl(2 + i * 7, 9, 7, R.pulp.d);
+    p.rect(11, 10, 10, 4, R.white, { shade: 'flat' });
+  }),
+  eierschalen: item(p => {
+    p.ell(11, 20, 7, 8, R.egg);
+    p.ell(23, 22, 6, 6, R.egg);
+    const cut1 = x => 15 + [0, -2, -1, 1][x % 4], cut2 = x => 19 + [1, -1, 0, -2][x % 4];
+    p.clear((x, y) => (x <= 18 && y < cut1(x)) || (x >= 17 && x <= 29 && y < cut2(x) && y > 14));
+    for (let x = 4; x <= 18; x++) if (p.get(x, cut1(x) + 1)) p.dot(x, cut1(x), INK);
+    for (let x = 17; x <= 29; x++) if (p.get(x, cut2(x) + 1)) p.dot(x, cut2(x), INK);
+    for (let x = 6; x <= 16; x++) if (p.get(x, cut1(x) + 2) && p.get(x, cut1(x) + 2) !== INK) p.dot(x, cut1(x) + 1, R.egg.d);
+  }),
+  kaffeefilter: item(p => {
+    p.poly([[4, 8], [28, 8], [19, 29], [13, 29]], R.paper);
+    for (let x = 14; x < 19; x += 2) p.vl(x, 26, 3, R.paper.d);
+    p.ell(16, 9, 11, 3.5, R.coffee);
+    [[12, 8], [18, 9], [21, 8]].forEach(([x, y]) => p.dot(x, y, R.coffee.l));
+  }),
+  papiertaschentuch: item(p => {
+    p.poly([[5, 14], [9, 7], [16, 10], [22, 5], [28, 11], [26, 18], [29, 24], [20, 28], [12, 27], [4, 22]], R.white);
+    p.path([[10, 12], [14, 17], [12, 23]], R.white.d).path([[20, 9], [19, 15], [24, 21]], R.white.d).path([[15, 20], [20, 23]], R.white.d);
+  }),
+  papiertuete: item(p => {
+    p.path([[11, 10], [11, 5], [14, 3], [14, 10]], INK).path([[18, 10], [18, 3], [21, 5], [21, 10]], INK);
+    p.rect(6, 9, 20, 21, R.kraft);
+    p.rect(22, 10, 3, 19, R.kraft, { outline: false, shade: 'dark' });
+    for (let x = 7; x < 25; x += 2) p.dot(x, 10, R.kraft.d);
+    p.round(10, 16, 9, 7, 2, R.kraft, { shade: 'light', ink: R.kraft.d });
+  }),
+  thermosflasche: item(p => {
+    p.round(10, 8, 12, 22, 3, R.steel, { shade: 'cyl' });
+    p.rect(10, 18, 12, 3, R.ink, { shade: 'cyl' });
+    p.round(9, 2, 14, 7, 2, R.ink, { shade: 'cyl' });
+  }),
+  windeln: item(p => {
+    p.poly([[3, 8], [29, 8], [27, 14], [20, 22], [16, 25], [12, 22], [5, 14]], R.white);
+    p.rect(3, 8, 6, 5, R.sky);
+    p.rect(23, 8, 6, 5, R.sky);
+    [[12, 13], [16, 16], [20, 13], [14, 19], [18, 19]].forEach(([x, y]) => p.dot(x, y, R.pink.m));
+  }),
+  zahnbuerste: item(p => {
+    p.poly([[5, 26], [8, 29], [25, 10], [22, 7]], R.sky);
+    p.line(8, 26, 22, 10, R.sky.h);
+    p.poly([[20, 3], [29, 9], [26, 13], [17, 7]], R.white);
+    for (let i = 0; i < 4; i++) p.dot(21 + i * 2, 6 + i, R.sky.m);
+  }),
+  zeitung: item(p => {
+    p.rect(4, 5, 23, 23, R.paper);
+    p.rect(26, 7, 3, 21, R.paper, { shade: 'dark' });
+    p.rect(7, 8, 17, 3, R.ink, { outline: false, shade: 'flat' });
+    p.rect(7, 13, 8, 7, R.grey, { outline: false });
+    for (let y = 13; y < 25; y += 2) p.hl(17, y, 7, R.paper.d);
+    for (let y = 22; y < 26; y += 2) p.hl(7, y, 8, R.paper.d);
+  }),
+  zigarettenschachtel: item(p => {
+    p.rect(8, 5, 16, 24, R.white);
+    p.rect(8, 5, 16, 10, R.red);
+    p.hl(9, 9, 14, R.red.d);
+    p.ell(16, 12, 2, 2, R.white, { outline: false });
+    p.rect(10, 19, 12, 7, R.grey, { outline: false });
+    p.hl(11, 21, 10, R.white.d);
+  }),
+
+  // tier 2 ------------------------------------------------------------------
+  batterien: item(p => { battery(p, 6, R.yellow, 'plus'); battery(p, 18, R.yellow, 'plus'); }),
+  akkus: item(p => { battery(p, 6, R.green, 'bolt'); battery(p, 18, R.green, 'bolt'); }),
+  ladekabel: item(p => {
+    p.rect(13, 0, 2, 4, R.steel, { outline: false });
+    p.rect(17, 0, 2, 4, R.steel, { outline: false });
+    p.round(10, 3, 12, 10, 2, R.white);
+    p.path([[16, 13], [16, 17], [9, 20], [9, 25], [18, 28], [25, 24], [23, 18], [27, 15]], INK, 2);
+    p.round(24, 9, 6, 7, 1, R.alu);
+  }),
+  handy: item(p => {
+    p.round(8, 2, 16, 28, 3, R.ink);
+    p.rect(10, 5, 12, 20, R.screen, { outline: false });
+    p.line(12, 22, 20, 8, R.screen.h);
+    p.hl(14, 27, 4, R.grey.l);
+  }),
+  elektrozahnbuerste: item(p => {
+    p.round(8, 27, 16, 4, 1, R.grey);
+    p.rect(14, 5, 4, 9, R.white);
+    p.round(13, 1, 6, 6, 2, R.white);
+    for (let y = 2; y < 6; y++) p.hl(14, y, 1, R.blue.m);
+    p.round(11, 12, 10, 17, 4, R.white, { shade: 'cyl' });
+    p.rect(13, 16, 6, 7, R.blue, { outline: false });
+    p.ell(16, 25, 1.6, 1.6, R.blue, { outline: false });
+  }),
+  led_lampe: item(p => {
+    p.poly([[10, 17], [22, 17], [19, 23], [13, 23]], R.white);
+    p.ell(16, 11, 10, 9, R.white);
+    p.rect(12, 9, 8, 3, R.yellow, { outline: false, shade: 'flat' });
+    for (let x = 12; x < 20; x += 2) p.dot(x, 10, R.yellow.h);
+    screwBase(p, 23);
+  }),
+  gluehlampe: item(p => {
+    p.poly([[10, 17], [22, 17], [19, 23], [13, 23]], R.clear);
+    p.ell(16, 11, 10, 9, R.clear);
+    p.vl(13, 12, 9, R.grey.m).vl(19, 12, 9, R.grey.m);
+    p.path([[13, 12], [14, 9], [15, 12], [16, 9], [17, 12], [18, 9], [19, 12]], R.orange.m);
+    p.dot(10, 7, '#ffffff').dot(9, 9, '#ffffff');
+    screwBase(p, 23);
+  }),
+  pfandflasche_einweg: item(p => {
+    p.round(10, 8, 12, 22, 4, R.pet, { shade: 'cyl' });
+    p.rect(13, 4, 6, 5, R.pet, { shade: 'cyl' });
+    p.rect(12, 1, 8, 4, R.blue);
+    p.rect(10, 15, 12, 7, R.red, { shade: 'cyl' });
+    p.ring(16, 18.5, 2.5, 1.2, R.white, { outline: false, shade: 'flat' });
+    p.hl(11, 25, 10, R.pet.d).hl(11, 27, 10, R.pet.d);
+  }),
+  pfandflasche_mehrweg: item(p => bottle(p, R.bglass, 'dots')),
+  fernbedienung: item(p => remote(p, false)),
+
+  // tier 3 ------------------------------------------------------------------
+  aludose: item(p => {
+    p.round(9, 5, 14, 24, 2, R.red, { shade: 'cyl' });
+    p.round(9, 3, 14, 4, 1, R.alu, { shade: 'cyl' });
+    p.rect(9, 27, 14, 3, R.alu, { shade: 'cyl' });
+    p.path([[11, 22], [15, 14], [20, 11]], '#ffffff', 2);
+  }),
+  glasflasche: item(p => bottle(p, R.clear)),
+  opalglas: item(p => {
+    p.round(6, 11, 20, 18, 4, R.milk, { shade: 'cyl' });
+    p.round(7, 6, 18, 6, 2, R.alu, { shade: 'cyl' });
+    p.ell(16, 20, 4, 3, R.pink, { outline: false, shade: 'flat' });
+    p.hl(13, 25, 6, R.milk.d);
+  }),
+  kristallglas: item(p => {
+    p.poly([[7, 3], [25, 3], [24, 11], [19, 16], [13, 16], [8, 11]], R.clear);
+    for (let x = 10; x < 24; x += 4) p.line(x, 5, x - 2, 12, R.clear.h);
+    p.line(12, 6, 15, 13, R.clear.d);
+    p.rect(15, 16, 2, 9, R.clear, { outline: false, shade: 'cyl' });
+    p.vl(14, 16, 9, INK).vl(17, 16, 9, INK);
+    p.ell(16, 27, 8, 2.5, R.clear);
+  }),
+  spiegel: item(p => {
+    p.round(5, 2, 22, 28, 3, R.wood);
+    p.rect(8, 5, 16, 22, R.sky);
+    p.line(10, 14, 16, 7, R.sky.h, 2).line(13, 22, 21, 12, R.sky.h);
+  }),
+  joghurtbecher: item(p => {
+    p.poly([[8, 9], [24, 9], [22, 29], [10, 29]], R.white, { shade: 'cyl' });
+    p.poly([[8.7, 14], [23.3, 14], [22.8, 20], [9.2, 20]], R.pink, { shade: 'cyl' });
+    p.hl(11, 24, 10, R.blue.m).hl(11, 25, 10, R.blue.m);
+    p.round(5, 6, 22, 4, 1, R.alu);
+    p.rect(26, 7, 3, 3, R.alu);
+  }),
+  getraenkekarton: item(p => {
+    p.rect(15, 1, 3, 5, R.white);
+    p.poly([[8, 12], [16, 5], [24, 12]], R.white);
+    p.rect(8, 11, 16, 19, R.yellow);
+    p.ell(14, 19, 4, 4, R.orange);
+    p.ell(18, 15, 2.5, 1.5, R.leaf, { outline: false });
+    p.rect(9, 26, 14, 3, R.white, { outline: false, shade: 'flat' });
+  }),
+  konservendose: item(p => {
+    p.rect(7, 6, 18, 23, R.alu, { shade: 'cyl' });
+    p.rect(7, 10, 18, 15, R.orange, { shade: 'cyl' });
+    p.ell(14, 17, 3.5, 3, R.green);
+    p.ell(19, 18, 3, 2.5, R.red);
+    p.hl(8, 7, 16, R.alu.d).hl(8, 27, 16, R.alu.d);
+  }),
+  deospray: item(p => {
+    p.round(10, 8, 12, 22, 2, R.blue, { shade: 'cyl' });
+    p.rect(10, 8, 12, 3, R.alu, { shade: 'cyl' });
+    p.round(11, 2, 10, 7, 3, R.white, { shade: 'cyl' });
+    p.rect(19, 4, 3, 2, R.ink, { outline: false });
+    p.rect(12, 16, 8, 8, R.white, { outline: false, shade: 'flat' });
+    p.ell(16, 20, 2, 2, R.sky, { outline: false });
+  }),
+  kronkorken: item(p => {
+    p.paint((a, b) => {
+      const d = Math.hypot(a - 16, b - 16), ang = Math.atan2(b - 16, a - 16);
+      return d <= 12 + (Math.cos(ang * 21) > 0.3 ? 1 : 0);
+    }, R.red);
+    p.ring(16, 16, 9, 8, R.red, { outline: false, shade: 'dark' });
+    p.poly([[16, 10], [18, 15], [23, 15], [19, 18], [20, 23], [16, 20], [12, 23], [13, 18], [9, 15], [14, 15]], R.yellow, { outline: false });
+  }),
+  shampooflasche: item(p => {
+    p.round(8, 8, 16, 22, 5, R.pink, { shade: 'cyl' });
+    p.round(12, 2, 8, 7, 1, R.white, { shade: 'cyl' });
+    p.round(11, 15, 10, 9, 1, R.white, { shade: 'flat' });
+    p.hl(13, 18, 6, R.pink.m).hl(13, 20, 6, R.pink.l);
+  }),
+  plastiktuete: item(p => {
+    p.ring(11, 8, 5, 3, R.white);
+    p.ring(21, 8, 5, 3, R.white);
+    p.round(4, 10, 24, 20, 3, R.white);
+    p.path([[8, 14], [10, 20], [8, 27]], R.white.d).path([[22, 13], [24, 22]], R.white.d);
+    p.rect(12, 17, 8, 6, R.red, { shade: 'flat' });
+  }),
+  styropor: item(p => {
+    p.poly([[4, 12], [11, 5], [29, 5], [22, 12]], R.white, { shade: 'light' });
+    p.poly([[22, 12], [29, 5], [29, 21], [22, 28]], R.white, { shade: 'dark' });
+    p.rect(4, 12, 19, 16, R.white);
+    [[7, 16], [12, 19], [17, 15], [9, 23], [15, 25], [19, 21], [25, 12], [26, 18], [15, 8], [21, 7]]
+      .forEach(([x, y]) => p.dot(x, y, R.white.d));
+  }),
+  kaffeekapsel: item(p => {
+    p.poly([[7, 12], [25, 12], [21, 27], [11, 27]], R.purple, { shade: 'cyl' });
+    p.round(4, 9, 24, 4, 1, R.purple, { shade: 'light' });
+    p.hl(9, 18, 14, R.purple.d);
+  }),
+  tshirt: item(p => {
+    p.poly([[9, 5], [13, 4], [16, 7], [19, 4], [23, 5], [30, 11], [27, 16], [24, 14], [24, 29], [8, 29], [8, 14], [5, 16], [2, 11]], R.blue);
+    p.ell(16, 5, 3, 2, R.blue, { shade: 'dark' });
+    p.rect(11, 15, 4, 4, R.white, { outline: false, shade: 'flat' });
+  }),
+  'tshirt.kaputt': item(p => {
+    const dirty = { d: '#5c5a52', m: '#868377', l: '#a8a598' };
+    p.poly([[9, 5], [13, 4], [16, 7], [19, 4], [23, 5], [30, 11], [27, 16], [24, 14], [24, 29], [8, 29], [8, 14], [5, 16], [2, 11]], dirty);
+    p.ell(13, 20, 4, 3, R.brown, { outline: false });
+    p.ell(21, 11, 2.5, 2, R.brown, { outline: false });
+    p.clear((x, y) => (x - 19) ** 2 + (y - 23) ** 2 < 5 || (x > 23 && y > 25 && x - y > -3));
+    p.ring(19, 23, 2.8, 2.1, R.ink, { outline: false, shade: 'flat' });
+    p.path([[11, 9], [14, 12], [12, 14]], INK);
+  }),
+  bettwaesche: item(p => {
+    p.round(3, 7, 26, 10, 2, R.sky);
+    for (let x = 6; x < 27; x += 4) p.dot(x, 11, R.white.l).dot(x + 2, 13, R.white.l);
+    p.round(4, 16, 24, 11, 2, R.white);
+    for (let y = 19; y < 26; y += 3) p.hl(6, y, 20, R.sky.l);
+  }),
+  gummistiefel: item(p => {
+    p.poly([[9, 20], [20, 20], [27, 23], [29, 28], [9, 28]], R.green);
+    p.rect(9, 3, 12, 20, R.green, { shade: 'cyl' });
+    p.rect(8, 2, 14, 3, R.green, { shade: 'light' });
+    p.rect(8, 27, 22, 3, R.ink);
+  }),
+  teelicht: item(p => {
+    p.round(5, 17, 22, 9, 2, R.alu, { shade: 'cyl' });
+    p.ell(16, 18, 9, 2, R.white, { outline: false, shade: 'flat' });
+    p.vl(16, 13, 4, INK);
+    p.ell(16, 9, 3, 5, R.yellow);
+    p.ell(16, 10, 1.4, 2.4, R.orange, { outline: false, shade: 'flat' });
+  }),
+
+  // tier 4 ------------------------------------------------------------------
+  toaster: item(p => {
+    p.round(9, 4, 6, 8, 1, R.bread);
+    p.round(17, 5, 6, 7, 1, R.bread);
+    p.round(3, 10, 26, 17, 5, R.steel);
+    p.rect(9, 10, 6, 2, R.ink, { outline: false });
+    p.rect(17, 10, 6, 2, R.ink, { outline: false });
+    p.rect(28, 15, 3, 3, R.ink);
+    p.rect(5, 27, 4, 2, R.ink).rect(23, 27, 4, 2, R.ink);
+  }),
+  wasserkocher: item(p => {
+    p.ring(24, 17, 7, 4, R.ink);
+    p.poly([[9, 8], [23, 8], [25, 27], [7, 27]], R.steel, { shade: 'cyl' });
+    p.poly([[3, 9], [10, 9], [10, 14]], R.steel);
+    p.rect(19, 13, 2, 9, R.sky, { outline: false, shade: 'flat' });
+    p.round(10, 4, 12, 5, 2, R.ink);
+    p.round(6, 27, 20, 4, 1, R.ink);
+  }),
+  laptop: item(p => {
+    p.round(5, 3, 22, 16, 1, R.grey);
+    p.rect(7, 5, 18, 12, R.screen, { outline: false });
+    p.line(9, 15, 15, 6, R.screen.h);
+    p.poly([[3, 19], [29, 19], [31, 26], [1, 26]], R.steel);
+    for (let y = 20; y < 24; y += 2) for (let x = 5; x < 27; x += 2) p.dot(x + (y % 4 ? 1 : 0), y, R.steel.d);
+    p.rect(13, 24, 6, 1, R.steel.d, { outline: false });
+  }),
+  fernseher: item(p => {
+    p.rect(14, 23, 4, 4, R.ink);
+    p.round(8, 26, 16, 4, 1, R.ink);
+    p.round(1, 4, 30, 20, 1, R.ink);
+    p.rect(3, 6, 26, 16, R.screen, { outline: false });
+    p.line(6, 19, 15, 8, R.screen.h).line(10, 20, 18, 11, R.screen.l);
+  }),
+  kuehlschrank: item(p => {
+    p.round(8, 1, 16, 29, 2, R.white);
+    p.hl(9, 11, 14, INK);
+    p.vl(21, 4, 5, R.grey.m).vl(21, 14, 8, R.grey.m);
+    p.rect(9, 30, 3, 2, R.ink, { outline: false }).rect(20, 30, 3, 2, R.ink, { outline: false });
+  }),
+  matratze: item(p => {
+    p.poly([[2, 13], [8, 8], [30, 8], [24, 13]], R.mattress, { shade: 'light' });
+    p.rect(2, 13, 23, 11, R.mattress);
+    p.poly([[24, 13], [30, 8], [30, 19], [24, 24]], R.mattress, { shade: 'dark' });
+    for (let x = 6; x < 24; x += 5) for (let y = 16; y < 23; y += 4) p.dot(x, y, R.mattress.d);
+    p.hl(3, 21, 21, R.sky.m);
+  }),
+  sofa: item(p => {
+    p.round(4, 7, 24, 12, 3, R.red);
+    p.vl(16, 8, 10, R.red.d);
+    p.round(4, 16, 24, 8, 2, R.red, { shade: 'light' });
+    p.round(1, 12, 7, 14, 3, R.red);
+    p.round(24, 12, 7, 14, 3, R.red);
+    p.rect(4, 26, 3, 4, R.wood).rect(25, 26, 3, 4, R.wood);
+  }),
+  stuhl: item(p => {
+    p.rect(10, 20, 2, 9, R.wood, { shade: 'dark' }).rect(20, 20, 2, 9, R.wood, { shade: 'dark' });
+    p.rect(9, 2, 3, 17, R.wood).rect(20, 2, 3, 17, R.wood);
+    p.rect(11, 4, 10, 3, R.wood).rect(11, 9, 10, 3, R.wood);
+    p.poly([[6, 17], [26, 17], [28, 21], [4, 21]], R.wood, { shade: 'light' });
+    p.rect(5, 21, 3, 9, R.wood).rect(24, 21, 3, 9, R.wood);
+  }),
+  bettdecke: item(p => {
+    p.round(2, 7, 28, 19, 6, R.duvet);
+    for (let x = 9; x < 26; x += 7) p.vl(x, 9, 15, R.duvet.d);
+    for (let y = 13; y < 24; y += 6) p.hl(4, y, 24, R.duvet.d);
+  }),
+  bohrmaschine: item(p => drill(p, true)),
+
+  // tier 5 ------------------------------------------------------------------
+  farbeimer: item(p => {
+    p.path([[6, 11], [8, 5], [16, 2], [24, 5], [26, 11]], INK);
+    p.poly([[6, 11], [26, 11], [24, 29], [8, 29]], R.white, { shade: 'cyl' });
+    p.round(5, 9, 22, 4, 1, R.alu, { shade: 'cyl' });
+    p.rect(9, 16, 14, 8, R.grey, { shade: 'flat' });
+    p.path([[12, 21], [15, 18], [20, 18]], R.white.l, 2);
+  }),
+  nagellack: item(p => {
+    p.round(8, 14, 16, 15, 4, R.pink, { shade: 'cyl' });
+    p.round(12, 2, 8, 13, 1, R.ink, { shade: 'cyl' });
+    p.line(11, 17, 11, 25, R.pink.h);
+  }),
+  rohrreiniger: item(p => {
+    p.round(8, 8, 16, 22, 3, R.yellow, { shade: 'cyl' });
+    p.round(11, 2, 10, 7, 1, R.red, { shade: 'cyl' });
+    hazard(p, 16, 19, 6);
+  }),
+  pflanzenschutz: item(p => {
+    p.round(8, 9, 16, 21, 3, R.green, { shade: 'cyl' });
+    p.round(12, 3, 8, 7, 1, R.ink, { shade: 'cyl' });
+    p.round(10, 14, 12, 12, 1, R.white, { shade: 'flat' });
+    hazard(p, 16, 20, 5);
+  }),
+  medikamente: item(p => {
+    p.rect(3, 3, 19, 13, R.white);
+    p.rect(11, 5, 3, 9, R.red, { outline: false, shade: 'flat' });
+    p.rect(8, 8, 9, 3, R.red, { outline: false, shade: 'flat' });
+    p.round(10, 13, 20, 16, 2, R.alu);
+    for (let r = 0; r < 2; r++) for (let c = 0; c < 3; c++) p.ell(15 + c * 6, 18 + r * 6, 2.2, 2.2, c % 2 ? R.pink : R.white);
+  }),
+  thermometer: item(p => {
+    p.poly([[6, 23], [9, 26], [28, 7], [25, 4]], R.clear);
+    p.line(10, 22, 22, 10, R.alu.m, 2);
+    for (let i = 0; i < 5; i++) p.dot(13 + i * 3, 23 - i * 3 - 4, INK);
+    p.ell(7, 26, 4, 4, R.alu);
+  }),
+  energiesparlampe: item(p => {
+    [9, 14, 19].forEach(x => p.round(x, 1, 5, 17, 2, R.white));
+    p.round(7, 16, 18, 7, 2, R.white, { shade: 'cyl' });
+    screwBase(p, 23);
+  }),
+  lametta: item(p => {
+    for (let i = 0; i < 9; i++) {
+      const x = 7 + i * 2, len = 14 + (i * 7) % 9;
+      for (let y = 8; y < 8 + len; y++) p.dot(x + ((y + i) % 4 === 0 ? 1 : 0), y, i % 2 ? R.alu.l : R.alu.d);
+    }
+    p.round(5, 3, 22, 6, 1, R.red);
+    p.hl(8, 5, 16, R.red.l);
+  }),
+  verduenner: item(p => {
+    p.round(7, 6, 18, 24, 1, R.alu, { shade: 'cyl' });
+    p.round(18, 1, 5, 6, 1, R.red);
+    p.rect(9, 12, 14, 13, R.orange, { shade: 'flat' });
+    hazard(p, 16, 18, 5);
+  }),
 };
 
-// Palette swaps for shapes that recur. X is the body colour, H its highlight,
-// L the label's print.
-const SWAPS = {
-  glasflasche: { X: 'C', H: 'w', L: 'G' },
-  'glasflasche.weiss': { X: 'C', H: 'w', L: 'G' },
-  'glasflasche.gruen': { X: 'e', H: 'l', L: 'E' },
-  'glasflasche.braun': { X: 'a', H: 'y', L: 'N' },
-  'glasflasche.blau': { X: 'b', H: 'c', L: 'B' },
-  pfandflasche_mehrweg: { X: 'e', H: 'l', L: 'r' },
-};
-// Glass colour is also carried as a texture — green-versus-brown is exactly the
-// pair a colour-blind player loses (R12, AE11): green is striped, brown dotted,
-// blue barred, clear plain.
-const TEXTURE = {
-  diag: (x, y) => (x + y) % 3 === 0,
-  dots: (x, y) => x % 2 === 0 && y % 2 === 0,
-  bars: x => x % 2 === 0,
-};
-const GLASS_TEXTURE = { 'glasflasche.gruen': ['diag', 'E'], 'glasflasche.braun': ['dots', 'N'],
-                        'glasflasche.blau': ['bars', 'B'], pfandflasche_mehrweg: ['diag', 'E'] };
-Object.entries(SWAPS).forEach(([id, map]) => {
-  const tex = GLASS_TEXTURE[id];
-  S[id] = BOTTLE.map((row, y) => [...row].map((ch, x) => {
-    if (ch === 'X' && tex && TEXTURE[tex[0]](x, y)) return tex[1];
-    return map[ch] || ch;
-  }).join(''));
-});
+// Glass by colour. Green, brown and blue are also striped, dotted and barred,
+// so the colour survives greyscale.
+S['glasflasche.weiss'] = item(p => bottle(p, R.clear));
+S['glasflasche.gruen'] = item(p => bottle(p, R.gglass, 'diag'));
+S['glasflasche.braun'] = item(p => bottle(p, R.bglass, 'dots'));
+S['glasflasche.blau'] = item(p => bottle(p, R.blglass, 'bars'));
 
-// Parts reuse the picture of what they are.
+// Parts are drawn as what they are once separated.
 S['fernbedienung:batterien'] = S.batterien;
-S['fernbedienung:geraet'] = S.fernbedienung;
-S['bohrmaschine:akku'] = [
-  '................',
-  '................',
-  '................',
-  '................',
-  '...kkkkkkkkkk...',
-  '..kKKKKKKKKKKk..',
-  '..kKggKKKKeeKk..',
-  '..kKggKKKKelKk..',
-  '..kKKKKKKKKKKk..',
-  '..kkkkkkkkkkkk..',
-  '................',
-  '................',
-  '................',
-  '................',
-  '................',
-  '................',
-];
-S['bohrmaschine:geraet'] = S.bohrmaschine;
-S['joghurtbecher:becher'] = [
-  '................',
-  '................',
-  '..kkkkkkkkkkkk..',
-  '..k..........k..',
-  '..kkkkkkkkkkkk..',
-  '...kwwwwwwwWk...',
-  '...kwPPPPPwWk...',
-  '...kwPwwwPwWk...',
-  '...kwPPPPPwWk...',
-  '....kwwwwwWk....',
-  '....kwbbbbWk....',
-  '....kwwwwwWk....',
-  '.....kwwwWk.....',
-  '.....kkkkkk.....',
-  '................',
-  '................',
-];
-S['joghurtbecher:deckel'] = [
-  '................',
-  '................',
-  '................',
-  '................',
-  '................',
-  '..kkkkkkkkkkkkk.',
-  '.kmGmGmGmGmGmGk.',
-  '.kGwmGmGPPmGmGk.',
-  '.kmGmGmPmmPmGmk.',
-  '.kGmGmGmPPmGmGk.',
-  '..kkkkkkkkkkkkkk',
-  '...........kmk..',
-  '............k...',
-  '................',
-  '................',
-  '................',
-];
+S['fernbedienung:geraet'] = item(p => remote(p, true));
+S['bohrmaschine:akku'] = item(p => {
+  p.round(4, 10, 24, 13, 2, R.ink);
+  p.rect(9, 7, 14, 4, R.ink);
+  p.rect(20, 14, 4, 3, R.green, { outline: false, shade: 'light' });
+  p.hl(7, 19, 18, R.ink.l);
+});
+S['bohrmaschine:geraet'] = item(p => drill(p, false));
+S['joghurtbecher:becher'] = item(p => {
+  p.poly([[8, 9], [24, 9], [22, 29], [10, 29]], R.white, { shade: 'cyl' });
+  p.poly([[8.7, 14], [23.3, 14], [22.8, 20], [9.2, 20]], R.pink, { shade: 'cyl' });
+  p.hl(11, 24, 10, R.blue.m).hl(11, 25, 10, R.blue.m);
+  p.ell(16, 9, 8, 2, R.ink, { outline: false });
+});
+S['joghurtbecher:deckel'] = item(p => {
+  p.ell(15, 17, 13, 7, R.alu);
+  p.ell(15, 17, 6, 3, R.pink, { outline: false, shade: 'flat' });
+  p.poly([[25, 13], [31, 9], [31, 13], [27, 16]], R.alu);
+});
 
 export const ITEMS = S;
 
 // ---------------------------------------------------------------- containers
-// Containers are composed rather than drawn cell by cell: a bin is a lid, a
-// body and a plate with an icon, and fourteen of them differ only in those.
+// Bins are coloured all over, the way they stand in the courtyard. The island's
+// containers follow the real ones: a beige, rounded shell with a round hole and
+// a white sticker, alike in everything but one coloured band — so the kind can
+// be told at a glance without reading.
 
-function grid(w, h) { return Array.from({ length: h }, () => Array(w).fill('.')); }
-function rect(g, x, y, w, h, c) {
-  x = Math.round(x); y = Math.round(y); w = Math.round(w); h = Math.round(h);
-  for (let j = y; j < y + h; j++) for (let i = x; i < x + w; i++) if (g[j] && i >= 0 && i < g[j].length) g[j][i] = c;
-}
-function box(g, x, y, w, h, fill, line = 'k') {
-  rect(g, x, y, w, h, line);
-  rect(g, x + 1, y + 1, w - 2, h - 2, fill);
-}
-function put(g, x, y, rows) {
-  rows.forEach((row, j) => [...row].forEach((ch, i) => { if (ch !== '.' && g[y + j]) g[y + j][x + i] = ch; }));
-}
-const rows = g => g.map(r => r.join(''));
+const box48 = fn => draw(48, 48, fn);
 
-// Icons sit on a plate on the container's front: 8 by 6, drawn in ink and the
-// container's accent, so the picture survives greyscale (R12).
+function plate(p, x, y, icon) {
+  p.round(x, y, 16, 13, 1, R.white, { shade: 'flat' });
+  ICON[icon](p, x + 2, y + 2);
+}
 const ICON = {
-  rest: ['..kkkk..', '.kkkkkk.', '..kggk..', '..kggk..', '..kggk..', '..kkkk..'],
-  papier: ['kkkkkkk.', 'kwkkkwk.', 'kwwwwwkk', 'kwkkkwwk', 'kwwwwwwk', 'kkkkkkkk'],
-  bio: ['....kkk.', '..kkeek.', '.kelleek', '.keleek.', 'kkkkk...', 'k.......'],
-  gelb: ['...kk...', '..kYYk..', '..kkkk..', '.kYwYYk.', '.kYwYYk.', '.kkkkkk.'],
-  pfand: ['.kkkkk..', 'k.....k.', 'k..kkkkk', 'k...kkk.', '.k...k..', '..kkk...'],
-  batt: ['...kk...', '.kkkkkk.', '.kYYYYk.', '.kYYYYk.', '.kkkkkk.', '.kGGGGk.'],
-  plug: ['.k...k..', '.k...k..', 'kkkkkkk.', 'kgggggk.', '.kgggk..', '...k....'],
-  glass: ['...kk...', '...kk...', '..kXXk..', '.kXXXXk.', '.kXXXXk.', '.kkkkkk.'],
-  can: ['.kkkkkk.', '.kGGGGk.', '.kgggg k', '.kGGGGk.', '.kggggk.', '.kkkkkk.'],
-  shirt: ['.kk..kk.', 'kXXkkXXk', 'kXXXXXXk', '.kXXXXk.', '.kXXXXk.', '.kkkkkk.'],
-  tv: ['kkkkkkkk', 'kbbbbbck', 'kbbbbcbk', 'kkkkkkkk', '...kk...', '.kkkkkk.'],
-  chair: ['.kk.....', '.kk.....', '.kkkkkk.', '.knnnnk.', '.k....k.', '.k....k.'],
-  hazard: ['...kk...', '..kYYk..', '..kkYk..', '.kYkYYk.', 'kYYYYYYk', 'kkkkkkkk'],
-  flask: ['..kkk...', '..kgk...', '.kgggk..', 'kgeeegk.', 'keeeeek.', 'kkkkkkk.'],
+  rest: (p, x, y) => { p.round(x + 3, y + 1, 6, 8, 1, R.ink); p.hl(x + 2, y + 1, 8, INK); p.hl(x + 4, y, 4, INK); },
+  papier: (p, x, y) => { p.rect(x + 1, y + 1, 10, 8, R.paper); p.hl(x + 3, y + 3, 6, INK).hl(x + 3, y + 5, 6, R.grey.l).hl(x + 3, y + 7, 4, R.grey.l); },
+  bio: (p, x, y) => { p.ell(x + 6, y + 4, 5, 3.5, R.leaf); p.line(x + 2, y + 8, x + 9, y + 2, R.leaf.d); },
+  gelb: (p, x, y) => { p.round(x + 3, y + 3, 6, 6, 1, R.yellow); p.rect(x + 4, y, 4, 3, R.yellow); },
+  glass: (p, x, y) => { p.poly([[x + 5, y], [x + 7, y], [x + 7, y + 3], [x + 9, y + 5], [x + 9, y + 9], [x + 3, y + 9], [x + 3, y + 5], [x + 5, y + 3]], R.clear); },
+  can: (p, x, y) => { p.rect(x + 3, y + 1, 6, 8, R.alu, { shade: 'cyl' }); p.hl(x + 3, y + 3, 6, INK); },
+  plastic: (p, x, y) => { p.round(x + 3, y + 2, 6, 7, 2, R.pet, { shade: 'cyl' }); p.rect(x + 4, y, 4, 2, R.blue); },
+  shirt: (p, x, y) => { p.poly([[x + 2, y + 1], [x + 10, y + 1], [x + 11, y + 4], [x + 9, y + 4], [x + 9, y + 9], [x + 3, y + 9], [x + 3, y + 4], [x + 1, y + 4]], R.blue); },
+  batt: (p, x, y) => { p.rect(x + 4, y, 4, 2, R.steel); p.rect(x + 3, y + 1, 6, 8, R.yellow); p.hl(x + 4, y + 7, 4, INK); },
+  plug: (p, x, y) => { p.vl(x + 4, y, 3, INK).vl(x + 7, y, 3, INK); p.round(x + 2, y + 2, 8, 5, 1, R.grey); p.vl(x + 6, y + 7, 3, INK); },
+  tv: (p, x, y) => { p.rect(x + 1, y + 1, 10, 7, R.screen); p.hl(x + 4, y + 8, 4, INK); },
+  chair: (p, x, y) => { p.vl(x + 3, y, 9, INK); p.hl(x + 3, y + 5, 7, INK); p.vl(x + 9, y + 5, 4, INK); },
+  flask: (p, x, y) => { p.poly([[x + 4, y], [x + 7, y], [x + 7, y + 3], [x + 10, y + 9], [x + 1, y + 9], [x + 4, y + 3]], R.green); },
 };
 
-function plate(g, x, y, icon, accent) {
-  box(g, x, y, 10, 8, 'w');
-  put(g, x + 1, y + 1, ICON[icon].map(r => r.replace(/X/g, accent || 'g').replace(/ /g, '.')));
+function wheelie(ramp, icon) {
+  return box48(p => {
+    p.rect(13, 3, 22, 3, R.ink);
+    p.poly([[8, 12], [40, 12], [38, 42], [10, 42]], ramp, { shade: 'cyl' });
+    for (const x of [14, 34]) p.vl(x, 15, 25, ramp.d);
+    p.round(5, 6, 38, 8, 2, ramp);
+    p.hl(7, 12, 34, ramp.d);
+    plate(p, 16, 20, icon);
+    p.ell(13, 43, 4, 4, R.ink);
+    p.ell(35, 43, 4, 4, R.ink);
+    p.dot(13, 43, R.grey.l).dot(35, 43, R.grey.l);
+  });
 }
 
-function wheelie(lid, lidShade, icon) {
-  const g = grid(24, 24);
-  box(g, 3, 6, 18, 15, 'K');
-  rect(g, 4, 7, 1, 13, 'g');
-  rect(g, 19, 7, 1, 13, 'd');
-  box(g, 2, 2, 20, 5, lid);
-  rect(g, 3, 5, 18, 1, lidShade);
-  rect(g, 8, 1, 8, 1, 'k');
-  plate(g, 7, 9, icon);
-  box(g, 4, 20, 4, 3, 'g');
-  box(g, 16, 20, 4, 3, 'g');
-  return rows(g);
+function island(band, tex, icon) {
+  return box48(p => {
+    p.ring(17, 6, 2.5, 1, R.steel).ring(31, 6, 2.5, 1, R.steel);
+    p.poly([[6, 34], [42, 34], [43, 41], [41, 45], [7, 45], [5, 41]], R.beige, { shade: 'cyl' });
+    p.round(5, 7, 38, 28, 9, R.beige, { shade: 'cyl' });
+    p.ell(24, 14, 4.5, 4.5, R.ink, { outline: false });
+    p.round(14, 20, 20, 10, 1, R.white, { shade: 'flat' });
+    ICON[icon](p, 18, 20);
+    p.hl(26, 23, 6, R.grey.l).hl(26, 25, 6, R.grey.l).hl(26, 27, 4, R.grey.l);
+    // The one element that differs: the band round the waist, in the colour of
+    // what goes in — and, for glass, in a texture too.
+    p.round(3, 31, 42, 8, 1, band, { tex: tex && TEX[tex], texColor: band.d });
+  });
 }
 
-function igloo(body, shade, icon, accent, texture) {
-  const g = grid(24, 24);
-  box(g, 2, 5, 20, 17, body);
-  if (texture) {
-    for (let y = 6; y < 21; y++) for (let x = 4; x < 20; x++) if (TEXTURE[texture](x, y)) g[y][x] = shade;
-  }
-  rect(g, 3, 6, 1, 15, 'w');
-  rect(g, 20, 6, 1, 15, shade);
-  box(g, 4, 2, 16, 4, shade);
-  box(g, 9, 3, 6, 2, 'k');
-  plate(g, 7, 9, icon, accent);
-  rect(g, 2, 21, 20, 1, 'k');
-  box(g, 3, 21, 3, 2, 'K');
-  box(g, 18, 21, 3, 2, 'K');
-  return rows(g);
+function crate(ramp, icon) {
+  return box48(p => {
+    p.rect(2, 30, 44, 4, R.wood, { shade: 'light' });
+    p.rect(4, 34, 3, 12, R.wood).rect(41, 34, 3, 12, R.wood);
+    p.round(10, 10, 28, 21, 1, ramp);
+    p.rect(17, 9, 14, 3, R.ink);
+    plate(p, 16, 16, icon);
+  });
 }
 
-function crate(body, shade, icon, accent) {
-  const g = grid(24, 24);
-  box(g, 1, 14, 22, 9, 'n');
-  rect(g, 2, 15, 20, 1, 't');
-  box(g, 5, 6, 14, 9, body);
-  rect(g, 6, 7, 12, 1, shade);
-  box(g, 9, 5, 6, 2, 'k');
-  plate(g, 7, 15, icon, accent);
-  return rows(g);
+function skip(ramp, icon, cargo) {
+  return box48(p => {
+    cargo(p);
+    p.poly([[2, 18], [46, 18], [41, 42], [7, 42]], ramp);
+    p.hl(4, 21, 40, ramp.l);
+    for (const x of [12, 24, 36]) p.vl(x, 22, 18, ramp.d);
+    plate(p, 16, 25, icon);
+    p.round(8, 41, 8, 5, 2, R.ink).round(32, 41, 8, 5, 2, R.ink);
+  });
 }
-
-function skip(body, shade, icon, cargo) {
-  const g = grid(24, 24);
-  for (let j = 0; j < 12; j++) rect(g, 1 + Math.floor(j / 4), 9 + j, 22 - 2 * Math.floor(j / 4), 1, j === 0 ? 'k' : body);
-  for (let j = 0; j < 12; j++) {
-    const x = 1 + Math.floor(j / 4), w = 22 - 2 * Math.floor(j / 4);
-    g[9 + j][x] = 'k'; g[9 + j][x + w - 1] = 'k';
-  }
-  rect(g, 3, 21, 18, 1, 'k');
-  rect(g, 2, 10, 20, 1, shade);
-  put(g, 3, 3, cargo);
-  plate(g, 7, 12, icon);
-  box(g, 4, 21, 3, 3, 'K');
-  box(g, 17, 21, 3, 3, 'K');
-  return rows(g);
-}
-
-const CARGO = {
-  elektro: ['....kkkkkk......', '...kbbbbcbk.kk..', '...kbbbcbbkkGGk.', '..kkkkkkkkkGGGk.', '.kGGGk.kGGGGGGk.', '.kGwGk.kGkGkGGk.'],
-  sperr: ['.kkk.......kkk..', '.knk.......knk..', '.knkkkkkkkkknk..', '.kRRRRRRRRRRRk..', 'kRrrrrrrrrrrrRk.', 'kkkkkkkkkkkkkkk.'],
-};
 
 const C = {
-  restmuell: wheelie('k', 'K', 'rest'),
-  papier: wheelie('b', 'B', 'papier'),
-  bio: wheelie('n', 'N', 'bio'),
-  gelbe_tonne: wheelie('Y', 'a', 'gelb'),
-  glas_weiss: igloo('w', 'G', 'glass', 'C'),
-  glas_gruen: igloo('e', 'E', 'glass', 'e', 'diag'),
-  glas_braun: igloo('a', 'N', 'glass', 'a', 'dots'),
-  kunststoff: igloo('Y', 'a', 'gelb'),
-  metall: igloo('G', 'g', 'can'),
-  altkleider: igloo('R', 'r', 'shirt', 'b'),
-  batteriebox: crate('e', 'E', 'batt'),
-  elektro_ruecknahme: crate('b', 'B', 'plug'),
-  elektroschrott: skip('b', 'B', 'tv', CARGO.elektro),
-  batterien: igloo('e', 'E', 'batt'),
-  sperrmuell: skip('o', 'a', 'chair', CARGO.sperr),
+  restmuell: wheelie(R.ink, 'rest'),
+  papier: wheelie(R.blue, 'papier'),
+  bio: wheelie(R.brown, 'bio'),
+  gelbe_tonne: wheelie(R.yellow, 'gelb'),
+  glas_weiss: island(R.white, null, 'glass'),
+  glas_gruen: island(R.gglass, 'diag', 'glass'),
+  glas_braun: island(R.bglass, 'dots', 'glass'),
+  kunststoff: island(R.yellow, null, 'plastic'),
+  metall: island(R.steel, 'checks', 'can'),
+  altkleider: box48(p => {
+    p.round(7, 4, 34, 41, 2, R.red);
+    p.rect(13, 10, 22, 6, R.ink);
+    p.rect(14, 11, 20, 2, R.grey, { outline: false });
+    plate(p, 16, 22, 'shirt');
+    p.rect(7, 42, 34, 3, R.ink);
+  }),
+  batteriebox: crate(R.green, 'batt'),
+  elektro_ruecknahme: crate(R.blue, 'plug'),
+  elektroschrott: skip(R.blue, 'tv', p => {
+    p.rect(8, 8, 14, 11, R.ink);
+    p.rect(9, 9, 12, 8, R.screen, { outline: false });
+    p.round(25, 9, 12, 10, 2, R.steel);
+    p.path([[36, 6], [40, 3], [43, 8], [39, 12]], INK, 2);
+  }),
+  batterien: box48(p => {
+    p.round(10, 6, 28, 38, 3, R.green, { shade: 'cyl' });
+    p.round(9, 4, 30, 5, 1, R.green, { shade: 'dark' });
+    for (const y of [17, 31]) p.hl(11, y, 26, R.green.d);
+    plate(p, 16, 18, 'batt');
+  }),
+  sperrmuell: skip(R.orange, 'chair', p => {
+    p.round(7, 5, 18, 10, 2, R.red);
+    p.round(5, 11, 22, 7, 2, R.red, { shade: 'light' });
+    p.rect(30, 2, 3, 16, R.wood).rect(38, 2, 3, 16, R.wood).rect(30, 9, 11, 3, R.wood);
+  }),
+  pfandautomat: box48(p => {
+    p.round(7, 1, 34, 45, 1, R.steel);
+    p.rect(11, 5, 26, 9, R.ink);
+    p.rect(12, 6, 24, 7, R.green, { outline: false, shade: 'flat' });
+    p.hl(14, 9, 14, R.green.h);
+    p.round(13, 18, 22, 16, 2, R.grey);
+    p.ell(24, 26, 6, 6, R.ink);
+    p.ell(24, 26, 3, 3, R.ink, { outline: false, shade: 'dark' });
+    p.rect(13, 38, 22, 3, R.ink);
+  }),
+  giftmobil: box48(p => {
+    p.round(1, 10, 31, 27, 1, R.white);
+    p.round(31, 18, 16, 19, 2, R.red);
+    p.rect(35, 21, 9, 7, R.sky);
+    hazard(p, 16, 22, 7);
+    p.rect(1, 35, 46, 3, R.ink);
+    p.ell(10, 39, 5, 5, R.ink).ell(38, 39, 5, 5, R.ink);
+    p.dot(10, 39, R.grey.l).dot(38, 39, R.grey.l);
+  }),
+  problemstoffannahme: box48(p => {
+    p.round(3, 4, 11, 22, 2, R.red, { shade: 'cyl' });
+    p.hl(4, 11, 9, R.red.d).hl(4, 19, 9, R.red.d);
+    p.round(34, 2, 11, 24, 2, R.green, { shade: 'cyl' });
+    p.hl(35, 10, 9, R.green.d).hl(35, 18, 9, R.green.d);
+    p.round(17, 10, 14, 16, 1, R.yellow);
+    hazard(p, 24, 18, 5);
+    p.rect(0, 26, 48, 21, R.wood);
+    p.hl(1, 28, 46, R.wood.l);
+    plate(p, 16, 31, 'flask');
+  }),
 };
-
-C.pfandautomat = (() => {
-  const g = grid(24, 24);
-  box(g, 3, 1, 18, 22, 'G');
-  rect(g, 4, 2, 1, 20, 'w');
-  rect(g, 19, 2, 1, 20, 'g');
-  box(g, 6, 3, 12, 5, 'E');
-  rect(g, 8, 5, 6, 1, 'l');
-  box(g, 7, 10, 10, 8, 'K');
-  box(g, 9, 12, 6, 4, 'k');
-  rect(g, 10, 13, 4, 2, 'd');
-  rect(g, 7, 19, 10, 2, 'k');
-  rect(g, 8, 19, 8, 1, 'g');
-  return rows(g);
-})();
-
-C.giftmobil = (() => {
-  const g = grid(24, 24);
-  box(g, 1, 6, 15, 13, 'w');
-  rect(g, 2, 7, 13, 1, 'W');
-  box(g, 15, 9, 8, 10, 'R');
-  box(g, 17, 10, 5, 4, 'C');
-  put(g, 4, 8, ICON.hazard);
-  rect(g, 1, 18, 22, 1, 'k');
-  box(g, 3, 18, 5, 5, 'K');
-  rect(g, 5, 20, 1, 1, 'G');
-  box(g, 16, 18, 5, 5, 'K');
-  rect(g, 18, 20, 1, 1, 'G');
-  return rows(g);
-})();
-
-C.problemstoffannahme = (() => {
-  const g = grid(24, 24);
-  box(g, 0, 13, 24, 10, 'n');
-  rect(g, 1, 14, 22, 1, 't');
-  box(g, 2, 3, 6, 10, 'R');
-  rect(g, 3, 6, 4, 1, 'k');
-  rect(g, 3, 9, 4, 1, 'k');
-  box(g, 9, 5, 6, 8, 'Y');
-  put(g, 10, 6, ['.kk.', 'kYYk', 'kkYk', 'kkkk'].map(r => r));
-  box(g, 16, 2, 6, 11, 'e');
-  rect(g, 17, 5, 4, 1, 'k');
-  rect(g, 17, 8, 4, 1, 'k');
-  plate(g, 7, 15, 'flask');
-  return rows(g);
-})();
 
 export const CONTAINERS = C;
 
 // ------------------------------------------------------------------ scenery
-// The finale's tree, and the four places it can go.
-export const TREE = (() => {
-  const g = grid(32, 44);
-  // Four tiers, each a triangle that overlaps the one above, drawn top to
-  // bottom so the wider tier covers the narrower one's base.
-  [[1, 10, 6], [7, 11, 9], [14, 12, 12], [21, 14, 15]].forEach(([top, height, base]) => {
-    for (let r = 0; r < height; r++) {
-      const half = Math.round(1 + (base - 1) * r / (height - 1));
-      const y = top + r;
-      rect(g, 16 - half, y, half * 2, 1, r === height - 1 ? 'E' : 'e');
-      g[y][16 - half] = 'k';
-      g[y][16 + half - 1] = 'k';
-      if (half > 2 && r < height - 1) { g[y][16 - half + 1] = 'l'; if (r % 3 === 1) g[y][16 - half + 2] = 'l'; }
-    }
-    rect(g, 16 - base, top + height - 1, base * 2, 1, 'k');
+// The finale's tree, what has to come off it, and the four places it can go.
+export const TREE = draw(64, 88, p => {
+  p.round(26, 70, 12, 14, 1, R.wood);
+  [[2, 22, 13], [14, 22, 19], [28, 24, 25], [43, 27, 31]].forEach(([top, height, base]) => {
+    p.paint((a, b) => {
+      if (b < top || b >= top + height) return false;
+      const t = (b - top) / height;
+      const half = 2 + (base - 2) * t + (Math.floor(a / 3) % 2 && t > 0.85 ? -1.5 : 0);
+      return Math.abs(a - 32) <= half;
+    }, R.leaf);
   });
-  rect(g, 15, 0, 2, 1, 'k');
-  box(g, 13, 34, 6, 7, 'n');
-  rect(g, 14, 35, 1, 5, 't');
-  return rows(g);
-})();
+  for (let y = 6; y < 70; y += 9) p.dot(32 - Math.floor(y / 3), y, R.leaf.h);
+});
 
-// What has to come off the tree before it can go anywhere (AWM: abschmücken
-// und von Plastik befreien). Small enough to sit on the tree's branches.
 export const DECOR = {
-  kugel: ['..kk..', '.kRRk.', 'kRwRRk', 'kRRRRk', 'kRRRrk', '.kkkk.'],
-  kugel_gold: ['..kk..', '.kYYk.', 'kYwYYk', 'kYYYYk', 'kYYYak', '.kkkk.'],
-  lametta: ['kmkGkmk', 'kGkmkGk', 'kmkGkmk', '.kGkmk.', '.kmk.k.', '..k....'],
-  lichter: ['k.....k', '.kk.kk.', 'kYk.kYk', 'kyk.kyk', '.k...k.'],
-  kerze: ['..k...', '.kYk..', '..k...', '.kwk..', '.kwk..', 'kGGGk.'],
-  netz: ['k.k.k.k.k', '.k.k.k.k.', 'k.k.k.k.k', '.k.k.k.k.', 'k.k.k.k.k'],
-  stern: ['...k...', '..kYk..', 'kkYYYkk', '.kYYYk.', '.kYkYk.', 'kk...kk'],
+  kugel: draw(12, 13, p => { p.rect(5, 0, 2, 2, R.alu); p.ell(6, 7, 5.5, 5.5, R.red); p.dot(4, 5, R.red.h).dot(4, 6, R.red.h); }),
+  kugel_gold: draw(12, 13, p => { p.rect(5, 0, 2, 2, R.alu); p.ell(6, 7, 5.5, 5.5, R.yellow); p.dot(4, 5, R.yellow.h).dot(4, 6, R.yellow.h); }),
+  lametta: draw(14, 12, p => {
+    for (let i = 0; i < 7; i++) for (let y = 0; y < 8 + (i * 5) % 5; y++) p.dot(1 + i * 2 + (y % 3 === 0 ? 1 : 0), y, i % 2 ? R.alu.l : R.alu.d);
+  }),
+  lichter: draw(16, 8, p => {
+    p.path([[0, 1], [5, 4], [10, 4], [15, 1]], INK);
+    [[2, 3], [7, 5], [12, 4]].forEach(([x, y]) => p.ell(x + 0.5, y + 1.5, 1.8, 1.8, R.yellow));
+  }),
+  kerze: draw(8, 12, p => { p.ell(4, 2, 1.5, 2, R.yellow, { outline: false }); p.rect(2, 4, 4, 5, R.white); p.rect(1, 9, 6, 3, R.alu); }),
+  netz: draw(40, 22, p => {
+    for (let y = 0; y < 22; y++) for (let x = 0; x < 40; x++) if ((x + y) % 5 === 0 || (x - y + 40) % 5 === 0) p.dot(x, y, R.white.d);
+  }),
+  stern: draw(15, 15, p => {
+    const pts = [];
+    for (let i = 0; i < 10; i++) {
+      const a = -Math.PI / 2 + i * Math.PI / 5, r = i % 2 ? 3.2 : 7.4;
+      pts.push([7.5 + r * Math.cos(a), 7.8 + r * Math.sin(a)]);
+    }
+    p.poly(pts, R.yellow);
+  }),
 };
 
 export const ROUTES = {
-  wertstoffhof: (() => {
-    const g = grid(24, 24);
-    box(g, 1, 8, 22, 14, 'G');
-    for (let x = 3; x < 22; x += 3) rect(g, x, 9, 1, 12, 'g');
-    box(g, 4, 2, 16, 6, 'e');
-    rect(g, 6, 4, 12, 2, 'w');
-    box(g, 8, 14, 8, 8, 'K');
-    return rows(g);
-  })(),
-  sammelstelle: (() => {
-    const g = grid(24, 24);
-    rect(g, 11, 6, 2, 17, 'K');
-    box(g, 3, 1, 18, 9, 'w');
-    put(g, 5, 2, ['...k..', '..kek.', '.keeek', 'keeeee', '..kk..']);
-    put(g, 12, 2, ['...k..', '..kek.', '.keeek', 'keeeee', '..kk..']);
-    rect(g, 0, 22, 24, 2, 'g');
-    put(g, 2, 14, ['..kk..', '.keek.', 'keeeek', '.keek.', 'keeeek', '..nn..', '..nn..', '..nn..']);
-    put(g, 16, 14, ['..kk..', '.keek.', 'keeeek', '.keek.', 'keeeek', '..nn..', '..nn..', '..nn..']);
-    return rows(g);
-  })(),
-  schule: (() => {
-    const g = grid(24, 24);
-    box(g, 2, 9, 20, 13, 'y');
-    for (let y = 2; y < 9; y++) rect(g, 12 - (y - 1) * 1.5, y, (y - 1) * 3, 1, 'r');
-    box(g, 9, 14, 6, 8, 'n');
-    box(g, 4, 11, 4, 4, 'c');
-    box(g, 16, 11, 4, 4, 'c');
-    box(g, 10, 4, 4, 4, 'w');
-    rect(g, 11, 5, 1, 2, 'k'); rect(g, 12, 6, 1, 1, 'k');
-    return rows(g);
-  })(),
-  strasse: (() => {
-    const g = grid(24, 24);
-    rect(g, 0, 15, 24, 9, 'g');
-    rect(g, 0, 19, 24, 1, 'w');
-    for (let x = 1; x < 24; x += 5) rect(g, x, 19, 3, 1, 'g');
-    put(g, 3, 4, ['...kk...', '..keek..', '.keeeek.', '..keek..', '.keeeek.', 'keeeeeek', '...nn...', '...nn...', '...nn...', '...nn...', '...nn...']);
-    box(g, 13, 2, 10, 10, 'R');
-    box(g, 15, 4, 6, 6, 'w');
-    for (let i = 0; i < 6; i++) g[4 + i][15 + i] = 'R';
-    return rows(g);
-  })(),
+  wertstoffhof: box48(p => {
+    p.rect(2, 16, 44, 28, R.steel);
+    for (let x = 6; x < 44; x += 5) p.vl(x, 18, 24, R.steel.d);
+    p.rect(16, 28, 16, 16, R.grey);
+    p.round(8, 4, 32, 11, 1, R.green);
+    p.rect(12, 8, 24, 3, R.white, { outline: false, shade: 'flat' });
+  }),
+  sammelstelle: box48(p => {
+    p.rect(0, 43, 48, 5, R.grey, { shade: 'flat' });
+    p.rect(22, 12, 4, 32, R.grey);
+    p.rect(6, 2, 36, 17, R.white);
+    for (const x of [14, 32]) p.poly([[x, 4], [x + 5, 15], [x - 5, 15]], R.leaf);
+    for (const x of [8, 38]) { p.poly([[x, 24], [x + 6, 40], [x - 6, 40]], R.leaf); p.rect(x - 1, 40, 2, 3, R.wood, { outline: false }); }
+  }),
+  schule: box48(p => {
+    p.rect(4, 18, 40, 26, R.duvet);
+    p.poly([[2, 19], [24, 4], [46, 19]], R.red);
+    p.rect(19, 30, 10, 14, R.wood);
+    p.rect(8, 23, 7, 7, R.sky).rect(33, 23, 7, 7, R.sky);
+    p.ell(24, 14, 3.5, 3.5, R.white);
+    p.vl(24, 12, 3, INK).hl(24, 14, 2, INK);
+  }),
+  strasse: box48(p => {
+    p.rect(0, 30, 48, 18, R.grey, { shade: 'flat', outline: false });
+    for (let x = 2; x < 48; x += 10) p.hl(x, 38, 6, R.white.m);
+    p.rect(9, 32, 2, 3, R.wood, { outline: false });
+    p.poly([[10, 6], [17, 32], [3, 32]], R.leaf);
+    p.vl(37, 22, 10, INK).vl(38, 22, 10, INK);
+    p.ell(37.5, 13, 9, 9, R.red);
+    p.ell(37.5, 13, 6, 6, R.white, { outline: false, shade: 'flat' });
+    p.line(33, 9, 42, 17, R.red.m, 2);
+  }),
 };
 
 // The city behind the falling items: two onion domes are enough to say Munich.
-export const SKYLINE = (() => {
-  const g = grid(96, 28);
-  const roof = (x, w, h, c) => { box(g, x, 28 - h, w, h, c); };
-  roof(0, 14, 12, 'W'); roof(12, 10, 16, 'm'); roof(56, 12, 13, 'W'); roof(66, 14, 10, 'm'); roof(78, 18, 14, 'W');
-  // Frauenkirche: two towers with domes
-  [[28, 'n'], [42, 'n']].forEach(([x]) => {
-    box(g, x, 8, 8, 20, 'a');
-    rect(g, x + 1, 9, 1, 18, 'o');
-    box(g, x + 2, 12, 4, 4, 'N');
-    box(g, x + 1, 2, 6, 7, 'E');
-    rect(g, x + 2, 3, 1, 4, 'e');
-    rect(g, x + 3, 0, 2, 2, 'k');
-  });
-  box(g, 34, 16, 10, 12, 'a');
-  for (let x = 2; x < 96; x += 4) for (let y = 18; y < 26; y += 4) {
-    if (g[y][x] !== '.' && g[y][x] !== 'k' && g[y][x + 1] !== 'k' && g[y + 1] && g[y + 1][x] !== 'k') rect(g, x, y, 2, 2, 'c');
+export const SKYLINE = draw(192, 56, p => {
+  const house = (x, w, h, ramp) => {
+    p.rect(x, 56 - h, w, h, ramp);
+    for (let wx = x + 4; wx < x + w - 4; wx += 7) for (let wy = 56 - h + 5; wy < 52; wy += 8) p.rect(wx, wy, 3, 4, R.sky, { outline: false, shade: 'flat' });
+  };
+  house(0, 28, 24, R.white); house(24, 20, 32, R.alu); house(112, 24, 26, R.white);
+  house(132, 28, 20, R.alu); house(156, 36, 28, R.white);
+  for (const x of [56, 84]) {
+    p.rect(x, 16, 16, 40, R.bglass);
+    p.round(x + 5, 24, 6, 8, 3, R.ink, { outline: false });
+    p.ell(x + 8, 11, 8, 8, R.gglass);
+    p.rect(x + 7, 0, 2, 4, R.ink, { outline: false });
   }
-  return rows(g);
-})();
+  p.rect(70, 32, 16, 24, R.bglass);
+  p.round(74, 38, 8, 12, 4, R.ink, { outline: false });
+});

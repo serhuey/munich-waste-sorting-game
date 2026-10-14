@@ -55,17 +55,13 @@ export class Belt {
         const bin = document.createElement('div');
         bin.className = 'bin';
         bin.dataset.container = c.id;
-        // Three channels besides colour (R12): the drawing's shape and icon, a
-        // glyph, and the name in words.
+        // Channels besides colour (R12): the drawing's shape and icon, a texture
+        // where two colours share a grey, and the name in words.
         const pic = img(containerSprite(c.id), 'bin-sprite');
-        const sym = document.createElement('span');
-        sym.className = 'sym';
-        sym.setAttribute('aria-hidden', 'true');
-        sym.textContent = c.glyph || '•';
         const name = document.createElement('span');
         name.className = 'bin-label';
         name.textContent = this.label(c.labels);
-        bin.append(pic, sym, name);
+        bin.append(pic, name);
         bins.append(bin);
       });
       group.append(label, bins);
