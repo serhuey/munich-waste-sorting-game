@@ -52,9 +52,6 @@ img, canvas { image-rendering: pixelated; image-rendering: crisp-edges; }
 .item .detail.unreadable { filter: blur(3px); opacity: .7; user-select: none; }
 .item .hint { position: absolute; top: -24px; left: 50%; transform: translateX(-50%); font-size: 12px;
   font-weight: 700; color: var(--paper); background: var(--slate); padding: 2px 7px; white-space: nowrap; }
-/* A borderline object carries a shape, not only a colour. */
-.item .mark { position: absolute; top: 0; right: 18px; width: 24px; height: 24px; line-height: 20px;
-  font-weight: 900; font-size: 15px; background: var(--sun); border: 2px dashed var(--ink); }
 .item.part .sprite { width: 64px; height: 64px; }
 .item.landed-ok { opacity: 0; transition: opacity .25s; }
 .item.landed-bad { opacity: 0; transition: opacity .25s; }
@@ -136,7 +133,12 @@ img, canvas { image-rendering: pixelated; image-rendering: crisp-edges; }
 .panel-card h2 { margin: 0 0 6px; font-size: 20px; line-height: 1.2; overflow-wrap: anywhere; hyphens: auto; }
 .panel-card h2.ok { color: var(--ok); } .panel-card h2.bad { color: var(--bad); }
 .panel-head { display: flex; flex-direction: column; align-items: center; gap: 8px; }
-.badge { display: inline-block; padding: 4px 8px; border: 3px solid var(--ink); box-shadow: 3px 3px 0 var(--ink); }
+.badge { display: inline-block; padding: 5px 9px 6px; border: 3px solid var(--ink); box-shadow: 3px 3px 0 var(--ink); }
+/* A canvas is inline by default and sits on the text baseline, which left a
+   descender's worth of empty space under the digits. As a block it is boxed by
+   the padding alone; the top is a pixel short of the bottom so the figures read
+   as centred — capitals with no descenders look low when the gaps are equal. */
+.badge .ptext { display: block; }
 .badge.ok { background: var(--ok); } .badge.bad { background: var(--bad); }
 .badge[hidden] { display: none; }
 #panel-extra:empty { display: none; }

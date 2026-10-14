@@ -37,15 +37,10 @@ export class Fall {
     const name = document.createElement('div');
     name.className = 'name';
     name.textContent = label;
+    // A borderline object is not marked: a sign saying "the obvious answer is
+    // wrong" would hand out the very knowledge the score measures. It only
+    // falls slower, which gives time to think without saying why.
     body.append(pic, name);
-    // A borderline object says so with a shape, not with a coloured glow alone.
-    if (borderline) {
-      const mark = document.createElement('div');
-      mark.className = 'mark';
-      mark.setAttribute('aria-hidden', 'true');
-      mark.textContent = '?';
-      body.append(mark);
-    }
     if (detail) {
       const small = document.createElement('div');
       small.className = 'detail' + (legible ? '' : ' unreadable');
