@@ -1,0 +1,64 @@
+{
+  "_todo": [
+    "это черновик, написанный машиной (Claude) по записи лексикона/странице AWM; человек его не сверял",
+    "открыть source.url и прочитать запись целиком",
+    "проверить destinations, пояснения и labels",
+    "поставить source.verified_by и source.verified_on",
+    "перенести: python3 tools/drafts.py promote <id>"
+  ],
+  "_drafted_by": "claude",
+  "_awm_term": "Alufolie",
+  "_awm_tip": null,
+  "_awm_notes": {},
+  "id": "alufolie",
+  "tier": 3,
+  "attrs": [],
+  "labels": {
+    "de": "Alufolie",
+    "en": "Aluminium foil"
+  },
+  "source": {
+    "authority": "awm",
+    "key": "alufolie",
+    "url": "https://www.awm-muenchen.de/abfall-entsorgen/abfalllexikon",
+    "destinations_at_verification": [
+      "wertstoffhof",
+      "wertstoffinsel"
+    ],
+    "verified_by": "",
+    "verified_on": ""
+  },
+  "variants": [
+    {
+      "id": "standard",
+      "kind": "simple",
+      "labels": {
+        "de": "",
+        "en": ""
+      },
+      "destinations": [
+        {
+          "id": "metall",
+          "until": "2027-01-01"
+        },
+        {
+          "id": "gelbe_tonne",
+          "from": "2027-01-01"
+        }
+      ]
+    }
+  ],
+  "explanation": {
+    "de": "Alufolie ist Metall und gehört in den Metall-Container, ab 2027 in die Gelbe Tonne.",
+    "en": "Aluminium foil is metal and goes in the metal container, from 2027 in the yellow bin."
+  },
+  "sources": [
+    {
+      "authority": "page",
+      "reference": "Wertstoffinseln: Das können Sie abgeben",
+      "url": "https://www.awm-muenchen.de/abfall-entsorgen/abgabestellen/wertstoffinseln",
+      "verified_by": "",
+      "verified_on": ""
+    }
+  ]
+}

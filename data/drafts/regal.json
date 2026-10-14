@@ -1,0 +1,52 @@
+{
+  "_todo": [
+    "это черновик, написанный машиной (Claude) по записи лексикона/странице AWM; человек его не сверял",
+    "открыть source.url и прочитать запись целиком",
+    "проверить destinations, пояснения и labels",
+    "поставить source.verified_by и source.verified_on",
+    "перенести: python3 tools/drafts.py promote <id>"
+  ],
+  "_drafted_by": "claude",
+  "_awm_term": "Regale",
+  "_awm_tip": null,
+  "_awm_notes": {
+    "weiternutzen": "Verschenken, tauschen, kaufen, finden, reparieren... zu schade zum Wegwerfen!",
+    "sperrmuell": "Haben Sie sperrige Gegenstände, die Sie schon lange loswerden wollten? Dann sind Sie beim Sperrmüllabholdienst des AWM richtig.Die Sperrmüllabfuhr des Abfallwirtschaftsbetriebes entsorgt auch den Sperrmüll von Vereinen, Institutionen und Gewerbebetrieben."
+  },
+  "id": "regal",
+  "tier": 4,
+  "attrs": [],
+  "labels": {
+    "de": "Regal",
+    "en": "Shelf"
+  },
+  "source": {
+    "authority": "awm",
+    "key": "regale",
+    "url": "https://www.awm-muenchen.de/abfall-entsorgen/abfalllexikon/detailansicht-lexikoneintrag/regale",
+    "destinations_at_verification": [
+      "sperrmuell",
+      "weiternutzen",
+      "wertstoffhof"
+    ],
+    "verified_by": "",
+    "verified_on": ""
+  },
+  "variants": [
+    {
+      "id": "standard",
+      "kind": "simple",
+      "labels": {
+        "de": "",
+        "en": ""
+      },
+      "destinations": [
+        "sperrmuell"
+      ]
+    }
+  ],
+  "explanation": {
+    "de": "Möbel sind Sperrmüll: am Wertstoffhof bis 2 m³ am Tag kostenlos.",
+    "en": "Furniture is bulky waste: up to 2 m³ a day free at the recycling centre."
+  }
+}
