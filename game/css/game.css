@@ -79,9 +79,6 @@ img, canvas { image-rendering: pixelated; image-rendering: crisp-edges; }
   .item .body.nudge, .pop { animation: none; }
 }
 
-.say { flex: 0 0 auto; text-align: center; font-size: 14px; font-weight: 700; min-height: 22px;
-  padding: 2px 12px; background: var(--sky3); }
-.say.ok { color: var(--ok); } .say.bad { color: var(--bad); }
 
 /* ------------------------------------------------------------------ tabs */
 #tabs { flex: 0 0 auto; display: flex; gap: 6px; padding: 6px 8px; justify-content: center;

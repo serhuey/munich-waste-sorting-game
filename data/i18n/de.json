@@ -43,8 +43,6 @@
   "should_be": "Richtig: {list}",
   "undivided": "Ganz geht das nicht – erst zerlegen: {parts}",
   "nothing": "nichts",
-  "part_ok": "✓ {part} → {container}",
-  "part_bad": "✗ {part} → {container}",
   "fixture_banner": "Testversion: Inhalte noch nicht von Menschen geprüft. Im Zweifel gilt awm-muenchen.de",
   "clock_banner": "Regeln gelten für den {date}",
   "slow_banner": "Zeitlupe ×{n}",

@@ -43,8 +43,6 @@
   "should_be": "Right: {list}",
   "undivided": "It can't go whole – take it apart first: {parts}",
   "nothing": "nothing",
-  "part_ok": "✓ {part} → {container}",
-  "part_bad": "✗ {part} → {container}",
   "fixture_banner": "Test build: content not yet checked by a person. When in doubt, awm-muenchen.de is right",
   "clock_banner": "Rules as of {date}",
   "slow_banner": "Slow motion ×{n}",

@@ -190,7 +190,6 @@ function startTier(tier) {
   el('left').textContent = state.queue.length;
   el('right').textContent = '0';
   el('points').textContent = '0';
-  el('say').textContent = '';
   hidePanel();
   if (!state.queue.length) return emptyTier(tier);
   tierIntro(tier);
@@ -370,9 +369,10 @@ function landed({ item, variant, el: itemEl, early, remaining }) {
     round.lines.push(line);
     round.partPoints += points;
     round.slots = round.slots.slice(1);
-    // Parts share one explanation at the end of the item; a short line keeps the
-    // player informed that the part registered while the next one is falling.
-    say(t(ok ? 'part_ok' : 'part_bad', { part: line.part, container: line.chosen || t('nothing') }), ok);
+    // Parts share one explanation at the end of the item. Until then a tick or
+    // a cross pops over the belt, where the eye already is, and is gone again:
+    // a line of text that stayed behind outlived the moment it described.
+    pop(ok ? '✓' : '✗', ok);
     return setTimeout(next, 550);
   }
 
@@ -401,9 +401,14 @@ function finishRound() {
 function addPoints(points) {
   state.points += points;
   el('points').textContent = state.points;
-  const pop = make('div', 'pop ' + (points >= 0 ? 'ok' : 'bad'), (points >= 0 ? '+' : '') + points);
-  el('field').append(pop);
-  setTimeout(() => pop.remove(), 900);
+  pop((points >= 0 ? '+' : '') + points, points >= 0);
+}
+
+function pop(text, ok) {
+  const node = make('div', 'pop ' + (ok ? 'ok' : 'bad'), text);
+  node.setAttribute('aria-hidden', 'true');
+  el('field').append(node);
+  setTimeout(() => node.remove(), 900);
 }
 
 function mark(itemEl, ok) {
@@ -463,12 +468,6 @@ function finishTier() {
     },
     actionLabel: labels[out.kind]
   });
-}
-
-function say(text, ok) {
-  const box = el('say');
-  box.textContent = text;
-  box.className = 'say ' + (ok ? 'ok' : 'bad');
 }
 
 // Every answer gets an explanation before the game moves on (R8). Dismissing it
@@ -546,7 +545,6 @@ function startFinale() {
       b.onclick = () => {
         removed.add(d.id);
         b.classList.add('gone');
-        say(pick(d.labels) + ' ✓', true);
         setTimeout(render, 180);
       };
       stage.append(b);
