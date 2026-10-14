@@ -1107,62 +1107,140 @@ export const ROUTES = {
   }),
 };
 
-// The city behind the falling items, read left to right as one walks it: the
-// Olympic tower and BMW's four cylinders in the north, the town hall's tower
-// on Marienplatz, the Frauenkirche's two onion domes in the middle — where a
-// phone's narrow crop lands — then the yellow Theatinerkirche and, far out, the
-// Allianz Arena.
-export const SKYLINE = draw(256, 64, p => {
-  const H = 64;
-  const house = (x, w, h, ramp, roof) => {
-    p.rect(x, H - h, w, h, ramp);
-    if (roof) p.poly([[x, H - h + 1], [x + w / 2, H - h - 6], [x + w, H - h + 1]], R.red);
-    for (let wx = x + 3; wx < x + w - 3; wx += 6) for (let wy = H - h + 5; wy < H - 4; wy += 7) p.rect(wx, wy, 2, 3, R.sky, { outline: false, shade: 'flat' });
-  };
+// The city behind the falling items, in three planes. The Alps stand furthest
+// back and palest — no ink outline, the way distance takes contrast away. Then
+// the landmarks, crowding and overlapping as they do from a hill: the Olympic
+// tower and BMW's cylinders on the left, the Frauenkirche's two onion domes in
+// the middle where a phone's narrow crop lands, the Neues Rathaus pushed in
+// front of its feet, the yellow Theatinerkirche behind the roofs on the right
+// and the Allianz Arena far out. In front of everything, a row of gabled
+// houses and a few trees, with the inked outline only the near plane gets.
+export const SKYLINE = draw(320, 96, p => {
+  const H = 96;
+  const far = { d: '#a9bccf', m: '#c3d2e1', l: '#d7e2ed' };
+  const farer = { d: '#bccbdb', m: '#d2dde8', l: '#e2eaf2' };
+  const snow = { d: '#dfe7ef', m: '#f2f6fa', l: '#ffffff' };
+  const mist = c => ({ ink: c });
+
+  // --- the Alps: two ranges, the further one paler
+  const ridge = (pts, ramp, ink) => p.poly([...pts, [320, H], [0, H]], ramp, { ink, shade: 'flat' });
+  ridge([[0, 46], [18, 34], [30, 40], [52, 18], [66, 30], [80, 24], [104, 40], [128, 28], [146, 14], [164, 30],
+         [184, 22], [206, 38], [228, 20], [244, 12], [262, 28], [282, 22], [300, 34], [320, 26]], farer, '#b4c4d6');
+  // snow on the high peaks of the far range
+  for (const [x, y] of [[52, 18], [146, 14], [244, 12], [228, 20]]) {
+    p.poly([[x, y], [x + 7, y + 8], [x + 3, y + 6], [x, y + 9], [x - 3, y + 6], [x - 7, y + 8]], snow, { ink: '#c9d6e3', shade: 'flat' });
+  }
+  ridge([[0, 58], [24, 44], [40, 52], [62, 36], [78, 46], [98, 40], [118, 52], [138, 42], [160, 54], [182, 40],
+         [204, 50], [226, 36], [250, 48], [272, 42], [296, 54], [320, 46]], far, '#a3b6ca');
+  for (const [x, y] of [[62, 36], [226, 36], [182, 40]]) {
+    p.poly([[x, y], [x + 6, y + 6], [x + 2, y + 5], [x, y + 7], [x - 2, y + 5], [x - 6, y + 6]], snow, { ink: '#c0cfdd', shade: 'flat' });
+  }
+
+  // --- far plane: Olympic tower and roof, BMW, Allianz Arena, Theatiner
+  const pale = { d: '#8e9db0', m: '#b2bfcd', l: '#d2dbe5', h: '#eef2f6' };
   // Olympiaturm
-  p.vl(19, 0, 6, INK);
-  p.rect(17, 5, 5, 59, R.alu, { shade: 'cyl' });
-  p.round(12, 12, 15, 4, 1, R.alu);
-  p.round(13, 16, 13, 5, 1, R.ink, { shade: 'flat' });
-  p.hl(14, 18, 11, R.sky.m);
-  // Olympic roof, a tent of tiles
-  p.poly([[0, 52], [10, 44], [26, 48], [36, 58], [0, 58]], R.clear, { tex: TEX.checks, texColor: R.clear.l });
-  // BMW-Vierzylinder and the museum's bowl
-  for (const [x, top] of [[40, 22], [46, 18], [52, 22]]) {
-    p.round(x, top, 9, H - top, 4, R.alu, { shade: 'cyl' });
-    for (let y = top + 6; y < H; y += 6) p.hl(x + 1, y, 7, R.alu.d);
+  p.vl(51, 0, 4, '#c9364a').vl(51, 4, 4, '#f4f4f4').vl(51, 8, 3, '#c9364a');
+  p.rect(49, 10, 5, 76, pale, { shade: 'cyl', ink: '#7d8ca0' });
+  p.round(43, 18, 17, 4, 1, pale, mist('#7d8ca0'));
+  p.round(44, 22, 15, 6, 1, { d: '#5d6a80', m: '#6f7d93', l: '#8796ab' }, mist('#5d6a80'));
+  p.hl(45, 24, 13, '#bfe3ef');
+  p.round(45, 28, 13, 3, 1, pale, mist('#7d8ca0'));
+  // the Olympic tent roof
+  p.paint((a, b) => b > 66 && b < 80 && a > 14 && a < 92 && b > 66 + Math.abs(Math.sin((a - 14) / 12)) * 8,
+          { d: '#a8bccb', m: '#c8d8e3', l: '#e4eef4' }, { ink: '#8ea3b5', tex: TEX.checks, texColor: '#b6c8d6' });
+  // BMW: four cylinders, the blue-and-white roundel on top
+  for (const [x, top] of [[82, 34], [96, 30], [89, 40], [103, 42]]) {
+    p.round(x, top, 13, H - top, 6, pale, { shade: 'cyl', ink: '#7d8ca0' });
+    for (let y = top + 7; y < 80; y += 7) p.hl(x + 2, y, 9, pale.d);
   }
-  p.paint((a, b) => b > 50 && b < 60 && Math.abs(a - 66) < 8 - (b - 50) * 0.3, R.alu, { shade: 'cyl' });
-  house(74, 18, 26, R.white, true);
-  // Neues Rathaus: dark Gothic front, gables, the tower with its spire
-  p.rect(92, 34, 34, 30, R.grey);
-  for (let x = 94; x < 124; x += 6) p.poly([[x, 35], [x + 3, 29], [x + 6, 35]], R.grey);
-  p.rect(105, 12, 9, 52, R.grey);
-  p.poly([[104, 13], [109.5, 1], [115, 13]], R.leaf);
-  p.ell(109.5, 20, 2.5, 2.5, R.paper, { outline: false });
-  for (let x = 95; x < 124; x += 5) if (x < 104 || x > 114) p.rect(x, 42, 2, 5, R.sky, { outline: false, shade: 'flat' });
-  // Frauenkirche: two brick towers, green onion domes
-  for (const x of [132, 152]) {
-    p.rect(x, 16, 14, 48, R.bglass);
-    p.round(x + 4, 22, 6, 9, 3, R.ink, { outline: false });
+  // the roundel, quartered blue and white
+  p.paint((a, b) => Math.hypot(a - 103, b - 27) <= 4.6, R.white, { ink: INK, shade: 'flat' });
+  p.paint((a, b) => Math.hypot(a - 103, b - 27) <= 3.4 && (a < 103) === (b < 27), R.blue, { outline: false, shade: 'flat' });
+  // Allianz Arena, low on the far right
+  p.ell(300, 66, 19, 8, { d: '#d9c6cc', m: '#ece1e4', l: '#f7f1f3' },
+        { ink: '#a88f97', tex: (x, y) => (x + 2 * y) % 5 === 0, texColor: '#d2aab4' });
+  p.hl(283, 67, 34, '#e8a0ad');
+  // Theatinerkirche: ochre, two towers with scrolls, the big dome
+  const ochre = { d: '#c08a2c', m: '#e3b04f', l: '#f2cf7f' };
+  const copper = { d: '#3f8a63', m: '#5fae84', l: '#8fd1aa', h: '#c4ecd4' };
+  p.rect(232, 50, 46, 46, ochre);
+  p.ell(255, 46, 11, 11, copper);
+  p.rect(252, 30, 6, 8, ochre);
+  p.ell(255, 28, 4, 4, copper);
+  p.vl(255, 20, 5, INK);
+  for (const x of [226, 270]) {
+    p.rect(x, 34, 12, 62, ochre);
+    p.round(x + 2, 26, 8, 9, 3, ochre);
+    p.ell(x + 6, 23, 4, 5, copper);
+    p.vl(x + 6, 15, 4, INK);
+    for (let y = 42; y < 90; y += 10) p.round(x + 4, y, 4, 6, 2, { d: '#6d4a1a', m: '#6d4a1a', l: '#6d4a1a' }, { outline: false });
+  }
+  p.round(249, 66, 12, 30, 6, R.wood);
+  p.poly([[240, 60], [255, 52], [270, 60]], ochre);
+
+  // --- the heroes: Frauenkirche, with the Neues Rathaus in front of its feet
+  const brick = { d: '#7a3e1c', m: '#a95a2c', l: '#c9773f', h: '#e39a5f' };
+  // nave roof between the towers, steep and tiled
+  p.poly([[150, 52], [196, 52], [196, 96], [150, 96]], brick);
+  p.poly([[146, 54], [173, 20], [200, 54]], { d: '#6b2f20', m: '#8f4030', l: '#b05a44' });
+  for (let y = 30; y < 54; y += 4) p.hl(173 - (y - 20) * 0.75 + 2, y, (y - 20) * 1.5 - 3, '#6b2f20');
+  for (const x of [142, 186]) {
+    p.rect(x, 26, 20, 70, brick, { shade: 'cyl' });
+    for (let y = 36; y < 96; y += 12) p.hl(x + 1, y, 18, brick.d);
+    p.round(x + 6, 40, 3, 10, 1, { d: INK, m: '#2b2f3a', l: '#2b2f3a' }, { outline: false });
+    p.round(x + 11, 40, 3, 10, 1, { d: INK, m: '#2b2f3a', l: '#2b2f3a' }, { outline: false });
+    p.ell(x + 10, 60, 4, 4, R.paper);
+    p.vl(x + 10, 57, 3, INK).hl(x + 10, 60, 2, INK);
+    p.rect(x + 2, 22, 16, 5, brick, { shade: 'light' });
+    // the onion dome: a neck, a swell, a point and a lantern
     p.paint((a, b) => {
-      const cx = x + 7, t = (b - 2) / 15;
+      const cx = x + 10, t = (b - 2) / 20;
       if (t < 0 || t > 1) return false;
-      const w = t < 0.35 ? t / 0.35 * 3 : 3 + Math.sin((t - 0.35) / 0.65 * Math.PI) * 5;
-      return Math.abs(a - cx) <= Math.max(1, w);
-    }, R.gglass);
-    p.vl(x + 7, 0, 3, INK);
+      const w = t < 0.3 ? 1 + t / 0.3 * 2 : 3 + Math.sin((t - 0.3) / 0.7 * Math.PI * 0.95) * 6;
+      return Math.abs(a - cx + 0.5) <= Math.max(1, w);
+    }, copper);
+    p.rect(x + 9, 0, 2, 3, R.alu, { outline: false });
   }
-  p.rect(144, 30, 10, 34, R.bglass);
-  p.round(147, 38, 4, 10, 2, R.ink, { outline: false });
-  house(168, 16, 22, R.white, false);
-  // Theatinerkirche: yellow, two towers and a dome
-  p.rect(186, 30, 30, 34, R.duvet);
-  for (const x of [184, 210]) { p.rect(x, 18, 8, 46, R.duvet); p.ell(x + 4, 17, 4, 4, R.gglass); }
-  p.ell(201, 28, 7, 7, R.gglass);
-  p.vl(201, 18, 4, INK);
-  p.round(196, 44, 10, 20, 4, R.wood);
-  // Allianz Arena, low on the edge of the city
-  p.ell(240, 56, 15, 7, R.white, { tex: (x, y) => (x + 2 * y) % 6 === 0, texColor: R.white.d });
-  p.hl(227, 57, 27, R.red.m);
+  // Neues Rathaus: Gothic front, pinnacles, the clock tower with its spire
+  const stone = { d: '#3e3a44', m: '#5d5866', l: '#7d778a' };
+  p.rect(98, 54, 58, 42, stone);
+  for (let x = 100; x < 154; x += 6) {
+    p.poly([[x, 55], [x + 3, 46], [x + 6, 55]], stone);
+    p.vl(x + 3, 43, 3, INK);
+  }
+  for (let x = 102; x < 152; x += 6) for (let y = 62; y < 92; y += 10) {
+    if (x > 118 && x < 132) continue;
+    p.round(x, y, 3, 6, 1, { d: '#bfe3ef', m: '#9fd3f7', l: '#bfe3ef' }, { outline: false });
+  }
+  p.rect(118, 24, 14, 72, stone, { shade: 'cyl' });
+  p.poly([[116, 25], [125, 2], [134, 25]], copper);
+  p.vl(125, 0, 3, INK);
+  p.ell(125, 33, 4, 4, R.paper);
+  p.vl(125, 30, 3, INK).hl(125, 33, 2, INK);
+  p.rect(116, 44, 18, 7, stone, { shade: 'light' });
+  for (let x = 118; x < 133; x += 3) p.dot(x, 47, '#e3b04f');
+  p.round(121, 76, 8, 20, 4, R.wood);
+
+  // --- the near plane: a row of houses and trees, overlapping
+  const fronts = [
+    [0, 22, 30, '#f2cf7f'], [18, 18, 24, '#f4f4f4'], [34, 24, 34, '#e8a0ad'], [56, 20, 26, '#cfe3c8'],
+    [74, 26, 30, '#f4f4f4'], [96, 18, 22, '#f2cf7f'], [192, 22, 26, '#f4f4f4'], [212, 18, 30, '#cfe3c8'],
+    [228, 26, 24, '#f2cf7f'], [252, 20, 28, '#e8a0ad'], [270, 24, 20, '#f4f4f4'], [292, 28, 22, '#f2cf7f'],
+  ];
+  fronts.forEach(([x, w, h, c], i) => {
+    const ramp = { d: c, m: c, l: c };
+    p.rect(x, H - h, w, h, ramp, { shade: 'flat' });
+    const roof = i % 3 === 0
+      ? [[x - 1, H - h + 1], [x + w / 2, H - h - 9], [x + w + 1, H - h + 1]]
+      : [[x - 1, H - h + 1], [x + 3, H - h - 5], [x + w - 3, H - h - 5], [x + w + 1, H - h + 1]];
+    p.poly(roof, { d: '#8f4030', m: '#b05a44', l: '#c97760' });
+    if (i % 2) p.rect(x + w - 6, H - h - 9, 3, 6, { d: '#8f4030', m: '#8f4030', l: '#8f4030' });
+    for (let wx = x + 3; wx < x + w - 3; wx += 6) for (let wy = H - h + 5; wy < H - 4; wy += 8) {
+      p.rect(wx, wy, 3, 4, { d: '#5aa9e6', m: '#9fd3f7', l: '#bfe3ef' }, { ink: '#3e4a66' });
+    }
+  });
+  for (const [x, y, r] of [[160, 86, 9], [174, 88, 7], [8, 88, 6], [312, 86, 8], [218, 90, 6]]) {
+    p.ell(x, y, r, r * 0.9, R.leaf);
+    p.dot(x - 2, y - 3, R.leaf.h).dot(x + 1, y - 4, R.leaf.l);
+  }
 });

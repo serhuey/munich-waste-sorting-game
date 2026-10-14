@@ -489,33 +489,32 @@ test('the first tier plays ten of its own objects', () => {
   same(new Set(round.map(i => i.id)).size, 10, 'без повторов');
 });
 
-const SHELF = [...Array.from({ length: 12 }, (_, i) => ({ id: 'h' + i, tier: 1 })),
-               ...Array.from({ length: 10 }, (_, i) => ({ id: 's' + i, tier: 2 }))];
+const SHELF = [...Array.from({ length: 30 }, (_, i) => ({ id: 'h' + i, tier: 1 })),
+               ...Array.from({ length: 20 }, (_, i) => ({ id: 's' + i, tier: 2 }))];
 
-test('a new tier opens with its own objects, then mixes in earlier ones', () => {
+test('a later tier is twice as long: its own objects first, then a mix', () => {
   const round = rules.roundFor(SHELF, 2);
-  same(round.length, 12);
-  assert(round.slice(0, 5).every(i => i.tier === 2), 'первые пять — с нового места');
-  const tail = round.slice(5);
-  same(tail.filter(i => i.tier === 1).length, 4, 'в смеси четыре предмета прошлых уровней');
-  same(tail.filter(i => i.tier === 2).length, 3);
-  same(new Set(round.map(i => i.id)).size, 12, 'без повторов внутри раунда');
+  same(round.length, 24);
+  assert(round.slice(0, 6).every(i => i.tier === 2), 'первые шесть — с нового места');
+  const tail = round.slice(6);
+  same(tail.filter(i => i.tier === 1).length, 10, 'в смеси десять предметов прошлых уровней');
+  same(tail.filter(i => i.tier === 2).length, 8);
+  same(new Set(round.map(i => i.id)).size, 24, 'без повторов внутри раунда');
 });
 
 test('objects already met in this run come last', () => {
-  const seen = new Set(['h0', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'h7']);
+  const seen = new Set(Array.from({ length: 20 }, (_, i) => 'h' + i));
   const round = rules.roundFor(SHELF, 2, seen);
-  const earlier = round.filter(i => i.tier === 1).map(i => i.id).sort();
-  same(earlier, ['h10', 'h11', 'h8', 'h9'], 'из прошлого уровня берутся невиденные');
+  const earlier = round.filter(i => i.tier === 1);
+  assert(earlier.every(i => !seen.has(i.id)), 'из прошлого уровня берутся невиденные');
 });
 
 test('a thin tier borrows from earlier ones instead of playing short', () => {
   const thin = SHELF.filter(i => i.tier === 1 || i.id === 's0' || i.id === 's1');
   const round = rules.roundFor(thin, 2);
-  same(round.length, 12);
+  same(round.length, 24);
   same(round.slice(0, 2).map(i => i.tier), [2, 2]);
-});
-await Promise.all(pending);
+});await Promise.all(pending);
 const box = document.getElementById('out');
 const bad = results.filter(r => !r.ok);
 box.innerHTML = results.map(r =>

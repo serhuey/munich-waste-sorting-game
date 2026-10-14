@@ -45,12 +45,13 @@ export function itemsForTier(items, tier) {
 }
 
 // A tier plays a sample, not the whole shelf. The first tier is ten of its own
-// objects. Every later one opens with five objects of the place it adds, so the
-// player finds their way to the new containers before anything else happens,
-// and then mixes: three more of its own and four from earlier tiers — the
-// flat does not stop existing once you have found the island, and having to
+// objects. Every later one is twice as long — the first tier teaches three bins,
+// a later one has a whole belt to play with. It opens with six objects of the
+// place it adds, so the player finds the new containers before anything else
+// happens, and then mixes: eight more of its own and ten from earlier tiers —
+// the flat does not stop existing once you have found the island, and having to
 // switch places is where the game gets lively.
-export const ROUND = { first: 10, intro: 5, own: 3, earlier: 4 };
+export const ROUND = { first: 10, intro: 6, own: 8, earlier: 10 };
 
 // Objects already met in this run are drawn last, so a run repeats nothing
 // until a pool runs dry. `seen` lives in memory with the run (KTD3).
