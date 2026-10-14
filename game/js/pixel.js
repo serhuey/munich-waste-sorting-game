@@ -3,7 +3,7 @@
 // nearest-neighbour (image-rendering: pixelated), so a 16-pixel sprite stays
 // crisp at any size.
 
-import { ITEMS, CONTAINERS, ROUTES, TREE, SKYLINE } from './sprites.js';
+import { ITEMS, CONTAINERS, ROUTES, DECOR, TREE, SKYLINE } from './sprites.js';
 
 const cache = new Map();
 
@@ -30,13 +30,31 @@ function url(key, rows) {
   return cache.get(key);
 }
 
+// Hand-drawn files win over drawings in code. The build lists what lies in
+// game/art/<kind>/ so the game never asks for a file that is not there; a part
+// is written with a double dash in the file name, because a colon is not a
+// thing to put in a Mac file name.
+const art = new Map();
+export function setArt(list) {
+  art.clear();
+  (list || []).forEach(file => {
+    const [kind, name] = file.split('/');
+    art.set(kind + '/' + name.replace(/\.png$/, '').replace(/--/g, ':'), 'art/' + file);
+  });
+}
+const drawn = (kind, key) => art.get(kind + '/' + key);
+const has = (kind, set, key) => !!(set[key] || drawn(kind, key));
+function pick(kind, set, key, prefix) {
+  return drawn(kind, key) || (set[key] ? url(prefix + key, set[key]) : url('i:?', UNKNOWN));
+}
+
 // An object's picture: a part has its own, a variant has one only where the eye
 // is the honest cue, and an object nobody drew falls back to a plain box rather
-// than to nothing.
+// than to nothing. A variant or a part can be drawn by hand without any code.
 export function itemKey(item, variant, partId) {
-  if (partId && ITEMS[item.id + ':' + partId]) return item.id + ':' + partId;
-  if (variant && ITEMS[item.id + '.' + variant.id]) return item.id + '.' + variant.id;
-  return ITEMS[item.id] ? item.id : null;
+  if (partId && has('items', ITEMS, item.id + ':' + partId)) return item.id + ':' + partId;
+  if (variant && has('items', ITEMS, item.id + '.' + variant.id)) return item.id + '.' + variant.id;
+  return has('items', ITEMS, item.id) ? item.id : null;
 }
 
 const UNKNOWN = [
@@ -48,16 +66,15 @@ const UNKNOWN = [
 
 export function itemSprite(item, variant, partId) {
   const key = itemKey(item, variant, partId);
-  return key ? url('i:' + key, ITEMS[key]) : url('i:?', UNKNOWN);
+  return key ? pick('items', ITEMS, key, 'i:') : url('i:?', UNKNOWN);
 }
-
-export function containerSprite(id) {
-  return CONTAINERS[id] ? url('c:' + id, CONTAINERS[id]) : url('i:?', UNKNOWN);
-}
-
-export function routeSprite(id) { return url('r:' + id, ROUTES[id]); }
-export function treeSprite() { return url('tree', TREE); }
-export function skylineSprite() { return url('sky', SKYLINE); }
+export function itemSpriteByKey(key) { return pick('items', ITEMS, key, 'i:'); }
+export function containerSprite(id) { return pick('containers', CONTAINERS, id, 'c:'); }
+export function routeSprite(id) { return pick('routes', ROUTES, id, 'r:'); }
+export function decorSprite(id) { return pick('decor', DECOR, id, 'd:'); }
+export function decorSize(id) { const s = DECOR[id] || DECOR.kugel; return { w: s.w, h: s.h }; }
+export function treeSprite() { return pick('scenery', { tree: TREE }, 'tree', 's:'); }
+export function skylineSprite() { return pick('scenery', { skyline: SKYLINE }, 'skyline', 's:'); }
 
 export function img(src, cls, alt = '') {
   const el = document.createElement('img');

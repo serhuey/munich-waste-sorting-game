@@ -152,6 +152,19 @@ def load_i18n(repo):
     return bundle, fatal
 
 
+def list_art(repo):
+    """Рисунки от руки: game/art/<вид>/<имя>.png заменяют нарисованное кодом.
+    Список нужен игре, чтобы не запрашивать файлы, которых нет."""
+    base = os.path.join(repo, "game", "art")
+    out = []
+    if os.path.isdir(base):
+        for kind in sorted(os.listdir(base)):
+            d = os.path.join(base, kind)
+            if os.path.isdir(d):
+                out += ["%s/%s" % (kind, f) for f in sorted(os.listdir(d)) if f.endswith(".png")]
+    return out
+
+
 def signed(sources):
     return bool(sources) and all((s.get("verified_by") or "").strip() for s in sources)
 
@@ -598,6 +611,7 @@ def build(repo, date, today=None, langs=LANGS, fixtures=False):
         "i18n": i18n,
         "finale": finale,
         "notices": notices,
+        "art": list_art(repo),
     }
     return content, report
 

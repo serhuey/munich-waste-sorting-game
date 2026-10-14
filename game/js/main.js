@@ -11,9 +11,8 @@ import * as progress from './progress.js';
 import * as finale from './finale.js';
 import { createI18n, preferredLanguage } from './i18n.js';
 import { payload, share } from './share.js';
-import { itemSprite, containerSprite, routeSprite, treeSprite, skylineSprite, img,
-         pixelText, setPixelText, draw } from './pixel.js';
-import { DECOR, ITEMS } from './sprites.js';
+import { itemSprite, itemSpriteByKey, containerSprite, routeSprite, treeSprite, skylineSprite,
+         decorSprite, decorSize, setArt, img, pixelText } from './pixel.js';
 
 const el = id => document.getElementById(id);
 const make = (tag, cls, text) => {
@@ -53,6 +52,7 @@ const fall = new Fall({ fieldEl: el('field'), onLanded: landed });
 async function boot() {
   const res = await fetch('content.json', { cache: 'no-store' });
   state.content = await res.json();
+  setArt(state.content.art);
   const langs = Object.keys(state.content.i18n || {});
   i18n = createI18n(state.content.i18n, preferredLanguage(params.get('lang'), navigator.languages, langs));
   el('sky').src = skylineSprite();
@@ -135,7 +135,7 @@ function showTitle() {
   const screen = openScreen('title');
   const art = make('div', 'title-art');
   ['bananenschalen', 'glasflasche.gruen', 'aludose', 'getraenkekarton', 'batterien'].forEach(k => {
-    art.append(img(draw(ITEMS[k], 1).toDataURL(), 'title-sprite'));
+    art.append(img(itemSpriteByKey(k), 'title-sprite'));
   });
   if (state.content.fixture) screen.append(make('p', 'fixture-note', t('fixture_banner')));
   screen.append(art, pixelHeading(t('title')), make('p', 'lead', t('subtitle')));
@@ -538,7 +538,11 @@ function startFinale() {
       const [x, y] = positions[d.id] || [50, 50];
       b.style.left = x + '%';
       b.style.top = y + '%';
-      b.append(img(draw(DECOR[d.id] || DECOR.kugel, 3).toDataURL(), 'decor-sprite'));
+      const pic = img(decorSprite(d.id), 'decor-sprite');
+      const size = decorSize(d.id);
+      pic.width = size.w * 3;
+      pic.height = size.h * 3;
+      b.append(pic);
       b.onclick = () => {
         removed.add(d.id);
         b.classList.add('gone');
