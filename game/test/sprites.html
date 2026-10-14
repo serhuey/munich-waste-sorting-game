@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="de"><head><meta charset="utf-8"><title>Sprites</title>
+<style>
+body{font:13px system-ui;margin:16px;background:#e9edf1;color:#222}
+.sheet{display:flex;flex-wrap:wrap;gap:10px}
+figure{margin:0;background:#fff;padding:6px;border-radius:6px;text-align:center;width:104px}
+figure.dark{background:#20242a;color:#ddd}
+img,canvas{image-rendering:pixelated}
+figcaption{font-size:11px;word-break:break-all}
+h2{font-size:15px;margin:18px 0 8px}
+.grey img{filter:grayscale(1)}
+</style></head><body>
+<label><input type="checkbox" id="g"> greyscale</label>
+<div id="out"></div>
+<script type="module">
+import * as S from '../js/sprites.js';
+import * as P from '../js/pixel.js';
+const out = document.getElementById('out');
+function section(title, set, scale) {
+  const h = document.createElement('h2'); h.textContent = title + ' (' + Object.keys(set).length + ')'; out.append(h);
+  const sheet = document.createElement('div'); sheet.className = 'sheet'; out.append(sheet);
+  for (const [id, rows] of Object.entries(set)) {
+    const f = document.createElement('figure');
+    const c = P.draw(rows, scale); f.append(c);
+    const cap = document.createElement('figcaption'); cap.textContent = id; f.append(cap);
+    sheet.append(f);
+  }
+}
+section('Items', S.ITEMS, 4);
+section('Containers', S.CONTAINERS, 4);
+section('Routes', S.ROUTES, 3);
+section('Tree', { tree: S.TREE }, 3);
+section('Decorations', S.DECOR, 5);
+section('Skyline', { sky: S.SKYLINE }, 3);
+const h = document.createElement('h2'); h.textContent = 'Type'; out.append(h);
+out.append(P.pixelText('Münchner Mülltrennung 2026', { scale: 3, shadow: '#94b0c2' }));
+out.append(document.createElement('br'));
+out.append(P.pixelText('ÄÖÜ 0123456789 .,:!?-+/%()"·×→€–★ STUFE 5', { scale: 2 }));
+document.getElementById('g').onchange = e => document.body.classList.toggle('grey', e.target.checked);
+</script></body></html>
