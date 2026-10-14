@@ -44,6 +44,15 @@ export function itemsForTier(items, tier) {
   return items.filter(i => i.tier === tier);
 }
 
+// A tier plays a sample, not the whole shelf: ten objects keep a tier near two
+// minutes, and a second run meets different ones. A tier with fewer simply plays
+// all of them.
+export const TIER_SIZE = 10;
+
+export function roundForTier(items, tier, size = TIER_SIZE) {
+  return shuffle(itemsForTier(items, tier)).slice(0, size);
+}
+
 // Destinations a variant accepts today. A destination may be a bare id or an
 // object with its own window — that is how one item survives the 2027 switch
 // instead of being duplicated into a second item.
@@ -113,12 +122,12 @@ export function variantNeedsSplit(variant) {
 // What the player can read on the falling card. Before examination the variant
 // is deliberately unreadable — the answer is printed on the object in small
 // type, and going to look at it is the move R4 is about.
-export function visibleLabel(item, variant, examined) {
-  const name = (item.labels && item.labels.de) || item.id;
+export function visibleLabel(item, variant, examined, pick = m => (m && m.de) || '') {
+  const name = pick(item.labels) || item.id;
   // Only a named variant has anything to show under the name: with one version
   // of the object there is nothing to tell apart, and repeating its name there
   // would be noise pretending to be information.
-  const detail = (variant && variant.labels && variant.labels.de) || '';
+  const detail = (variant && pick(variant.labels)) || '';
   const legible = !needsExamination(item) || examined;
   return { name, detail, legible: detail ? legible : true };
 }

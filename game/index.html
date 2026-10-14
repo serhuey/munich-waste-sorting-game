@@ -3,38 +3,49 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="theme-color" content="#1a1c2c">
 <title>Münchner Mülltrennung</title>
 <link rel="stylesheet" href="css/game.css">
 </head>
 <body>
 <div id="app">
-  <div id="fixture" hidden>СТЕНД: данные не сверены, играть можно, верить нельзя</div>
-  <div id="clock" hidden></div>
-  <header>
-    <span>тир <b id="tier">1</b> · осталось <b id="left">0</b> из <b id="total">0</b></span>
-    <span>верно <b id="right">0</b> · <b id="points">0</b> очк</span>
+  <div id="fixture" class="banner warn" hidden></div>
+  <div id="clock" class="banner info" hidden></div>
+  <header class="hud">
+    <span class="hud-cell"><span id="lbl-tier">Stufe</span> <b id="tier">1</b></span>
+    <span class="hud-cell"><span id="lbl-left">noch</span> <b id="left">0</b>/<b id="total">0</b></span>
+    <span class="hud-cell"><span id="lbl-right">richtig</span> <b id="right">0</b></span>
+    <span class="hud-cell"><span id="lbl-points">Punkte</span> <b id="points">0</b></span>
   </header>
 
-  <div id="field"></div>
-  <div id="say" class="say"></div>
+  <div id="stage">
+    <img id="sky" alt="" draggable="false">
+    <div id="field"></div>
+  </div>
+  <div id="say" class="say" aria-live="polite"></div>
 
   <div id="tabs" hidden></div>
   <div id="belt"><div id="track"></div></div>
 
   <div id="hud">
-    <span class="touch-hint">свайп по ленте — контейнер · тап по предмету — рассмотреть или разобрать · тап мимо — бросить</span>
-    <span class="key-hint">← → лента · Tab место · цифра место · ↑ рассмотреть · пробел бросить</span>
+    <span class="touch-hint" id="hint-touch"></span>
+    <span class="key-hint" id="hint-keys"></span>
   </div>
 
-  <div id="panel" hidden>
-    <div class="panel-card">
+  <div id="panel" hidden role="dialog" aria-modal="true" aria-labelledby="panel-title">
+    <div class="panel-card" aria-live="polite">
+      <div id="panel-badge" class="badge" hidden></div>
       <h2 id="panel-title"></h2>
+      <div id="panel-extra"></div>
       <p id="panel-line"></p>
       <div id="panel-lines"></div>
-      <p id="panel-note"></p>
-      <button id="panel-btn" type="button"></button>
+      <div id="panel-note"></div>
+      <p id="panel-flag" class="flag" hidden></p>
+      <button id="panel-btn" class="pbtn" type="button"></button>
     </div>
   </div>
+
+  <div id="screen" class="screen" hidden></div>
 </div>
 <script type="module" src="js/main.js"></script>
 </body>

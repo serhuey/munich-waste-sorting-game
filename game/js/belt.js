@@ -13,12 +13,16 @@ export function nearestIndex(centers, x) {
   return best;
 }
 
+import { containerSprite, img } from './pixel.js';
+
 export class Belt {
-  constructor({ beltEl, trackEl, tabsEl, onPlaceChange }) {
+  constructor({ beltEl, trackEl, tabsEl, onPlaceChange, label }) {
     this.belt = beltEl;
     this.track = trackEl;
     this.tabs = tabsEl;
     this.onPlaceChange = onPlaceChange || (() => {});
+    // Labels come in the player's language; the belt asks rather than knowing.
+    this.label = label || (map => (map && map.de) || '');
     this.strip = [];
     this.centers = [];
     this.offset = 0;
@@ -44,20 +48,24 @@ export class Belt {
       group.className = 'group';
       const label = document.createElement('div');
       label.className = 'group-label';
-      label.textContent = g.labels.de;
+      label.textContent = this.label(g.labels);
       const bins = document.createElement('div');
       bins.className = 'bins';
       g.containers.forEach(c => {
         const bin = document.createElement('div');
-        bin.className = 'bin pattern-' + (c.pattern || 'solid');
+        bin.className = 'bin';
         bin.dataset.container = c.id;
+        // Three channels besides colour (R12): the drawing's shape and icon, a
+        // glyph, and the name in words.
+        const pic = img(containerSprite(c.id), 'bin-sprite');
         const sym = document.createElement('span');
         sym.className = 'sym';
+        sym.setAttribute('aria-hidden', 'true');
         sym.textContent = c.glyph || '•';
         const name = document.createElement('span');
         name.className = 'bin-label';
-        name.textContent = c.labels.de;
-        bin.append(sym, name);
+        name.textContent = this.label(c.labels);
+        bin.append(pic, sym, name);
         bins.append(bin);
       });
       group.append(label, bins);
@@ -72,7 +80,7 @@ export class Belt {
         const num = document.createElement('span');
         num.className = 'num';
         num.textContent = gi + 1;
-        tab.append(num, document.createTextNode(g.labels.de));
+        tab.append(num, document.createTextNode(this.label(g.labels)));
         tab.addEventListener('click', () => this.jumpToPlace(gi));
         this.tabs.append(tab);
       }

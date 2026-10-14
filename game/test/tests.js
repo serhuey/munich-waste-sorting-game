@@ -7,12 +7,21 @@ import { nearestIndex } from '../js/belt.js';
 import * as score from '../js/score.js';
 import * as explain from '../js/explain.js';
 import * as progress from '../js/progress.js';
+import * as finale from '../js/finale.js';
+import { createI18n, preferredLanguage } from '../js/i18n.js';
+import { bareUrl, payload, share } from '../js/share.js';
 
 const results = [];
 const eq = (a, b) => JSON.stringify(a) === JSON.stringify(b);
+const pending = [];
 function test(name, fn) {
-  try { fn(); results.push({ name, ok: true }); }
-  catch (e) { results.push({ name, ok: false, why: e.message }); }
+  const slot = { name, ok: true };
+  results.push(slot);
+  const fail = e => { slot.ok = false; slot.why = e.message; };
+  try {
+    const out = fn();
+    if (out && typeof out.then === 'function') pending.push(out.catch(fail));
+  } catch (e) { fail(e); }
 }
 function assert(cond, msg) { if (!cond) throw new Error(msg || 'ожидалось true'); }
 function same(got, want, msg) {
@@ -380,6 +389,107 @@ test('tier order comes from the data, not from a constant', () => {
   same(progress.placesOpened(reordered, NOW, 0, 1).map(p => p.id), ['hof']);
 });
 
+// --- languages (U8) ---------------------------------------------------------
+const BUNDLE = { de: { _language: 'Deutsch', hi: 'Hallo {name}', only: 'nur deutsch' },
+                 en: { _language: 'English', hi: 'Hello {name}' },
+                 fr: { _language: 'Français', hi: 'Salut {name}', only: 'seulement' } };
+
+test('a third language is selectable with no code naming it', () => {
+  const i = createI18n(BUNDLE, 'fr');
+  same(i.langs, ['de', 'en', 'fr']);
+  same(i.t('hi', { name: 'Anna' }), 'Salut Anna');
+  same(i.name('fr'), 'Français');
+});
+
+test('the browser language decides, an explicit choice wins', () => {
+  same(preferredLanguage(null, ['en-GB', 'de'], ['de', 'en']), 'en');
+  same(preferredLanguage('de', ['en-GB'], ['de', 'en']), 'de');
+  same(preferredLanguage(null, ['pt-BR'], ['de', 'en']), 'de', 'неизвестный язык — немецкий');
+});
+
+test('a missing string falls back to German, rule content to any language', () => {
+  const i = createI18n(BUNDLE, 'en');
+  same(i.t('only'), 'nur deutsch');
+  same(i.pick({ de: 'Glas' }), 'Glas');
+  same(i.pick({ en: 'Glass' }), 'Glass');
+  same(i.pick(null), '');
+});
+
+test('container names follow the language of the explanation', () => {
+  const strip = rules.stripOn(PLACES, d('2026-08-27'));
+  const line = explain.explainSlot({ strip, slot: { id: 's', labels: { de: 'Flasche', en: 'Bottle' },
+    destinations: ['glas_weiss'] }, chosen: 'glas_weiss', errorKind: 'container', lang: 'en' });
+  same([line.part, line.chosen], ['Bottle', 'Clear glass']);
+});
+
+test('a destination not yet on the belt is not named as the answer', () => {
+  const strip = rules.stripForTier(PLACES, d('2026-08-27'), 1);
+  const line = explain.explainSlot({ strip, slot: { id: 's', labels: { de: 'Akku' },
+    destinations: ['glas_weiss', 'papier'] }, chosen: 'restmuell', errorKind: 'container' });
+  same(line.wanted, ['Papier']);
+});
+
+// --- the tree (U7) -----------------------------------------------------------
+const TREE = {
+  decorations: [{ id: 'kugel' }, { id: 'netz' }],
+  routes: [
+    { id: 'hof', year_round: true },
+    { id: 'sammel', windows: [{ from: '2026-01-07', until: '2026-02-05' }] },
+    { id: 'strasse', illegal: true }
+  ]
+};
+
+test('a stripped tree to the recycling centre is right on any date', () => {
+  same(finale.judge(TREE, 'hof', d('2026-01-08')).kind, 'ok');
+  same(finale.judge(TREE, 'hof', d('2026-07-15')).kind, 'ok');
+});
+
+test('a collection point is right inside its window and closed outside it', () => {
+  const inside = finale.judge(TREE, 'sammel', d('2026-02-04'));
+  same(inside.kind, 'ok');
+  same(inside.also.map(r => r.id), ['hof'], 'другие открытые маршруты называются и после верного ответа');
+  same(finale.judge(TREE, 'sammel', d('2026-02-05')).kind, 'closed', 'until не включается');
+});
+
+test('only a place outside every route is illegal dumping', () => {
+  const v = finale.judge(TREE, 'strasse', d('2026-01-08'));
+  same(v.kind, 'illegal');
+  assert(v.points < finale.judge(TREE, 'sammel', d('2026-07-01')).points, 'свалка дороже закрытого маршрута');
+});
+
+test('an unstripped tree cannot be routed', () => {
+  assert(!finale.stripped(TREE, new Set(['kugel'])), 'сетка ещё на дереве');
+  assert(finale.stripped(TREE, new Set(['kugel', 'netz'])));
+});
+
+test('opening days are spoken inclusively', () => {
+  const fmt = x => x.toISOString().slice(5, 10);
+  same(finale.windowText(TREE.routes[1], fmt), '01-07 – 02-04');
+});
+
+// --- sharing (U11) -----------------------------------------------------------
+test('a shared link carries no source tag and no identifier', () => {
+  same(bareUrl('https://muell.sergei-grieg.de/?src=reddit-munich&lang=en'), 'https://muell.sergei-grieg.de/');
+  same(bareUrl('https://muell.sergei-grieg.de/index.html?x=1#y'), 'https://muell.sergei-grieg.de/');
+  const p = payload({ text: '1200 Punkte', href: 'https://muell.sergei-grieg.de/?src=toytown' });
+  same(p, { text: '1200 Punkte', url: 'https://muell.sergei-grieg.de/' });
+});
+
+test('without a share sheet the result goes to the clipboard', async () => {
+  let copied = null;
+  const nav = { clipboard: { writeText: async s => { copied = s; } } };
+  same(await share({ text: 'a', url: 'b' }, nav), 'copied');
+  same(copied, 'a b');
+});
+
+test('a tier plays at most ten objects, and all of them when it has fewer', () => {
+  const items = Array.from({ length: 14 }, (_, i) => ({ id: 'x' + i, tier: 3 }));
+  same(rules.roundForTier(items, 3).length, 10);
+  same(rules.roundForTier(items.slice(0, 4), 3).length, 4);
+  same(new Set(rules.roundForTier(items, 3).map(i => i.id)).size, 10, 'без повторов');
+});
+
+await Promise.all(pending);
 const box = document.getElementById('out');
 const bad = results.filter(r => !r.ok);
 box.innerHTML = results.map(r =>

@@ -282,7 +282,8 @@ dist/                                  build output, committed
 - **Goal.** The one item whose answer is not a container.
 - **Requirements.** R7, R16, R17, F4, AE7, AE8.
 - **Dependencies.** U6.
-- **Files.** `game/js/finale.js`, `data/finale/christbaum-2026.json`.
+- **Files.** `game/js/finale.js`, `data/finale/christbaum.json`, `game/js/sprites.js`.
+- **Built, 14 October 2026, unsigned. Deviations, each deliberate.** One file for the season rather than one per year: the season is a field, and the next edition replaces the dates in place. Two days are played — 8 January and 20 February 2026 — because the window is the thing a newcomer does not know exists; the second day has only the Wertstoffhof open. No fine is named: neither the city page nor AWM's release states an amount, only that leaving a tree elsewhere "kann ein Bußgeldverfahren nach sich ziehen", and that sentence is what the game shows (R17). Third-party catalogues quote 50 € for Bavaria; that is not a source. The edition note is shown on every visit rather than only off-season, since the 2026/27 dates are not out and every visit today is off-season. Hausverwaltung pick-up is left out: it needs twenty trees and a fee, which is not a newcomer's route.
 - **Approach.**
   1. Strip the tree first — decorations, stand, plastic — then choose a route.
   2. Route is its own data dimension: availability window or year-round flag, preparation rule, limits. Every currently valid route counts as correct.
@@ -301,6 +302,7 @@ dist/                                  build output, committed
 - **Requirements.** R21, R22, AE12.
 - **Dependencies.** U3, U5.
 - **Files.** `game/js/i18n.js`, `data/i18n/de.json`, `data/i18n/en.json`.
+- **Built, 14 October 2026.** The build bundles every file in `data/i18n/` and refuses a bundle where a key or a `{placeholder}` differs from German. Language follows `?lang=`, then the browser, then German, and is switchable on the title and result screens. Headings and buttons are set in a 5×7 pixel capital alphabet; explanations, item names and container labels stay in the system font, because legibility is the product.
 - **Approach.** Interface strings and rule content are separate stores. Language is chosen from the browser and switchable in the UI. German is authored first — it is the language of the source material and the longer of the two, so it sets the layout budget.
 - **Test scenarios.**
   - Covers AE12. Adding a third language file makes the language selectable with no change to any `.js` file.
@@ -313,7 +315,8 @@ dist/                                  build output, committed
 - **Goal.** Colour never carries meaning alone, and everything reads at arm's length.
 - **Requirements.** R12, R22, AE11.
 - **Dependencies.** U3, U8.
-- **Files.** `game/css/game.css`, `game/js/belt.js`, `data/places/2026.json`.
+- **Files.** `game/css/game.css`, `game/js/belt.js`, `game/js/sprites.js`.
+- **Built, 14 October 2026.** Every container is drawn, carries a glyph and its name; green and brown glass also differ in texture — stripes and dots — on both containers and bottles, because their greys are within ten levels of each other. Borderline objects carry a dashed `?` mark. Container labels are 14 px and hyphenate (`lang` is set), tabs 16 px. Checked in a greyscale render of the island; not yet checked on a physical phone at arm's length.
 - **Approach.** Every container carries a glyph and a text label besides its colour; borderline items carry a shape marker, not a coloured glow alone; glass containers and glass items carry the colour as a word and a hatch pattern, because green-versus-brown is exactly the pair colour-blind players lose. Minimum type: 14 px container labels, 16 px tabs.
 - **Test scenarios.**
   - Covers AE11. Rendered in greyscale, every container remains distinguishable and every glass item still states its colour.
@@ -326,7 +329,8 @@ dist/                                  build output, committed
 - **Goal.** The yellow bin arrives and the packaging containers leave the island, without touching game logic.
 - **Requirements.** R18, R19, R20, F5, AE10.
 - **Dependencies.** U6.
-- **Files.** `data/places/2027.json`, `game/js/rules.js`, `data/i18n/*.json`.
+- **Files.** `data/notices.json`, `data/places.json`, `game/js/main.js`.
+- **Built, 14 October 2026, unsigned.** One places file with windows, as U1 settled, so no `2027.json`. The intro text has two editions with complementary windows and the build refuses any date covered by none or by two (R20). The notice runs 1 January to 31 March 2027 and is shown on every session start inside that window, with nothing stored. Measured with `?date=2027-01-15`: the yellow bin stands at home, the island keeps three glass containers and textiles, every tier-3 packaging item is answered at the yellow bin.
 - **Approach.**
   1. Containers carry `from` / `until`; `gelbe_tonne` starts 2027-01-01 at `home`, and both `kunststoff` and `metall` end the same day at `wertstoffinsel`, where glass and textiles stay. Two containers, not one: AWM's own page for the islands lists plastic packaging and metals as separate containers, and the 2027 change moves plastic, composites and metal into the yellow bin together.
   2. The transition period is a window in data — 2027-01-01 to 2027-03-31 as the starting value — and the change message opens every session inside it, stating the current rule first and what changed into what, with nothing recorded on the device (KTD3).
@@ -344,6 +348,7 @@ dist/                                  build output, committed
 - **Requirements.** R23, AE14.
 - **Dependencies.** U5, U7.
 - **Files.** `game/js/share.js`.
+- **Built, 14 October 2026.** The shared text carries the score and the bare address — query and fragment stripped, so `?src=` never travels onwards. Web Share where present, clipboard otherwise, a hidden textarea as the last resort.
 - **Approach.** Web Share API where present, clipboard fallback otherwise. The text carries score and tier reached and the bare URL — no session id, no device id, no source tag (KTD8).
 - **Test scenarios.**
   - The shared payload contains no identifier of sender, session or device.

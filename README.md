@@ -2,7 +2,7 @@
 
 A casual mobile-web game that teaches people arriving in Munich where household waste actually goes.
 
-**Status: pre-release.** The specification is written and a playable spike of the first two places exists. The game itself is not built yet.
+**Status: pre-release.** The game is playable end to end in a local build: five tiers, the Christmas-tree finale, German and English, pixel art for every object and container. Most of its content is still unsigned — items drafted from AWM sources by machine and not yet read by a person — so the build that can be published contains only the signed first tier. See *Running it locally*.
 
 ## Why
 
@@ -62,8 +62,10 @@ This project is not affiliated with or endorsed by AWM or the city of Munich. It
 ```
 docs/SPEC.md          the requirements: what the product must do and why
 docs/plans/           dated working history of the specification, RU and EN
+data/                 places, items, drafts, interface strings, the finale, the 2027 notice
+game/                 the engine: plain ES modules, pixel art in game/js/sprites.js
 prototype/            playable spike of the first two places, open the HTML in a browser
-tools/                Abfalllexikon snapshot and diff
+tools/                Abfalllexikon snapshot and diff, the build gate, the verification form
 ```
 
 Start with `docs/SPEC.md`. It is a requirements document, not an architecture document — the how is deliberately still open.
@@ -77,8 +79,15 @@ python3 -m http.server 8080 --directory dist
 
 `--fixtures` includes items nobody has verified yet, marks every one of them
 `unverified`, stamps the build as a stand and makes `tools/publish.py` refuse to
-copy it anywhere. Without the flag the build contains only signed items, which
-is what ships.
+copy it anywhere. The same goes for the finale and the 2027 notice, whose sources
+are unsigned too. Without the flag the build contains only signed content, which
+is what ships; the game then ends after the last playable tier instead of
+showing dates nobody has checked.
+
+Drafts marked `"_drafted_by": "claude"` were written by machine from the AWM
+lexicon snapshot, AWM's pages and the federal norms they cite. Each names its
+source; none carries a signature. They go through the same loop as any draft —
+see `docs/VERIFYING.md`.
 
 Two development handles on the URL, and the first is also how the 2027 switch is
 demonstrated:
@@ -87,12 +96,19 @@ demonstrated:
   at home and both packaging containers leave the island, with no other change.
 - `?tier=3` starts further up the ladder.
 
-Engine tests are a page, because the engine is a page:
+Engine tests are a page, because the engine is a page, and the same tests run
+from a terminal together with a check that every object and container in the
+data has a drawing:
 
 ```bash
 python3 -m http.server 8081
 open http://127.0.0.1:8081/game/test/belt.test.html
+open http://127.0.0.1:8081/game/test/sprites.html    # all pixel art on one sheet
+node game/test/run.mjs
 ```
+
+Further handles: `?finale=1` goes straight to the tree, `?lang=en` picks a
+language, `?slow=4` stretches every fall.
 
 Data and tool tests:
 

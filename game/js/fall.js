@@ -21,21 +21,31 @@ export class Fall {
     this.paused = false;
   }
 
-  spawn({ item, variant, duration, label, detail, legible, borderline, hint }) {
+  spawn({ item, variant, duration, label, detail, legible, borderline, hint, sprite, part }) {
     this.clear();
     const el = document.createElement('div');
-    el.className = 'item' + (borderline ? ' borderline' : '');
+    el.className = 'item' + (borderline ? ' borderline' : '') + (part ? ' part' : '');
     // The card's own transform is rewritten every frame by the fall loop, so
     // anything that wants to move the card has to move this wrapper instead.
     const body = document.createElement('div');
     body.className = 'body';
-    const glyph = document.createElement('div');
-    glyph.className = 'glyph';
-    glyph.textContent = (item.attrs || []).includes('separable') ? '❖' : '◆';
+    const pic = document.createElement('img');
+    pic.className = 'sprite';
+    pic.src = sprite;
+    pic.alt = '';
+    pic.draggable = false;
     const name = document.createElement('div');
     name.className = 'name';
     name.textContent = label;
-    body.append(glyph, name);
+    body.append(pic, name);
+    // A borderline object says so with a shape, not with a coloured glow alone.
+    if (borderline) {
+      const mark = document.createElement('div');
+      mark.className = 'mark';
+      mark.setAttribute('aria-hidden', 'true');
+      mark.textContent = '?';
+      body.append(mark);
+    }
     if (detail) {
       const small = document.createElement('div');
       small.className = 'detail' + (legible ? '' : ' unreadable');
@@ -82,8 +92,10 @@ export class Fall {
 
   // Replace the card's contents in place: after examination the same object is
   // still falling, only now its label can be read.
-  relabel({ detail, legible, hint }) {
+  relabel({ detail, legible, hint, sprite }) {
     if (!this.el) return;
+    const pic = this.el.querySelector('.sprite');
+    if (pic && sprite) pic.src = sprite;
     const small = this.el.querySelector('.detail');
     if (small) {
       small.textContent = detail || '';
@@ -106,8 +118,8 @@ export class Fall {
     if (this.paused) { this.pausedAt = this.pausedAt || performance.now(); return; }
     this.pausedAt = 0;
     const k = (performance.now() - this.current.started) / this.current.duration;
-    const travel = this.field.clientHeight + 90;
-    this.current.el.style.transform = 'translate(-50%,' + (-90 + k * travel) + 'px)';
+    const travel = this.field.clientHeight + 40;
+    this.current.el.style.transform = 'translate(-50%,' + (-140 + k * travel) + 'px)';
     if (k >= 1) this._land(false);
   }
 

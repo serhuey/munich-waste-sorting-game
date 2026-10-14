@@ -1,6 +1,6 @@
-// Wiring: content in, one tier at a time out. An item may have to be examined
-// before it can be answered and taken apart before it can be sent anywhere; the
-// reward curve and the written explanation are U5, and their seams are marked.
+// Wiring: content in, screens out. Title, then five tiers one place at a time,
+// then the tree, then a result worth forwarding. Every rule is read from the
+// content bundle against a date; this file decides only what is on screen.
 
 import { Belt } from './belt.js';
 import { Fall } from './fall.js';
@@ -8,84 +8,222 @@ import * as rules from './rules.js';
 import * as score from './score.js';
 import * as explain from './explain.js';
 import * as progress from './progress.js';
+import * as finale from './finale.js';
+import { createI18n, preferredLanguage } from './i18n.js';
+import { payload, share } from './share.js';
+import { itemSprite, containerSprite, routeSprite, treeSprite, skylineSprite, img,
+         pixelText, setPixelText, draw } from './pixel.js';
+import { DECOR, ITEMS } from './sprites.js';
 
 const el = id => document.getElementById(id);
+const make = (tag, cls, text) => {
+  const node = document.createElement(tag);
+  if (cls) node.className = cls;
+  if (text != null) node.textContent = text;
+  return node;
+};
 
-// Two development handles, and one of them is how the 2027 switch gets shown to
-// people: ?date=2027-01-15 moves the clock the rules are read against, ?tier=3
-// starts further up the ladder. Neither changes any rule — both only choose
-// which day and which tier the same data is read for.
+// Development handles. ?date=2027-01-15 reads the rules against another day —
+// it is also how the 2027 switch is shown. ?tier=3 starts further up the ladder,
+// ?finale=1 goes straight to the tree, ?slow=4 stretches every fall, ?lang=en
+// picks a language. None of them changes a rule.
 const params = new URLSearchParams(location.search);
 const asked = params.get('date');
-const startAt = Math.max(1, Math.min(5, parseInt(params.get('tier'), 10) || 1));
-// ?slow=4 stretches every fall fourfold. Tuning the timing means playing the
-// same item at several speeds, and that is easier with a handle than with edits.
+const startAt = params.has('tier') ? Math.max(1, Math.min(5, parseInt(params.get('tier'), 10) || 1)) : null;
 const slow = Math.max(0.25, Math.min(20, parseFloat(params.get('slow')) || 1));
 
-const lang = (navigator.language || 'de').slice(0, 2) === 'en' ? 'en' : 'de';
 const state = { content: null, date: asked ? new Date(asked + 'T12:00:00Z') : new Date(),
-                tier: startAt, queue: [], strip: [], activePlace: null,
+                tier: 1, queue: [], strip: [], activePlace: null,
                 right: 0, answered: 0, points: 0, round: null, flight: null,
                 // The run outlives a tier: the header counts this tier, the run
                 // carries the ladder. Both die with the tab (KTD3).
-                run: progress.createRun(startAt) };
+                run: progress.createRun(1), finalePoints: 0, reached: 0 };
+let i18n = null;
+const t = (k, v) => i18n.t(k, v);
+const pick = m => (i18n ? i18n.pick(m) : (m && m.de) || '');
 
 const belt = new Belt({
-  beltEl: el('belt'), trackEl: el('track'), tabsEl: el('tabs'),
-  onPlaceChange: p => { state.activePlace = p; }
+  beltEl: el('belt'), trackEl: el('track'), tabsEl: el('tabs'), label: pick,
+  onPlaceChange: p => { state.activePlace = p; el('app').dataset.place = p || ''; }
 });
 const fall = new Fall({ fieldEl: el('field'), onLanded: landed });
 
 async function boot() {
   const res = await fetch('content.json', { cache: 'no-store' });
   state.content = await res.json();
-  if (state.content.fixture) el('fixture').hidden = false;
-  if (slow !== 1) {
-    el('clock').hidden = false;
-    el('clock').textContent = 'падение замедлено в ' + slow + ' раз';
-  }
-  if (asked) {
-    el('clock').hidden = false;
-    el('clock').textContent = 'правила читаются на ' + asked;
-  }
-  startTier(startAt);
+  const langs = Object.keys(state.content.i18n || {});
+  i18n = createI18n(state.content.i18n, preferredLanguage(params.get('lang'), navigator.languages, langs));
+  el('sky').src = skylineSprite();
+  applyLanguage();
+  if (params.has('finale')) return startFinale();
+  if (startAt) { state.run = progress.createRun(startAt); return startTier(startAt); }
+  showTitle();
 }
 
+function applyLanguage() {
+  document.documentElement.lang = i18n.lang;
+  document.title = t('title');
+  el('fixture').hidden = !state.content.fixture;
+  el('fixture').textContent = t('fixture_banner');
+  const notes = [];
+  if (asked) notes.push(t('clock_banner', { date: i18n.date(state.date) }));
+  if (slow !== 1) notes.push(t('slow_banner', { n: slow }));
+  el('clock').hidden = !notes.length;
+  el('clock').textContent = notes.join(' · ');
+  el('lbl-tier').textContent = t('hud_tier');
+  el('lbl-right').textContent = t('hud_right');
+  el('lbl-points').textContent = t('hud_points');
+  el('lbl-left').textContent = t('hud_left');
+  el('hint-touch').textContent = t('touch_hint');
+  el('hint-keys').textContent = t('how_keys');
+}
+
+function languageSwitch(after) {
+  const row = make('div', 'langs');
+  row.setAttribute('role', 'group');
+  row.setAttribute('aria-label', t('language'));
+  i18n.langs.forEach(l => {
+    const b = make('button', 'pbtn small' + (l === i18n.lang ? ' on' : ''), i18n.name(l));
+    b.type = 'button';
+    b.setAttribute('aria-pressed', l === i18n.lang);
+    b.onclick = () => { i18n.set(l); applyLanguage(); after(); };
+    row.append(b);
+  });
+  return row;
+}
+
+// A heading in pixel capitals, broken into lines and scaled down until the
+// longest line fits — German compounds decide the layout budget (R22).
+function pixelHeading(text, { max = 4, width = Math.min(window.innerWidth, 480) - 48, color = '#1a1c2c', shadow = '#94b0c2' } = {}) {
+  const box = make('div', 'pheading');
+  box.setAttribute('role', 'heading');
+  box.setAttribute('aria-level', '1');
+  box.setAttribute('aria-label', text);
+  const words = String(text).split(' ');
+  for (let scale = max; scale >= 1; scale--) {
+    const lines = [];
+    let line = '';
+    const fits = s => pixelText(s, { scale }).width <= width;
+    words.forEach(w => {
+      const next = line ? line + ' ' + w : w;
+      if (fits(next) || !line) line = next; else { lines.push(line); line = w; }
+    });
+    if (line) lines.push(line);
+    if (lines.every(fits) || scale === 1) {
+      lines.forEach(l => { const c = pixelText(l, { scale, color, shadow }); c.setAttribute('aria-hidden', 'true'); box.append(c); });
+      return box;
+    }
+  }
+  return box;
+}
+
+function currentIntro() {
+  const intro = (state.content.notices && state.content.notices.intro) || [];
+  const live = intro.find(n => rules.inWindow(n, state.date));
+  return live ? pick(live.text) : '';
+}
+
+function liveNotices() {
+  const list = (state.content.notices && state.content.notices.notices) || [];
+  return list.filter(n => rules.inWindow(n, state.date));
+}
+
+// ------------------------------------------------------------------ title
+function showTitle() {
+  const screen = openScreen('title');
+  const art = make('div', 'title-art');
+  ['bananenschalen', 'glasflasche.gruen', 'aludose', 'getraenkekarton', 'batterien'].forEach(k => {
+    art.append(img(draw(ITEMS[k], 1).toDataURL(), 'title-sprite'));
+  });
+  if (state.content.fixture) screen.append(make('p', 'fixture-note', t('fixture_banner')));
+  screen.append(art, pixelHeading(t('title')), make('p', 'lead', t('subtitle')));
+  const intro = currentIntro();
+  if (intro) screen.append(make('p', 'intro', intro));
+  const how = make('div', 'how');
+  how.append(make('h2', null, t('how_title')));
+  const list = make('ol');
+  ['how_1', 'how_2', 'how_3'].forEach(k => list.append(make('li', null, t(k))));
+  how.append(list, make('p', 'keys', t('how_keys')));
+  const go = make('button', 'pbtn big', t('play'));
+  go.type = 'button';
+  go.onclick = () => { closeScreen(); startRun(); };
+  screen.append(how, languageSwitch(showTitle), go, make('p', 'source', t('source_note')));
+  go.focus({ preventScroll: true });
+  // The change message opens every session inside its window and is never
+  // recorded as seen (R19): closing it is the only state, and it dies with the tab.
+  const notices = liveNotices();
+  if (notices.length) {
+    showPanel({ title: t('notice_title'), reasons: notices.map(n => ({ text: pick(n.text) })),
+                actionLabel: t('close'), action: () => { hidePanel(); go.focus(); } });
+  }
+}
+
+function startRun() {
+  const first = progress.ladder(state.content, state.date)[0] ?? 1;
+  state.run = progress.createRun(first);
+  state.finalePoints = 0;
+  state.reached = 0;
+  startTier(first);
+}
+
+// ------------------------------------------------------------------- tiers
 function startTier(tier) {
   state.tier = tier;
   state.right = 0;
   state.answered = 0;
   state.points = 0;
   state.round = null;
+  state.reached = Math.max(state.reached, tier);
   // Every place up to this tier, never only this tier's: what opened earlier
   // stays on the belt, because the ladder teaches where things go and the flat
   // does not stop existing once you have found the island (R6).
   state.strip = rules.stripForTier(state.content.places, state.date, tier);
   belt.setStrip(state.strip);
-  belt.locked = false;
-  state.queue = rules.shuffle(rules.itemsForTier(state.content.items, tier));
+  belt.locked = true;
+  state.queue = rules.roundForTier(state.content.items, tier);
   el('tier').textContent = tier;
   el('total').textContent = state.queue.length;
+  el('left').textContent = state.queue.length;
   el('right').textContent = '0';
   el('points').textContent = '0';
+  el('say').textContent = '';
   hidePanel();
   if (!state.queue.length) return emptyTier(tier);
-  next();
+  tierIntro(tier);
+}
+
+// Before a tier: what is new. The first tier introduces home; every later one
+// introduces exactly one place, with its containers drawn as they will appear.
+function tierIntro(tier) {
+  const places = rules.unlockedPlaces(state.content.places, state.date, tier);
+  const place = places.find(p => p.tier === tier) || places[places.length - 1];
+  const shelf = make('div', 'shelf');
+  (place ? place.containers : []).forEach(c => {
+    const fig = make('figure', 'shelf-bin');
+    fig.append(img(containerSprite(c.id), 'shelf-sprite'), make('figcaption', null, pick(c.labels)));
+    shelf.append(fig);
+  });
+  showPanel({
+    pixelTitle: t('tier_intro', { n: tier }),
+    line: tier === 1 ? t('tier_intro_first') : t('tier_intro_place', { place: pick(place.labels) }),
+    extra: shelf,
+    note: tier === 1 ? '' : t('tier_intro_more'),
+    actionLabel: t('go'),
+    action: () => { hidePanel(); belt.locked = false; next(); }
+  });
 }
 
 // A tier whose place exists but whose items are not authored yet. Reachable
 // only through ?tier= while content is being written; it says so plainly rather
 // than opening a round with nothing in it.
 function emptyTier(tier) {
-  belt.locked = true;
   const ahead = progress.nextPlayable(state.content, state.date, tier);
   const back = progress.ladder(state.content, state.date)[0] ?? 1;
   showPanel({
-    title: 'Тир ' + tier + ' пуст',
-    line: 'места есть, сверенных предметов пока нет',
-    note: 'предметы этого тира ещё не прошли ручную сверку',
+    pixelTitle: t('empty_tier', { n: tier }),
+    line: t('empty_tier_line'),
     action: () => startTier(ahead ?? back),
-    actionLabel: 'к тиру ' + (ahead ?? back)
+    actionLabel: t('to_tier', { n: ahead ?? back })
   });
 }
 
@@ -107,14 +245,21 @@ function next() {
 }
 
 function hintFor(round) {
-  if (!round.examined) return 'тап — рассмотреть';
-  if (rules.variantNeedsSplit(round.variant) && !round.split) return 'тап — разобрать';
+  if (!round.examined) return t('hint_examine');
+  if (rules.variantNeedsSplit(round.variant) && !round.split) return t('hint_split');
   return '';
+}
+
+// A variant has its own drawing only where the eye is the honest cue — green
+// glass looks green before anyone reads a label — so the drawing is shown from
+// the start; objects whose label decides share one picture (see sprites.js).
+function spriteFor(item, variant, examined, partId) {
+  return itemSprite(item, variant, partId);
 }
 
 function spawnWhole() {
   const { item, variant, examined } = state.round;
-  const shown = rules.visibleLabel(item, variant, examined);
+  const shown = rules.visibleLabel(item, variant, examined, pick);
   const destinations = rules.answerSlots(variant, state.date).flatMap(s => s.destinations);
   state.flight = { kind: 'whole' };
   fall.spawn({
@@ -122,7 +267,8 @@ function spawnWhole() {
     duration: rules.fallDuration(item, destinations, state.strip, state.activePlace) * slow,
     label: shown.name, detail: shown.detail, legible: shown.legible,
     borderline: (item.attrs || []).includes('borderline'),
-    hint: hintFor(state.round)
+    hint: hintFor(state.round),
+    sprite: spriteFor(item, variant, examined)
   });
 }
 
@@ -132,10 +278,11 @@ function spawnPart(slot) {
   fall.spawn({
     item, variant,
     duration: rules.fallDuration(item, slot.destinations, state.strip, state.activePlace) * slow,
-    label: (item.labels && item.labels.de) || item.id,
-    detail: (slot.labels && slot.labels.de) || slot.id, legible: true,
+    label: pick(slot.labels) || slot.id,
+    detail: pick(item.labels), legible: true,
     borderline: (item.attrs || []).includes('borderline'),
-    hint: ''
+    hint: '', part: true,
+    sprite: itemSprite(item, variant, slot.id)
   });
 }
 
@@ -144,7 +291,7 @@ function spawnPart(slot) {
 // or the space bar — because a key that means "let me look" must never be the
 // key that throws the thing away.
 function tapItem() {
-  if (!fall.current) return;
+  if (!fall.current || !el('panel').hidden) return;
   const action = rules.tapAction(state.round);
   if (action === 'examine') return examine();
   if (action === 'split') return split();
@@ -154,18 +301,22 @@ function tapItem() {
 function examine() {
   const round = state.round;
   fall.pause();
-  const detail = (round.variant.labels && round.variant.labels.de) || '—';
+  const detail = pick(round.variant.labels) || '—';
+  const pic = make('div', 'examine-pic');
+  pic.append(img(itemSprite(round.item, round.variant), 'big-sprite'));
   showPanel({
-    title: (round.item.labels && round.item.labels.de) || round.item.id,
+    title: pick(round.item.labels) || round.item.id,
     line: detail,
-    note: 'осмотр стоит времени, а не подсказывает ответ',
+    extra: pic,
+    note: t('examine_note'),
     action: () => {
       round.examined = true;
       hidePanel();
-      fall.relabel({ detail, legible: true, hint: hintFor(round) });
+      fall.relabel({ detail, legible: true, hint: hintFor(round),
+                     sprite: itemSprite(round.item, round.variant) });
       fall.resume(rules.TIMING.examineCost);
     },
-    actionLabel: 'дальше'
+    actionLabel: t('next')
   });
 }
 
@@ -191,7 +342,7 @@ function landed({ item, variant, el: itemEl, early, remaining }) {
     addPoints(points);
     mark(itemEl, false);
     state.round = null;
-    return showExplanation(explain.explainUndivided(item, variant, lang), points);
+    return showExplanation(item, variant, explain.explainUndivided(item, variant, i18n.lang), points);
   }
 
   const slot = flight.kind === 'part'
@@ -200,8 +351,8 @@ function landed({ item, variant, el: itemEl, early, remaining }) {
   const ok = !!chosen && slot.destinations.includes(chosen.id);
   const points = score.scoreAnswer({ ok, early, remaining });
   const line = explain.explainSlot({
-    strip: state.strip, slot, chosen: chosen && chosen.id,
-    fallbackName: (item.labels && item.labels.de) || item.id,
+    strip: state.strip, slot, chosen: chosen && chosen.id, lang: i18n.lang,
+    fallbackName: pick(item.labels) || item.id,
     errorKind: rules.errorKind(state.strip, chosen && chosen.id, slot.destinations)
   });
 
@@ -217,14 +368,14 @@ function landed({ item, variant, el: itemEl, early, remaining }) {
     round.slots = round.slots.slice(1);
     // Parts share one explanation at the end of the item; a short line keeps the
     // player informed that the part registered while the next one is falling.
-    say((ok ? '✓ ' : '✗ ') + line.part + ' → ' + (line.chosen || '—'), ok);
+    say(t(ok ? 'part_ok' : 'part_bad', { part: line.part, container: line.chosen || t('nothing') }), ok);
     return setTimeout(next, 550);
   }
 
   addPoints(points);
   state.round = null;
-  showExplanation(explain.explainAnswer({
-    item, variant, slots: [slot], strip: state.strip, lines: [line], points, lang
+  showExplanation(item, variant, explain.explainAnswer({
+    item, variant, slots: [slot], strip: state.strip, lines: [line], points, lang: i18n.lang
   }), points);
 }
 
@@ -236,16 +387,19 @@ function finishRound() {
   const points = score.splitFloor(round.partPoints, score.POINTS.wrong);
   addPoints(points);
   state.round = null;
-  showExplanation(explain.explainAnswer({
+  showExplanation(round.item, round.variant, explain.explainAnswer({
     item: round.item, variant: round.variant,
     slots: rules.answerSlots(round.variant, state.date),
-    strip: state.strip, lines: round.lines, points, lang
+    strip: state.strip, lines: round.lines, points, lang: i18n.lang
   }), points);
 }
 
 function addPoints(points) {
   state.points += points;
   el('points').textContent = state.points;
+  const pop = make('div', 'pop ' + (points >= 0 ? 'ok' : 'bad'), (points >= 0 ? '+' : '') + points);
+  el('field').append(pop);
+  setTimeout(() => pop.remove(), 900);
 }
 
 function mark(itemEl, ok) {
@@ -277,41 +431,31 @@ function finishTier() {
 
   const lines = [];
   if (state.run.tiers.length > 1) {
-    lines.push({ text: 'за прогон: ' + total.right + ' из ' + total.answered + ' · ' +
-                       total.points + ' очков', ok: total.points >= 0, quiet: true });
+    lines.push({ text: t('run_total', total), ok: total.points >= 0, quiet: true });
   }
   (out.opened || []).forEach(p => {
-    lines.push({ text: 'открывается: ' + p.labels.de + ' — контейнеров: ' +
-                       p.containers.length, ok: true });
+    lines.push({ text: t('opens', { place: pick(p.labels), count: p.containers.length }), ok: true });
   });
-  (out.skipped || []).forEach(t => {
-    lines.push({ text: 'тир ' + t + ' пропущен: предметы ещё не сверены', ok: false, quiet: true });
-  });
+  (out.skipped || []).forEach(n => lines.push({ text: t('skipped', { n }), ok: false, quiet: true }));
 
-  const titles = {
-    advance: 'Тир ' + state.tier + ' пройден',
-    retry: 'Тир ' + state.tier + ' не пройден',
-    finale: 'Лестница пройдена'
-  };
+  const hasFinale = !!state.content.finale;
+  const titles = { advance: 'tier_cleared', retry: 'tier_failed', finale: 'tier_cleared' };
   const notes = {
-    advance: 'Дальше: тир ' + out.tier,
-    retry: 'Нужно ' + Math.round(score.CLEAR_SHARE * 100) +
-           '%. Ошибки не блокируют — можно пройти ещё раз',
-    // U7 puts the tree here. Until it exists the ladder says where it ends
-    // rather than pretending to have an ending.
-    finale: 'Дальше — ёлка. Финал ещё не построен (U7)'
+    advance: t('next_tier', { n: out.tier }),
+    retry: t('need_share', { share: Math.round(score.CLEAR_SHARE * 100) }),
+    finale: ''
   };
-  const labels = { advance: 'продолжить', retry: 'ещё раз', finale: 'сначала' };
+  const labels = { advance: t('continue'), retry: t('retry'), finale: hasFinale ? t('to_finale') : t('finale_done') };
 
   showPanel({
-    title: titles[out.kind],
-    line: state.right + ' из ' + state.answered + ' — ' + share + '% · ' +
-          state.points + ' очков',
+    pixelTitle: t(titles[out.kind], { n: state.tier }),
+    titleOk: out.kind !== 'retry',
+    line: t('tier_line', { right: state.right, answered: state.answered, share, points: state.points }),
     lines,
     note: notes[out.kind],
     action: () => {
-      if (out.kind === 'finale') state.run = progress.createRun(startAt);
-      startTier(out.kind === 'finale' ? (progress.ladder(state.content, state.date)[0] ?? 1) : out.tier);
+      if (out.kind === 'finale') return hasFinale ? startFinale() : showEnd();
+      startTier(out.tier);
     },
     actionLabel: labels[out.kind]
   });
@@ -325,66 +469,212 @@ function say(text, ok) {
 
 // Every answer gets an explanation before the game moves on (R8). Dismissing it
 // quickly is allowed and changes nothing: the score was settled at the landing.
-function showExplanation(result, points) {
+function showExplanation(item, variant, result, points) {
   const lines = [];
   if (result.undivided) {
-    lines.push({ text: 'целиком отправить нельзя — надо было разобрать: ' +
-                       result.parts.join(' + '), ok: false });
+    lines.push({ text: t('undivided', { parts: result.parts.join(' + ') }), ok: false });
   } else {
     result.lines.forEach(l => {
       if (l.ok) {
-        lines.push({ text: l.part + ' → ' + l.chosen, ok: true });
-        if (l.also.length) {
-          lines.push({ text: 'верно было также: ' + l.also.join(', '), ok: true, quiet: true });
-        }
-      } else if (l.kind === 'place') {
-        lines.push({ text: l.part + ': не то место — ' + (l.chosenPlace || '—') +
-                           ' вместо ' + l.wantedPlace, ok: false });
-        lines.push({ text: 'нужно: ' + l.wanted.join(' / '), ok: false, quiet: true });
+        lines.push({ text: t('ok_line', { part: l.part, container: l.chosen }), ok: true });
+        if (l.also.length) lines.push({ text: t('also_correct', { list: l.also.join(', ') }), ok: true, quiet: true });
       } else {
-        lines.push({ text: l.part + ': не тот контейнер — ' + (l.chosen || '—'), ok: false });
-        lines.push({ text: 'нужно: ' + l.wanted.join(' / '), ok: false, quiet: true });
+        const chosen = l.chosen || t('nothing');
+        lines.push({ text: l.kind === 'place'
+          ? t('wrong_place', { part: l.part, chosen: l.chosenPlace || chosen, wanted: l.wantedPlace })
+          : t('wrong_container', { part: l.part, chosen }), ok: false });
+        lines.push({ text: t('should_be', { list: l.wanted.join(' / ') }), ok: false, quiet: true });
       }
     });
   }
+  const pic = make('div', 'answer-pic');
+  pic.append(img(itemSprite(item, variant), 'mid-sprite'));
   showPanel({
-    title: (points >= 0 ? '+' : '') + points,
+    title: pick(item.labels) || item.id,
+    badge: (points >= 0 ? '+' : '') + points,
     titleOk: points >= 0,
-    line: '',
+    extra: pic,
     lines,
     reasons: result.reasons,
+    unverified: item.unverified,
     action: () => { hidePanel(); next(); },
-    actionLabel: 'дальше'
+    actionLabel: t('next')
   });
 }
 
-function showPanel({ title, titleOk, line, lines, reasons, note, action, actionLabel }) {
+// ------------------------------------------------------------------ finale
+// The tree: strip it, then choose a route on a given day. Two days are played —
+// one inside the collection window and one after it — because the window is
+// the thing a newcomer does not know exists.
+function startFinale() {
+  fall.clear();
+  belt.locked = true;
+  hidePanel();
+  const data = state.content.finale;
+  if (!data) return showEnd();
+  const days = finale.sceneDates(data);
+  const removed = new Set();
+  let scene = 0;
+
+  const render = () => {
+    const screen = openScreen('finale');
+    const day = days[scene];
+    screen.append(pixelHeading(t('finale_title'), { max: 3 }));
+    screen.append(make('p', 'day', t('finale_day', { date: i18n.date(day) })));
+
+    const stage = make('div', 'tree-stage');
+    stage.append(img(treeSprite(), 'tree-sprite', ''));
+    const positions = { stern: [50, 1], kugel: [36, 44], kugel_gold: [64, 62], lametta: [52, 28],
+                        lichter: [44, 70], kerze: [70, 40], netz: [50, 52] };
+    (data.decorations || []).forEach(d => {
+      if (removed.has(d.id)) return;
+      const b = make('button', 'decor decor-' + d.id);
+      b.type = 'button';
+      b.setAttribute('aria-label', pick(d.labels));
+      const [x, y] = positions[d.id] || [50, 50];
+      b.style.left = x + '%';
+      b.style.top = y + '%';
+      b.append(img(draw(DECOR[d.id] || DECOR.kugel, 1).toDataURL(), 'decor-sprite'));
+      b.onclick = () => {
+        removed.add(d.id);
+        b.classList.add('gone');
+        say(pick(d.labels) + ' ✓', true);
+        setTimeout(render, 180);
+      };
+      stage.append(b);
+    });
+    screen.append(stage);
+
+    const done = finale.stripped(data, removed);
+    const left = (data.decorations || []).filter(d => !removed.has(d.id)).length;
+    screen.append(make('p', 'status', done ? t('finale_stripped') : (removed.size ? t('finale_left', { n: left }) : t('finale_strip'))));
+
+    const routes = make('div', 'routes');
+    data.routes.forEach(r => {
+      const b = make('button', 'route');
+      b.type = 'button';
+      b.disabled = !done;
+      b.append(img(routeSprite(r.id), 'route-sprite'), make('span', null, pick(r.labels)));
+      b.onclick = () => choose(r.id);
+      routes.append(b);
+    });
+    screen.append(routes, make('p', 'edition', t('finale_edition', { season: data.season })));
+    const first = screen.querySelector('.decor, .route:not([disabled])');
+    if (first) first.focus({ preventScroll: true });
+  };
+
+  const choose = routeId => {
+    const day = days[scene];
+    const verdict = finale.judge(data, routeId, day);
+    state.finalePoints += verdict.points;
+    const fmt = d => i18n.date(d, { day: 'numeric', month: 'long', timeZone: 'UTC' });
+    const lines = [];
+    if (verdict.kind === 'closed') {
+      lines.push({ text: t('finale_open_when', { windows: finale.windowText(verdict.route, fmt) }), ok: false });
+    }
+    if (verdict.kind === 'ok' && verdict.also.length) {
+      lines.push({ text: t('finale_also', { list: verdict.also.map(r => pick(r.labels)).join(', ') }), ok: true, quiet: true });
+    }
+    if (verdict.kind !== 'ok') {
+      lines.push({ text: t('should_be', { list: verdict.open.map(r => pick(r.labels)).join(' / ') }), ok: false, quiet: true });
+    }
+    const reasons = [{ text: pick(verdict.route.rule) }];
+    if (scene === 0) reasons.push({ text: pick(data.strip_reason) });
+    const last = scene === days.length - 1;
+    const pic = make('div', 'answer-pic');
+    pic.append(img(routeSprite(routeId), 'mid-sprite'));
+    showPanel({
+      title: pick(verdict.route.labels),
+      badge: (verdict.points >= 0 ? '+' : '') + verdict.points,
+      titleOk: verdict.kind === 'ok',
+      line: t({ ok: 'finale_ok', closed: 'finale_closed', illegal: 'finale_illegal' }[verdict.kind]),
+      extra: pic,
+      lines, reasons,
+      unverified: data.unverified,
+      actionLabel: last ? t('finale_done') : t('finale_next_day'),
+      action: () => { hidePanel(); if (last) return showEnd(); scene += 1; render(); }
+    });
+  };
+
+  render();
+}
+
+// --------------------------------------------------------------------- end
+function showEnd() {
+  fall.clear();
+  belt.locked = true;
+  hidePanel();
+  const total = progress.runTotals(state.run);
+  const points = total.points + state.finalePoints;
+  const screen = openScreen('end');
+  const art = make('div', 'title-art');
+  art.append(img(treeSprite(), 'end-tree'));
+  screen.append(art, pixelHeading(t('end_title'), { max: 5 }));
+  const big = make('div', 'score');
+  big.append(pixelText(t('points_short', { points }), { scale: 4, color: '#2f9e57', shadow: '#a7f070' }));
+  big.setAttribute('aria-label', t('points_short', { points }));
+  screen.append(big, make('p', 'lead', t('end_line', { points, right: total.right, answered: total.answered })));
+  if (state.reached) screen.append(make('p', 'intro', t('end_reached', { n: state.reached })));
+
+  const shareBtn = make('button', 'pbtn big', t('share'));
+  shareBtn.type = 'button';
+  shareBtn.onclick = async () => {
+    const result = await share(payload({ text: t('share_text', { points }), href: location.href }));
+    if (result === 'copied') shareBtn.textContent = t('shared');
+  };
+  const again = make('button', 'pbtn quiet', t('again'));
+  again.type = 'button';
+  again.onclick = () => { closeScreen(); startRun(); };
+  const buttons = make('div', 'end-buttons');
+  buttons.append(shareBtn, again);
+  screen.append(buttons, languageSwitch(showEnd), make('p', 'source', t('source_note')));
+  shareBtn.focus({ preventScroll: true });
+}
+
+// ------------------------------------------------------------- overlays
+function openScreen(kind) {
+  const screen = el('screen');
+  screen.textContent = '';
+  screen.className = 'screen screen-' + kind;
+  screen.hidden = false;
+  screen.scrollTop = 0;
+  const inner = make('div', 'screen-inner');
+  screen.append(inner);
+  return inner;
+}
+function closeScreen() { el('screen').hidden = true; el('screen').textContent = ''; }
+
+function showPanel({ title, pixelTitle, badge, titleOk, line, lines, reasons, note, extra, unverified, action, actionLabel }) {
   const head = el('panel-title');
-  head.textContent = title;
+  head.textContent = '';
   head.className = titleOk === undefined ? '' : (titleOk ? 'ok' : 'bad');
+  if (pixelTitle) head.append(pixelHeading(pixelTitle, { max: 3, width: Math.min(window.innerWidth, 380) - 80 }));
+  else head.textContent = title || '';
+  const badgeEl = el('panel-badge');
+  badgeEl.textContent = '';
+  badgeEl.hidden = !badge;
+  if (badge) {
+    badgeEl.className = 'badge ' + (titleOk ? 'ok' : 'bad');
+    badgeEl.append(pixelText(badge, { scale: 3, color: '#f4f4f4' }));
+    badgeEl.setAttribute('aria-label', badge);
+  }
+  el('panel-extra').textContent = '';
+  if (extra) el('panel-extra').append(extra);
   el('panel-line').textContent = line || '';
   const box = el('panel-lines');
   box.textContent = '';
-  (lines || []).forEach(l => {
-    const row = document.createElement('div');
-    row.className = 'panel-row ' + (l.ok ? 'ok' : 'bad') + (l.quiet ? ' quiet' : '');
-    row.textContent = l.text;
-    box.append(row);
-  });
+  (lines || []).forEach(l => box.append(make('div', 'panel-row ' + (l.ok ? 'ok' : 'bad') + (l.quiet ? ' quiet' : ''), l.text)));
   const notes = el('panel-note');
   notes.textContent = '';
-  if (note) notes.textContent = note;
+  if (note) notes.append(make('p', 'note', note));
   (reasons || []).forEach(r => {
-    const p = document.createElement('p');
-    p.className = 'reason';
-    if (r.scope) {
-      const tag = document.createElement('b');
-      tag.textContent = r.scope + ': ';
-      p.append(tag);
-    }
+    const p = make('p', 'reason');
+    if (r.scope) p.append(make('b', null, r.scope + ': '));
     p.append(document.createTextNode(r.text));
     notes.append(p);
   });
+  el('panel-flag').hidden = !unverified;
+  el('panel-flag').textContent = t('unverified');
   const btn = el('panel-btn');
   btn.textContent = actionLabel;
   btn.onclick = action;
@@ -398,6 +688,7 @@ document.addEventListener('keydown', e => {
     if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); el('panel-btn').click(); }
     return;
   }
+  if (!el('screen').hidden) return;
   if (e.key === 'Tab') { e.preventDefault(); belt.stepPlace(e.shiftKey ? -1 : 1); return; }
   if (/^[1-9]$/.test(e.key)) { e.preventDefault(); belt.jumpToPlace(+e.key - 1); return; }
   // No visible cursor: the aim frame is fixed and the belt moves, so a key must
@@ -409,6 +700,7 @@ document.addEventListener('keydown', e => {
 });
 
 el('field').addEventListener('pointerup', ev => {
+  if (!el('panel').hidden) return;
   if (ev.target.closest('.item')) tapItem();
   else fall.drop();
 });
@@ -416,8 +708,9 @@ el('field').addEventListener('pointerup', ev => {
 // With any development handle in the URL the moving parts are reachable from the
 // console: belt.step(1), state.round, rules.TIMING. Off by default, because a
 // player has no use for it and it would only be one more thing to keep working.
-if (params.has('date') || params.has('tier') || params.has('slow')) {
-  window.__game = { belt, fall, state, rules, progress, startTier, tapItem };
+if (['date', 'tier', 'slow', 'finale', 'lang'].some(k => params.has(k))) {
+  window.__game = { belt, fall, state, rules, progress, finale, startTier, startFinale, showEnd, tapItem,
+                    get i18n() { return i18n; } };
 }
 
 boot();

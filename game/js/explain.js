@@ -3,44 +3,51 @@
 // not knowing the other routes is exactly how someone ends up driving across
 // town for something the shop would have taken.
 
-const NO_PLACE = { de: '—', en: '—' };
-
-function containerName(strip, id) {
-  const found = strip.find(c => c.id === id);
-  return found ? found.labels.de : id;
+// A label in the asked language, then German, then whatever exists.
+export function tx(map, lang) {
+  if (!map) return '';
+  return map[lang] || map.de || map.en || Object.values(map).find(Boolean) || '';
 }
 
-function placeName(strip, id) {
+function containerName(strip, id, lang) {
   const found = strip.find(c => c.id === id);
-  return found ? found.placeLabels.de : NO_PLACE.de;
+  return found ? tx(found.labels, lang) : id;
+}
+
+function placeName(strip, id, lang) {
+  const found = strip.find(c => c.id === id);
+  return found ? tx(found.placeLabels, lang) : '—';
 }
 
 // One line per answered slot: what was chosen, what was right, and — when it was
 // wrong — whether the mistake was the place or the container inside it. The two
 // are different mistakes and get different sentences (KD7).
-export function explainSlot({ strip, slot, chosen, errorKind, fallbackName }) {
+export function explainSlot({ strip, slot, chosen, errorKind, fallbackName, lang = 'de' }) {
   const wanted = slot.destinations;
   const ok = !!chosen && wanted.includes(chosen);
   const line = {
     // An unnamed slot is the object itself, so the line says the object's name
     // rather than a machine key nobody chose.
-    part: (slot.labels && slot.labels.de) || fallbackName || slot.id,
+    part: tx(slot.labels, lang) || fallbackName || slot.id,
     ok,
-    wanted: wanted.map(id => containerName(strip, id)),
-    chosen: chosen ? containerName(strip, chosen) : null,
-    also: wanted.filter(id => id !== chosen).map(id => containerName(strip, id)),
+    // Only what is on the belt can be named: a destination in a place not yet
+    // unlocked is true, but naming it now would point at something the player
+    // cannot see.
+    wanted: wanted.filter(id => strip.some(c => c.id === id)).map(id => containerName(strip, id, lang)),
+    chosen: chosen ? containerName(strip, chosen, lang) : null,
+    also: wanted.filter(id => id !== chosen && strip.some(c => c.id === id)).map(id => containerName(strip, id, lang)),
   };
   if (!ok) {
     line.kind = errorKind;
-    line.wantedPlace = placeName(strip, wanted[0]);
-    line.chosenPlace = chosen ? placeName(strip, chosen) : null;
+    const reachable = wanted.find(id => strip.some(c => c.id === id)) || wanted[0];
+    line.wantedPlace = placeName(strip, reachable, lang);
+    line.chosenPlace = chosen ? placeName(strip, chosen, lang) : null;
   }
   return line;
 }
 
 export function reasonText(holder, lang) {
-  const text = (holder && holder.explanation) || {};
-  return text[lang] || text.de || text.en || '';
+  return tx(holder && holder.explanation, lang);
 }
 
 // Three reasons can exist and each answers a different question: the part says
@@ -56,12 +63,12 @@ export function reasons({ item, variant, slots, lang }) {
   if (composite) {
     (slots || []).forEach(slot => {
       const text = reasonText(slot, lang);
-      if (text) out.push({ scope: (slot.labels && slot.labels.de) || null, text });
+      if (text) out.push({ scope: tx(slot.labels, lang) || null, text });
     });
   }
   const ofVariant = reasonText(variant, lang);
   if (ofVariant) {
-    out.push({ scope: composite ? (variant.labels && variant.labels.de) || null : null,
+    out.push({ scope: composite ? tx(variant.labels, lang) || null : null,
                text: ofVariant });
   }
   const ofItem = reasonText(item, lang);
@@ -77,7 +84,7 @@ export function explainUndivided(item, variant, lang) {
   return {
     ok: false,
     undivided: true,
-    parts: (variant.parts || []).map(p => (p.labels && p.labels.de) || p.id),
+    parts: (variant.parts || []).map(p => tx(p.labels, lang) || p.id),
     reasons: reasons({ item, variant, slots: [], lang }),
   };
 }
