@@ -29,7 +29,7 @@ img, canvas { image-rendering: pixelated; image-rendering: crisp-edges; }
 
 /* ---------------------------------------------------------------- stage */
 #stage { position: relative; flex: 1 1 auto; overflow: hidden;
-  background: linear-gradient(180deg, var(--sky1) 0 40%, var(--sky2) 40% 72%, var(--sky3) 72% 100%); }
+  background: linear-gradient(180deg, var(--sky3) 0 28%, var(--sky2) 28% 60%, var(--sky1) 60% 100%); }
 #app[data-place="shop"] #stage { --sky1: #f6e3c4; --sky2: #fbeeda; --sky3: #fff7ea; }
 #app[data-place="wertstoffinsel"] #stage { --sky1: #cfe9d2; --sky2: #e0f2e2; --sky3: #f1faf2; }
 #app[data-place="wertstoffhof"] #stage { --sky1: #d9dde6; --sky2: #e6e9ef; --sky3: #f3f4f7; }
