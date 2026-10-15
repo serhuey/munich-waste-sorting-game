@@ -35,7 +35,7 @@ img, canvas { image-rendering: pixelated; image-rendering: crisp-edges; }
 #app[data-place="wertstoffhof"] #stage { --sky1: #d9dde6; --sky2: #e6e9ef; --sky3: #f3f4f7; }
 #app[data-place="problemabfall"] #stage { --sky1: #f3d6d6; --sky2: #f8e5e5; --sky3: #fcf2f2; }
 #sky { position: absolute; left: 50%; bottom: 0; width: max(640px, 100%); max-width: none; transform: translateX(-50%);
-  pointer-events: none; }
+  opacity: .85; pointer-events: none; }
 #field { position: absolute; inset: 0; overflow: hidden; }
 
 .item { position: absolute; left: 50%; top: 0; width: 140px; text-align: center; will-change: transform; }
