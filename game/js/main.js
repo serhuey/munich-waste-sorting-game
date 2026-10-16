@@ -102,7 +102,10 @@ function languageSwitch(after) {
 
 // A heading in pixel capitals, broken into lines and scaled down until the
 // longest line fits — German compounds decide the layout budget (R22).
-function pixelHeading(text, { max = 4, width = Math.min(window.innerWidth, 480) - 48, color = '#1a1c2c', shadow = '#94b0c2' } = {}) {
+// The page can be loaded while its window has no width yet — in a background tab,
+// say — and a heading sized against that would stay at one pixel per dot for the
+// rest of the session, so the budget never goes below a small phone's.
+function pixelHeading(text, { max = 4, width = Math.max(272, Math.min(window.innerWidth, 480) - 48), color = '#1a1c2c', shadow = '#94b0c2' } = {}) {
   const box = make('div', 'pheading');
   box.setAttribute('role', 'heading');
   box.setAttribute('aria-level', '1');
@@ -155,7 +158,7 @@ function showTitle() {
   const go = make('button', 'pbtn big', t('play'));
   go.type = 'button';
   go.onclick = () => { closeScreen(); startRun(); };
-  screen.append(how, languageSwitch(showTitle), go, make('p', 'source', t('source_note')));
+  screen.append(how, languageSwitch(showTitle), go, make('p', 'source', t('source_note')), make('p', 'credit', t('credit')));
   go.focus({ preventScroll: true });
   // The change message opens every session inside its window and is never
   // recorded as seen (R19): closing it is the only state, and it dies with the tab.
@@ -724,7 +727,7 @@ function showEnd() {
   again.onclick = () => { closeScreen(); startRun(); };
   const buttons = make('div', 'end-buttons');
   buttons.append(shareBtn, again);
-  screen.append(buttons, languageSwitch(showEnd), make('p', 'source', t('source_note')));
+  screen.append(buttons, languageSwitch(showEnd), make('p', 'source', t('source_note')), make('p', 'credit', t('credit')));
   shareBtn.focus({ preventScroll: true });
 }
 

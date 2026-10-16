@@ -73,5 +73,6 @@
   "points_short": "{points} pts",
   "unverified": "✎ Not yet reviewed by a person",
   "touch_hint": "Swipe: belt · Tap the object: look or take apart · Tap elsewhere: drop",
-  "finale_later": "{n} days later"
+  "finale_later": "{n} days later",
+  "credit": "Made by Sergei Grieg"
 }

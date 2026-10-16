@@ -201,6 +201,7 @@ img, canvas { image-rendering: pixelated; image-rendering: crisp-edges; }
 @media (hover: hover) and (pointer: fine) { .how .keys { display: block; } }
 .langs { display: flex; gap: 8px; justify-content: center; margin: 4px 0 6px; flex-wrap: wrap; }
 .source { font-size: 12px; color: var(--grey); margin-top: 18px; }
+.credit { font-size: 12px; color: var(--grey); margin: 6px 0 0; letter-spacing: .04em; }
 .fixture-note { font-size: 13px; color: #fff; background: var(--bad); padding: 6px 10px; margin: 0 0 14px; }
 .title-art { display: flex; justify-content: center; gap: 4px; margin-bottom: 10px; }
 .title-sprite { width: 48px; height: 48px; }
