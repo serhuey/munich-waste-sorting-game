@@ -221,7 +221,14 @@ function tierIntro(tier) {
     extra: shelf,
     note: tier === 1 ? '' : t('tier_intro_more'),
     actionLabel: t('go'),
-    action: () => { hidePanel(); belt.locked = false; next(); }
+    // A new place sits at the far end of the belt; the belt travels there, so the
+    // first thing the player sees is the containers they have not met yet.
+    action: () => {
+      hidePanel();
+      belt.locked = false;
+      if (tier > 1) belt.jumpToPlace(belt.groups.length - 1);
+      next();
+    }
   });
 }
 
@@ -334,7 +341,8 @@ function examine() {
                      sprite: itemSprite(round.item, round.variant) });
       fall.resume(rules.TIMING.examineCost);
     },
-    actionLabel: t('next')
+    // Not "next": nothing new comes after this — the same object goes on falling.
+    actionLabel: t('examine_ok')
   });
 }
 
