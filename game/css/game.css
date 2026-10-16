@@ -29,11 +29,15 @@ img, canvas { image-rendering: pixelated; image-rendering: crisp-edges; }
 
 /* ---------------------------------------------------------------- stage */
 #stage { position: relative; flex: 1 1 auto; overflow: hidden;
-  background: linear-gradient(180deg, var(--sky3) 0 28%, var(--sky2) 28% 60%, var(--sky1) 60% 100%); }
-#app[data-place="shop"] #stage { --sky1: #f6e3c4; --sky2: #fbeeda; --sky3: #fff7ea; }
-#app[data-place="wertstoffinsel"] #stage { --sky1: #cfe9d2; --sky2: #e0f2e2; --sky3: #f1faf2; }
-#app[data-place="wertstoffhof"] #stage { --sky1: #d9dde6; --sky2: #e6e9ef; --sky3: #f3f4f7; }
-#app[data-place="problemabfall"] #stage { --sky1: #f3d6d6; --sky2: #f8e5e5; --sky3: #fcf2f2; }
+  background: linear-gradient(180deg, var(--sky-top) 0 40%, var(--sky-mid) 40% 72%, var(--sky-bot) 72% 100%); }
+/* Darker above, lighter toward the city — but the lightest band is the bottom
+   one at full strength, never near-white: the mountains of the skyline picture
+   are pale and only read against a sky that has some colour left behind them. */
+#app { --sky-top: #86bde4; --sky-mid: #a3d0ee; --sky-bot: #bfe3f7; }
+#app[data-place="shop"] { --sky-top: #e0bb84; --sky-mid: #ecd0a4; --sky-bot: #f6e3c4; }
+#app[data-place="wertstoffinsel"] { --sky-top: #9ccaa2; --sky-mid: #b6dcba; --sky-bot: #cfe9d2; }
+#app[data-place="wertstoffhof"] { --sky-top: #aab2c4; --sky-mid: #c3c9d6; --sky-bot: #d9dde6; }
+#app[data-place="problemabfall"] { --sky-top: #dba0a0; --sky-mid: #e8bcbc; --sky-bot: #f3d6d6; }
 #sky { position: absolute; left: 50%; bottom: 0; width: max(640px, 100%); max-width: none; transform: translateX(-50%);
   opacity: .85; pointer-events: none; }
 #field { position: absolute; inset: 0; overflow: hidden; }
