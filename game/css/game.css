@@ -39,7 +39,7 @@ img, canvas { image-rendering: pixelated; image-rendering: crisp-edges; }
 #app[data-place="wertstoffhof"] { --sky-top: #aab2c4; --sky-mid: #c3c9d6; --sky-bot: #d9dde6; }
 #app[data-place="problemabfall"] { --sky-top: #dba0a0; --sky-mid: #e8bcbc; --sky-bot: #f3d6d6; }
 #sky { position: absolute; left: 50%; bottom: 0; width: max(640px, 100%); max-width: none; transform: translateX(-50%);
-  opacity: .85; pointer-events: none; }
+  opacity: .6; pointer-events: none; }
 #field { position: absolute; inset: 0; overflow: hidden; }
 
 .item { position: absolute; left: 50%; top: 0; width: 140px; text-align: center; will-change: transform; }
