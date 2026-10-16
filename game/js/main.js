@@ -565,6 +565,25 @@ function showExplanation(item, variant, result, points) {
 }
 
 // ------------------------------------------------------------------ finale
+// A tear-off calendar sheet: the month and year on a red band, the day number
+// large, the weekday under it. The date decides which routes are open, so it is
+// the first thing the player has to see change between the two days.
+function calendarSheet(date) {
+  const part = opts => i18n.date(date, { ...opts, timeZone: 'UTC' });
+  const sheet = make('div', 'calendar');
+  sheet.setAttribute('role', 'img');
+  sheet.setAttribute('aria-label', t('finale_day', { date: i18n.date(date) }));
+  const band = make('div', 'cal-band');
+  const title = make('span', 'cal-title');
+  title.append(make('span', 'cal-month', part({ month: 'long' })), make('span', 'cal-year', part({ year: 'numeric' })));
+  band.append(make('span', 'cal-ring'), title, make('span', 'cal-ring'));
+  const day = make('div', 'cal-day');
+  day.append(pixelText(part({ day: 'numeric' }), { scale: 9, color: '#1a1c2c' }));
+  day.firstChild.setAttribute('aria-hidden', 'true');
+  sheet.append(band, day, make('div', 'cal-weekday', part({ weekday: 'long' })));
+  return sheet;
+}
+
 // The tree: strip it, then choose a route on a given day. Two days are played —
 // one inside the collection window and one after it — because the window is
 // the thing a newcomer does not know exists.
@@ -578,11 +597,24 @@ function startFinale() {
   const removed = new Set();
   let scene = 0;
 
-  const render = () => {
+  // fresh: the day has just changed. Only then is the old sheet torn off; the
+  // screen is also rebuilt after every decoration, and the calendar must not
+  // tear again each time.
+  const render = fresh => {
     const screen = openScreen('finale');
     const day = days[scene];
     screen.append(pixelHeading(t('finale_title'), { max: 3 }));
-    screen.append(make('p', 'day', t('finale_day', { date: i18n.date(day) })));
+    const cal = calendarSheet(day);
+    if (fresh && scene > 0) {
+      // The sheet of the previous day lies on top and tears away, so what
+      // changed is shown rather than left to be noticed.
+      const old = calendarSheet(days[scene - 1]);
+      old.classList.add('torn');
+      cal.append(old);
+      const gone = Math.round((day - days[scene - 1]) / 86400000);
+      cal.append(make('div', 'cal-later', t('finale_later', { n: gone })));
+    }
+    screen.append(cal);
 
     const stage = make('div', 'tree-stage');
     stage.append(img(treeSprite(), 'tree-sprite', ''));
@@ -657,7 +689,7 @@ function startFinale() {
       lines, reasons,
       unverified: data.unverified,
       actionLabel: last ? t('finale_done') : t('finale_next_day'),
-      action: () => { hidePanel(); if (last) return showEnd(); scene += 1; render(); }
+      action: () => { hidePanel(); if (last) return showEnd(); scene += 1; render(true); }
     });
   };
 

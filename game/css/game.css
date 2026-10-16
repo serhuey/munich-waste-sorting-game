@@ -209,7 +209,39 @@ img, canvas { image-rendering: pixelated; image-rendering: crisp-edges; }
 .end-buttons { display: flex; flex-direction: column; align-items: center; gap: 4px; margin-bottom: 12px; }
 
 /* --------------------------------------------------------------- finale */
-.screen-finale .day { font-weight: 700; margin: 0 0 6px; }
+/* The tear-off calendar. Two sheets of paper stacked behind the top one give it
+   thickness; the rings sit on the red band. The sheet of the previous day is laid
+   over the new one and tears away: it swings down from its top-left corner,
+   dropping and fading. */
+.calendar { position: relative; width: 190px; margin: 18px auto 30px; background: var(--paper);
+  border: 3px solid var(--ink); box-shadow: 0 5px 0 -1px var(--paper), 0 5px 0 2px var(--ink),
+  0 10px 0 -1px var(--paper), 0 10px 0 2px var(--ink); text-align: center; }
+.cal-band { display: flex; align-items: center; justify-content: space-between; gap: 6px;
+  background: #c9364a; color: #fff; padding: 9px 12px 7px; border-bottom: 3px solid var(--ink);
+  font-weight: 800; text-transform: uppercase; letter-spacing: .08em; font-size: 15px; }
+.cal-ring { flex: 0 0 auto; width: 10px; height: 10px; border-radius: 50%; background: var(--ink);
+  box-shadow: inset 0 0 0 2px #7a2230; }
+.cal-title { flex: 1 1 auto; display: flex; justify-content: center; gap: 8px; }
+.cal-year { opacity: .85; }
+.cal-day { padding: 12px 0 2px; line-height: 0; }
+.cal-day canvas { display: inline-block; }
+.cal-weekday { padding: 0 8px 12px; font-size: 18px; font-weight: 800; text-transform: uppercase;
+  letter-spacing: .1em; color: var(--ink); }
+.cal-later { position: absolute; left: 50%; bottom: -46px; transform: translateX(-50%); white-space: nowrap;
+  font-size: 14px; font-weight: 800; color: #fff; background: var(--navy); padding: 3px 10px;
+  border: 2px solid var(--ink); box-shadow: 2px 2px 0 var(--ink); animation: cal-later 2.4s ease-out both; }
+.calendar .torn { position: absolute; inset: -3px; width: auto; margin: 0; z-index: 2;
+  transform-origin: 8% 0; animation: tear .9s cubic-bezier(.5, 0, .9, .4) .25s both; }
+@keyframes tear {
+  0% { transform: rotate(0) translateY(0); opacity: 1; }
+  30% { transform: rotate(-7deg) translateY(2px); opacity: 1; }
+  100% { transform: rotate(-34deg) translate(-30px, 260px); opacity: 0; }
+}
+@keyframes cal-later { 0%, 55% { opacity: 0; } 70%, 100% { opacity: 1; } }
+@media (prefers-reduced-motion: reduce) {
+  .calendar .torn { display: none; }
+  .cal-later { animation: none; }
+}
 .tree-stage { position: relative; width: 192px; height: 264px; margin: 0 auto 6px; }
 .tree-sprite { width: 192px; height: 264px; }
 .decor { position: absolute; transform: translate(-50%, 0); padding: 4px; border: 0; background: transparent;
