@@ -28,6 +28,7 @@ export class Belt {
     this.offset = 0;
     this.anim = null;
     this.locked = false;
+    this.glides = 0;
     this._bindPointer();
   }
 
@@ -144,7 +145,9 @@ export class Belt {
     }
 
     const from = this.offset, t0 = performance.now();
+    const run = ++this.glides;
     const tick = () => {
+      if (run !== this.glides) return;
       const k = Math.min(1, (performance.now() - t0) / ms);
       this.offset = from + (target - from) * (1 - Math.pow(1 - k, 3));
       this.render();
@@ -152,6 +155,16 @@ export class Belt {
       else this.index = this.activeIndex();
     };
     tick();
+    // Frames are not promised (a page saving power, a pane not painting); the
+    // belt must still end up where it was sent, or the aim and the picture
+    // disagree. If no frame finished the glide, a timer does.
+    setTimeout(() => {
+      if (run !== this.glides || this.offset === target) return;
+      cancelAnimationFrame(this.anim);
+      this.offset = target;
+      this.render();
+      this.index = this.activeIndex();
+    }, ms + 120);
   }
 
   snap() { this.glideTo(this.offsetFor(this.activeIndex()), 120); }
@@ -180,6 +193,7 @@ export class Belt {
     this.belt.addEventListener('pointerdown', e => {
       if (this.locked) return;
       cancelAnimationFrame(this.anim);
+      this.glides++;
       dragging = true; startX = e.clientX; startOffset = this.offset;
       this.belt.setPointerCapture(e.pointerId);
     });

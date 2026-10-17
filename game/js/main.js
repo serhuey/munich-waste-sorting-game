@@ -58,7 +58,7 @@ const fall = new Fall({
 async function boot() {
   const res = await fetch('content.json', { cache: 'no-store' });
   state.content = await res.json();
-  setArt(state.content.art);
+  setArt(state.content.art, state.content.version);
   const langs = Object.keys(state.content.i18n || {});
   i18n = createI18n(state.content.i18n, preferredLanguage(params.get('lang'), navigator.languages, langs));
   el('sky').src = skylineSprite();
@@ -785,18 +785,34 @@ function showPanel({ title, pixelTitle, badge, titleOk, line, lines, reasons, no
   el('panel-flag').textContent = t('unverified');
   const btn = el('panel-btn');
   btn.textContent = actionLabel;
-  btn.onclick = action;
+  // One press, one action. A double click or a double tap on "Weiter" used to
+  // run it twice — the second time on the next object, skipping it unanswered.
+  let done = false;
+  btn.onclick = () => { if (done) return; done = true; action(); };
   el('panel').hidden = false;
   btn.focus();
 }
-function hidePanel() { el('panel').hidden = true; }
+// When a dialog closes, the rest of that gesture must not reach the field: the
+// second tap of a double tap, or a held key repeating, would otherwise drop the
+// object that has only just appeared. Input on the field waits a moment.
+let quietUntil = 0;
+function hidePanel() {
+  if (!el('panel').hidden) quietUntil = performance.now() + 350;
+  el('panel').hidden = true;
+}
+const quiet = () => performance.now() < quietUntil;
 
 document.addEventListener('keydown', e => {
   if (!el('panel').hidden) {
-    if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); el('panel-btn').click(); }
+    // A held key repeats; only a fresh press may close a dialog.
+    if ((e.key === 'Enter' || e.key === ' ') && !e.repeat) { e.preventDefault(); el('panel-btn').click(); }
+    else if (e.key === 'Enter' || e.key === ' ') e.preventDefault();
     return;
   }
   if (!el('screen').hidden) return;
+  // The same key that closed the dialog, still held, must not drop or examine
+  // the next object; moving the belt with a held arrow is fine.
+  if ((e.repeat || quiet()) && ['Enter', ' ', 'ArrowUp', 'ArrowDown', 'e'].includes(e.key)) { e.preventDefault(); return; }
   if (e.key === 'Tab') { e.preventDefault(); belt.stepPlace(e.shiftKey ? -1 : 1); return; }
   if (/^[1-9]$/.test(e.key)) { e.preventDefault(); belt.jumpToPlace(+e.key - 1); return; }
   // No visible cursor: the aim frame is fixed and the belt moves, so a key must
@@ -808,7 +824,7 @@ document.addEventListener('keydown', e => {
 });
 
 el('field').addEventListener('pointerup', ev => {
-  if (!el('panel').hidden) return;
+  if (!el('panel').hidden || quiet()) return;
   if (ev.target.closest('.item')) tapItem();
   else fall.drop();
 });

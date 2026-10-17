@@ -11,16 +11,42 @@ export class Fall {
     this.current = null;
     this.raf = null;
     this.paused = false;
+    // Two reasons can hold a fall: the player is examining the object, or the
+    // page is not on screen. They are kept apart so that coming back to the tab
+    // does not end an examination, and ending one does not run a hidden page.
+    this.holds = new Set();
+    // The fall is timed by the clock, not by frames: a tab left for ten seconds
+    // would otherwise come back to an object that "landed" long ago, in whatever
+    // bin happened to be under the frame. A hidden page holds the fall.
+    if (typeof document !== 'undefined') {
+      document.addEventListener('visibilitychange', () => {
+        if (document.hidden) this._hold('hidden');
+        else this._release_hold('hidden', 0);
+      });
+    }
   }
 
   // Examining halts the fall so the small print can be read, and then costs a
   // slice of the remaining time. Looking is allowed; looking is not free.
-  pause() { this.paused = true; }
+  pause() { this._hold('examine'); }
 
-  resume(penaltyFraction) {
-    if (!this.current) return;
-    const paused = performance.now() - this.pausedAt;
-    this.current.started += paused - (penaltyFraction || 0) * this.current.duration;
+  resume(penaltyFraction) { this._release_hold('examine', penaltyFraction); }
+
+  _hold(reason) {
+    if (!this.current || this.holds.has(reason)) return;
+    // The moment is taken here, not in the next frame: a page that draws no
+    // frames would otherwise resume from a pause that never started.
+    if (!this.holds.size) this.pausedAt = performance.now();
+    this.holds.add(reason);
+    this.paused = true;
+  }
+
+  _release_hold(reason, penaltyFraction) {
+    if (!this.current || !this.holds.has(reason)) return;
+    this.holds.delete(reason);
+    if (penaltyFraction) this.current.started -= penaltyFraction * this.current.duration;
+    if (this.holds.size) return;
+    this.current.started += performance.now() - this.pausedAt;
     this.paused = false;
   }
 
@@ -61,6 +87,9 @@ export class Fall {
     }
     this.field.append(el);
     this.current = { item, variant, el, started: performance.now() - from * duration, duration };
+    this.holds.clear();
+    this.paused = false;
+    if (typeof document !== 'undefined' && document.hidden) this._hold('hidden');
     this.el = el;
     this._tick();
   }
@@ -69,7 +98,9 @@ export class Fall {
   // curve in U5 reads this: dropping early is worth more the earlier it is.
   remaining() {
     if (!this.current) return 0;
-    const k = (performance.now() - this.current.started) / this.current.duration;
+    // A held fall is frozen in time, and so is what is left of it.
+    const now = this.paused ? this.pausedAt : performance.now();
+    const k = (now - this.current.started) / this.current.duration;
     return Math.max(0, 1 - k);
   }
 
@@ -121,14 +152,14 @@ export class Fall {
     this.current = null;
     this.el = null;
     this.leaving = false;
+    this.holds.clear();
+    this.paused = false;
   }
 
   _tick() {
     this.raf = requestAnimationFrame(() => this._tick());
     if (!this.current) return;
-    if (this.paused) { this.pausedAt = this.pausedAt || performance.now(); return; }
-    this.pausedAt = 0;
-    if (this.leaving) return;
+    if (this.paused || this.leaving) return;
     const k = (performance.now() - this.current.started) / this.current.duration;
     const travel = this.field.clientHeight - 60;
     this.y = -140 + Math.min(1, k) * travel;

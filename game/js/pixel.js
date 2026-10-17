@@ -35,11 +35,14 @@ function url(key, rows) {
 // is written with a double dash in the file name, because a colon is not a
 // thing to put in a Mac file name.
 const art = new Map();
-export function setArt(list) {
+export function setArt(list, version) {
   art.clear();
+  // The build's version on every address, so a redrawn picture is fetched anew
+  // rather than served from yesterday's cache.
+  const tag = version ? '?v=' + version : '';
   (list || []).forEach(file => {
     const [kind, name] = file.split('/');
-    art.set(kind + '/' + name.replace(/\.png$/, '').replace(/--/g, ':'), 'art/' + file);
+    art.set(kind + '/' + name.replace(/\.png$/, '').replace(/--/g, ':'), 'art/' + file + tag);
   });
 }
 const drawn = (kind, key) => art.get(kind + '/' + key);

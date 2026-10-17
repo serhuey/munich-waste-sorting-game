@@ -152,6 +152,32 @@ def load_i18n(repo):
     return bundle, fatal
 
 
+def version_of(paths):
+    """Отпечаток содержимого движка и рисунков: меняется любой файл — меняется версия."""
+    import hashlib
+    h = hashlib.sha1()
+    for p in paths:
+        h.update(p.encode("utf-8"))
+        with open(p, "rb") as f:
+            h.update(f.read())
+    return h.hexdigest()[:10]
+
+
+IMPORT = re.compile(r"""((?:from|import)\s*\(?\s*['"])(\./[\w./-]+\.js)(['"])""")
+ASSET = re.compile(r"""((?:src|href)=")((?:js|css)/[\w./-]+\.(?:js|css))(")""")
+
+
+def stamp(text, version):
+    """Метка версии на каждом адресе модуля, стиля и скрипта.
+
+    Браузер на сайте может держать старые копии модулей. После обновления это
+    даёт новый main.js при старом fall.js — игра ломается так, будто ошибка в
+    коде. С меткой адрес каждой версии свой, и смешаться им негде.
+    """
+    text = IMPORT.sub(lambda m: m.group(1) + m.group(2) + "?v=" + version + m.group(3), text)
+    return ASSET.sub(lambda m: m.group(1) + m.group(2) + "?v=" + version + m.group(3), text)
+
+
 def list_art(repo):
     """Рисунки от руки: game/art/<вид>/<имя>.png заменяют нарисованное кодом.
     Список нужен игре, чтобы не запрашивать файлы, которых нет."""
@@ -679,19 +705,32 @@ def main():
     # которые видно только в проде.
     game = os.path.join(a.repo, "game")
     if os.path.isdir(game):
-        copied = 0
-        for base, _, files in os.walk(game):
+        files = []
+        for base, _, names in os.walk(game):
             if os.sep + "test" in base:
                 continue
-            for name in files:
+            for name in names:
                 if name.startswith(".") or name.endswith(".test.html"):
                     continue
-                src = os.path.join(base, name)
-                dst = os.path.join(out_dir, os.path.relpath(src, game))
-                os.makedirs(os.path.dirname(dst), exist_ok=True)
+                files.append(os.path.join(base, name))
+        version = version_of(sorted(files))
+        copied = 0
+        for src in files:
+            dst = os.path.join(out_dir, os.path.relpath(src, game))
+            os.makedirs(os.path.dirname(dst), exist_ok=True)
+            if src.endswith((".js", ".html", ".css")):
+                with open(src, encoding="utf-8") as f:
+                    text = stamp(f.read(), version)
+                with open(dst, "w", encoding="utf-8") as f:
+                    f.write(text)
+            else:
                 shutil.copy2(src, dst)
-                copied += 1
-        print("движок скопирован: %d файлов" % copied)
+            copied += 1
+        # Версия попадает и в content.json: по ней игра помечает адреса рисунков.
+        content["version"] = version
+        with open(out, "w", encoding="utf-8") as f:
+            json.dump(content, f, ensure_ascii=False, indent=2)
+        print("движок скопирован: %d файлов, версия %s" % (copied, version))
     if a.fixtures:
         print("ВНИМАНИЕ: в сборке есть неподписанные черновики. Это стенд для разработки,")
         print("          выкладывать его нельзя — publish.py откажется.")
