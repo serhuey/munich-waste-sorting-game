@@ -15,6 +15,13 @@ export function nearestIndex(centers, x) {
 
 import { containerSprite, img } from './pixel.js';
 
+// The index in the strip of a place's middle container (the left of the two
+// middle ones when the count is even), or -1 for a place not on the strip.
+export function middleIndex(strip, placeIndex) {
+  const own = strip.map((c, i) => c.placeIndex === placeIndex ? i : -1).filter(i => i >= 0);
+  return own.length ? own[Math.floor((own.length - 1) / 2)] : -1;
+}
+
 export class Belt {
   constructor({ beltEl, trackEl, tabsEl, onPlaceChange, label }) {
     this.belt = beltEl;
@@ -84,8 +91,8 @@ export class Belt {
     });
     this.tabs.hidden = groups.length < 2;
     this.groups = groups;
-    this.index = 0;
-    this.recentre(0);
+    this.index = Math.max(0, this.centreOf(0));
+    this.recentre(this.index);
     // Measuring before layout settles gives centres for a width the belt does not
     // have yet, and the strip ends up parked next to the aim frame instead of
     // under it. Re-do it once the browser has laid the row out.
@@ -175,9 +182,15 @@ export class Belt {
     this.glideTo(this.offsetFor(i), 110);
   }
 
+  // The container a place opens on: the middle one, not the first. From the
+  // middle every other container of that place is at most half the place away,
+  // which on the island's six is two steps instead of five. With an even count
+  // it is the left of the two middle ones.
+  centreOf(placeIndex) { return middleIndex(this.strip, placeIndex); }
+
   jumpToPlace(placeIndex) {
     if (this.locked) return;
-    const i = this.strip.findIndex(c => c.placeIndex === placeIndex);
+    const i = this.centreOf(placeIndex);
     if (i >= 0) this.glideTo(this.offsetFor(i), 260);
   }
 

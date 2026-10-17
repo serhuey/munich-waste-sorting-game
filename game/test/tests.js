@@ -3,7 +3,7 @@
 // proved by moving a clock instead of waiting for a year.
 
 import * as rules from '../js/rules.js';
-import { nearestIndex } from '../js/belt.js';
+import { nearestIndex, middleIndex } from '../js/belt.js';
 import * as score from '../js/score.js';
 import * as explain from '../js/explain.js';
 import * as progress from '../js/progress.js';
@@ -520,6 +520,14 @@ test('the game opens with three objects that need neither taking apart nor a clo
     assert(round.slice(0, 3).every(rules.isPlain), 'первые три — без разборки и без осмотра');
     same(round.length, 10);
   }
+});
+
+test('a place opens on its middle container, not its first', () => {
+  const strip = [0, 0, 0, 1, 1, 1, 1, 1, 1, 2, 2].map(placeIndex => ({ placeIndex }));
+  same(middleIndex(strip, 0), 1, 'из трёх — второй');
+  same(middleIndex(strip, 1), 5, 'из шести — левый из двух средних');
+  same(middleIndex(strip, 2), 9, 'из двух — левый');
+  same(middleIndex(strip, 7), -1);
 });
 
 test('a thin tier borrows from earlier ones instead of playing short', () => {
