@@ -509,14 +509,15 @@ test('objects already met in this run come last', () => {
   assert(earlier.every(i => !seen.has(i.id)), 'из прошлого уровня берутся невиденные');
 });
 
-test('the game opens with three objects that need no taking apart', () => {
+test('the game opens with three objects that need neither taking apart nor a closer look', () => {
   const box = id => ({ id, tier: 1, variants: [{ kind: 'composite', parts: [] }] });
+  const look = id => ({ id, tier: 1, attrs: ['examine'], variants: [{ kind: 'simple' }, { kind: 'simple' }] });
   const plain = id => ({ id, tier: 1, variants: [{ kind: 'simple' }] });
-  const shelf = [box('k1'), box('k2'), box('k3'), box('k4'), box('k5'), box('k6'), box('k7'),
+  const shelf = [box('k1'), box('k2'), box('k3'), box('k4'), look('e1'), look('e2'), look('e3'),
                  plain('p1'), plain('p2'), plain('p3')];
   for (let run = 0; run < 20; run++) {
     const round = rules.roundFor(shelf, 1);
-    assert(round.slice(0, 3).every(i => !rules.isComposite(i)), 'первые три — без разборки');
+    assert(round.slice(0, 3).every(rules.isPlain), 'первые три — без разборки и без осмотра');
     same(round.length, 10);
   }
 });

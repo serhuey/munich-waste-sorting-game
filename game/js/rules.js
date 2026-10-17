@@ -53,14 +53,18 @@ export function itemsForTier(items, tier) {
 // switch places is where the game gets lively.
 export const ROUND = { first: 10, intro: 6, own: 8, earlier: 10, easy: 3 };
 
-// The game opens with objects that go whole into one bin: the first few teach
-// the belt and the drop, and taking things apart can wait until those are in
-// the hands. The rest of the round keeps its random order.
+// The game opens with objects that ask for nothing but the belt and the drop:
+// no taking apart, no looking at the small print. Those two moves can wait
+// until the first one is in the hands. The rest of the round keeps its random
+// order.
 export function isComposite(item) {
   return (item.variants || []).some(v => v.kind === 'composite');
 }
+export function isPlain(item) {
+  return !isComposite(item) && !needsExamination(item);
+}
 function easyFirst(round, n) {
-  const easy = round.filter(i => !isComposite(i));
+  const easy = round.filter(isPlain);
   const head = easy.slice(0, n);
   return head.concat(round.filter(i => !head.includes(i)));
 }
