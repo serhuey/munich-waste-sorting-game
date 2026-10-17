@@ -61,6 +61,7 @@ This project is not affiliated with or endorsed by AWM or the city of Munich. It
 
 ```
 docs/SPEC.md          the requirements: what the product must do and why
+docs/HOW-IT-WORKS.md  how the system works, end to end
 docs/plans/           dated working history of the specification, RU and EN
 data/                 places, items, drafts, interface strings, the finale, the 2027 notice
 game/                 the engine: plain ES modules, pixel art in game/js/sprites.js
@@ -68,7 +69,7 @@ prototype/            playable spike of the first two places, open the HTML in a
 tools/                Abfalllexikon snapshot and diff, the build gate, the verification form
 ```
 
-Start with `docs/SPEC.md`. It is a requirements document, not an architecture document — the how is deliberately still open.
+Start with `docs/SPEC.md` for what the product must do and why, and [`docs/HOW-IT-WORKS.md`](docs/HOW-IT-WORKS.md) for how the system does it: the data, the build gate, the engine, the art pipeline and the verification loop.
 
 ## Running it locally
 
