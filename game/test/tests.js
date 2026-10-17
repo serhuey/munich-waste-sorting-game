@@ -509,6 +509,18 @@ test('objects already met in this run come last', () => {
   assert(earlier.every(i => !seen.has(i.id)), 'из прошлого уровня берутся невиденные');
 });
 
+test('the game opens with three objects that need no taking apart', () => {
+  const box = id => ({ id, tier: 1, variants: [{ kind: 'composite', parts: [] }] });
+  const plain = id => ({ id, tier: 1, variants: [{ kind: 'simple' }] });
+  const shelf = [box('k1'), box('k2'), box('k3'), box('k4'), box('k5'), box('k6'), box('k7'),
+                 plain('p1'), plain('p2'), plain('p3')];
+  for (let run = 0; run < 20; run++) {
+    const round = rules.roundFor(shelf, 1);
+    assert(round.slice(0, 3).every(i => !rules.isComposite(i)), 'первые три — без разборки');
+    same(round.length, 10);
+  }
+});
+
 test('a thin tier borrows from earlier ones instead of playing short', () => {
   const thin = SHELF.filter(i => i.tier === 1 || i.id === 's0' || i.id === 's1');
   const round = rules.roundFor(thin, 2);

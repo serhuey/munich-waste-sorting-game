@@ -51,7 +51,19 @@ export function itemsForTier(items, tier) {
 // happens, and then mixes: eight more of its own and ten from earlier tiers —
 // the flat does not stop existing once you have found the island, and having to
 // switch places is where the game gets lively.
-export const ROUND = { first: 10, intro: 6, own: 8, earlier: 10 };
+export const ROUND = { first: 10, intro: 6, own: 8, earlier: 10, easy: 3 };
+
+// The game opens with objects that go whole into one bin: the first few teach
+// the belt and the drop, and taking things apart can wait until those are in
+// the hands. The rest of the round keeps its random order.
+export function isComposite(item) {
+  return (item.variants || []).some(v => v.kind === 'composite');
+}
+function easyFirst(round, n) {
+  const easy = round.filter(i => !isComposite(i));
+  const head = easy.slice(0, n);
+  return head.concat(round.filter(i => !head.includes(i)));
+}
 
 // Objects already met in this run are drawn last, so a run repeats nothing
 // until a pool runs dry. `seen` lives in memory with the run (KTD3).
@@ -67,7 +79,7 @@ export function roundFor(items, tier, seen = new Set()) {
   const own = itemsForTier(items, tier);
   const earlier = items.filter(i => i.tier < tier);
   const taken = new Set();
-  if (!earlier.length) return draw(own, ROUND.first, seen, taken);
+  if (!earlier.length) return easyFirst(draw(own, ROUND.first, seen, taken), ROUND.easy);
   const intro = draw(own, ROUND.intro, seen, taken);
   let mix = draw(own, ROUND.own, seen, taken).concat(draw(earlier, ROUND.earlier, seen, taken));
   // A thin tier borrows from earlier ones rather than playing short.
