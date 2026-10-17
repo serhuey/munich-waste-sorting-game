@@ -1,0 +1,107 @@
+{
+  "_todo": [
+    "это черновик, написанный машиной (Claude) по записи лексикона/странице AWM; человек его не сверял",
+    "открыть source.url и прочитать запись целиком",
+    "проверить destinations, пояснения и labels",
+    "поставить source.verified_by и source.verified_on",
+    "перенести: python3 tools/drafts.py promote <id>"
+  ],
+  "_drafted_by": "claude",
+  "_awm_term": "Glasflaschen",
+  "_awm_tip": "Blaues und rotes Glas gehört in Container für Grünglas. Honiggläser nur ausgespült entosrgen.",
+  "_awm_notes": {},
+  "id": "glasflasche",
+  "tier": 3,
+  "attrs": [
+    "examine"
+  ],
+  "labels": {
+    "de": "Glasflasche",
+    "en": "Glass bottle"
+  },
+  "source": {
+    "authority": "awm",
+    "key": "glasflaschen",
+    "url": "https://www.awm-muenchen.de/abfall-entsorgen/abfalllexikon",
+    "destinations_at_verification": [
+      "wertstoffinsel"
+    ],
+    "verified_by": "Sergei Grieg",
+    "verified_on": "2026-10-17"
+  },
+  "variants": [
+    {
+      "id": "weiss",
+      "kind": "simple",
+      "labels": {
+        "de": "Weißglas – farblos",
+        "en": "Clear glass"
+      },
+      "destinations": [
+        "glas_weiss"
+      ],
+      "explanation": {
+        "de": "Farbloses Glas kommt in den Weißglas-Container.",
+        "en": "Colourless glass goes in the clear-glass container."
+      }
+    },
+    {
+      "id": "gruen",
+      "kind": "simple",
+      "labels": {
+        "de": "Grünglas",
+        "en": "Green glass"
+      },
+      "destinations": [
+        "glas_gruen"
+      ],
+      "explanation": {
+        "de": "Grünes Glas in den Grünglas-Container.",
+        "en": "Green glass goes in the green-glass container."
+      }
+    },
+    {
+      "id": "braun",
+      "kind": "simple",
+      "labels": {
+        "de": "Braunglas",
+        "en": "Brown glass"
+      },
+      "destinations": [
+        "glas_braun"
+      ],
+      "explanation": {
+        "de": "Braunes Glas in den Braunglas-Container.",
+        "en": "Brown glass goes in the brown-glass container."
+      }
+    },
+    {
+      "id": "blau",
+      "kind": "simple",
+      "labels": {
+        "de": "Blaues Glas",
+        "en": "Blue glass"
+      },
+      "destinations": [
+        "glas_gruen"
+      ],
+      "explanation": {
+        "de": "Blaues, rotes oder anderes farbiges Glas gehört zum Grünglas – es gibt keinen eigenen Container dafür.",
+        "en": "Blue, red or any other coloured glass belongs with the green glass – there is no container of its own."
+      }
+    }
+  ],
+  "explanation": {
+    "de": "Die Farbe des Glases entscheidet. Den Deckel musst du nicht abschrauben.",
+    "en": "The colour of the glass decides. You do not have to unscrew the lid."
+  },
+  "sources": [
+    {
+      "authority": "page",
+      "reference": "Wertstoffinseln: Das können Sie abgeben",
+      "url": "https://www.awm-muenchen.de/abfall-entsorgen/abgabestellen/wertstoffinseln",
+      "verified_by": "Sergei Grieg",
+      "verified_on": "2026-10-17"
+    }
+  ]
+}

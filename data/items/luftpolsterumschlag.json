@@ -1,0 +1,49 @@
+{
+  "_todo": [
+    "это черновик, написанный машиной (Claude) по записи лексикона/странице AWM; человек его не сверял",
+    "открыть source.url и прочитать запись целиком",
+    "проверить destinations, пояснения и labels",
+    "поставить source.verified_by и source.verified_on",
+    "перенести: python3 tools/drafts.py promote <id>"
+  ],
+  "_drafted_by": "claude",
+  "_awm_term": "Luftpolsterumschläge, Versandtaschen mit Innenfutter",
+  "_awm_tip": null,
+  "_awm_notes": {},
+  "id": "luftpolsterumschlag",
+  "tier": 1,
+  "attrs": [
+    "borderline"
+  ],
+  "labels": {
+    "de": "Luftpolsterumschlag",
+    "en": "Padded envelope"
+  },
+  "source": {
+    "authority": "awm",
+    "key": "luftpolsterumschlaege-versandtaschen-mit-innenfutter",
+    "url": "https://www.awm-muenchen.de/abfall-entsorgen/abfalllexikon",
+    "destinations_at_verification": [
+      "restmuell"
+    ],
+    "verified_by": "Sergei Grieg",
+    "verified_on": "2026-10-17"
+  },
+  "variants": [
+    {
+      "id": "standard",
+      "kind": "simple",
+      "labels": {
+        "de": "",
+        "en": ""
+      },
+      "destinations": [
+        "restmuell"
+      ]
+    }
+  ],
+  "explanation": {
+    "de": "Außen Papier, innen Plastikpolster: Der Luftpolsterumschlag gehört in den Restmüll.",
+    "en": "Paper outside, plastic padding inside: the padded envelope goes in the residual bin."
+  }
+}

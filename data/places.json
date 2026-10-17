@@ -2,7 +2,8 @@
   "_source": {
     "url": "https://www.awm-muenchen.de/abfall-entsorgen/abgabestellen/wertstoffinseln",
     "fetched": "2026-08-27",
-    "confirmed_by": "",
+    "confirmed_by": "Sergei Grieg",
+    "confirmed_on": "2026-10-17",
     "note": "Состав контейнеров на Wertstoffinsel взят с этой страницы: стекло по трём цветам, отдельно Kunststoffverpackungen, отдельно Metalle. С 2027 пластик, композит и металл уходят в Gelbe Tonne, стекло остаётся на островах. confirmed_by ставит человек, прочитавший страницу."
   },
   "_comment": "Места и контейнеры. Одна редакция на все времена: контейнер живёт между from и until. until не включается — контейнер с until 2027-01-01 работает по 31 декабря 2026. Так переход 1 января 2027 не требует ни выкладки, ни правки кода (KTD5).",

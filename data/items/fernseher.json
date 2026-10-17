@@ -1,0 +1,54 @@
+{
+  "_todo": [
+    "это черновик, написанный машиной (Claude) по записи лексикона/странице AWM; человек его не сверял",
+    "открыть source.url и прочитать запись целиком",
+    "проверить destinations, пояснения и labels",
+    "поставить source.verified_by и source.verified_on",
+    "перенести: python3 tools/drafts.py promote <id>"
+  ],
+  "_drafted_by": "claude",
+  "_awm_term": "Fernseher, Flachbildschirm, Monitor",
+  "_awm_tip": null,
+  "_awm_notes": {
+    "weiternutzen": "Verschenken, tauschen, kaufen, finden, reparieren... zu schade zum Wegwerfen!",
+    "sperrmuell": "Haben Sie sperrige Gegenstände, die Sie schon lange loswerden wollten? Dann sind Sie beim Sperrmüllabholdienst des AWM richtig.Die Sperrmüllabfuhr des Abfallwirtschaftsbetriebes entsorgt auch den Sperrmüll von Vereinen, Institutionen und Gewerbebetrieben.",
+    "halle2": "Gut erhaltenes für die Halle 2"
+  },
+  "id": "fernseher",
+  "tier": 4,
+  "attrs": [],
+  "labels": {
+    "de": "Fernseher",
+    "en": "Television"
+  },
+  "source": {
+    "authority": "awm",
+    "key": "fernseher-flachbildschirm-monitor",
+    "url": "https://www.awm-muenchen.de/abfall-entsorgen/abfalllexikon/detailansicht-lexikoneintrag/fernseher-flachbildschirm-monitor",
+    "destinations_at_verification": [
+      "halle2",
+      "sperrmuell",
+      "weiternutzen",
+      "wertstoffhof"
+    ],
+    "verified_by": "Sergei Grieg",
+    "verified_on": "2026-10-17"
+  },
+  "variants": [
+    {
+      "id": "standard",
+      "kind": "simple",
+      "labels": {
+        "de": "",
+        "en": ""
+      },
+      "destinations": [
+        "elektroschrott"
+      ]
+    }
+  ],
+  "explanation": {
+    "de": "Bildschirme enthalten Quecksilber, Blei und Cadmium. Sie gehören zum Elektroschrott.",
+    "en": "Screens contain mercury, lead and cadmium. They belong with the e-waste."
+  }
+}

@@ -1,0 +1,72 @@
+{
+  "_todo": [
+    "это черновик, написанный машиной (Claude) по записи лексикона/странице AWM; человек его не сверял",
+    "открыть source.url и прочитать запись целиком",
+    "проверить destinations, пояснения и labels",
+    "поставить source.verified_by и source.verified_on",
+    "перенести: python3 tools/drafts.py promote <id>"
+  ],
+  "_drafted_by": "claude",
+  "_awm_term": "Leuchtstoffröhren, Neonröhren, UV-Röhren",
+  "_awm_tip": null,
+  "_awm_notes": {
+    "problemabfall": "Sie können beim Giftmobil Abfälle mit problematischen Inhaltsstoffen kostenlos abgeben.",
+    "wertstoffmobil": "Sie wollen Haushaltsgegenstände, Batterien, Energiesparlampen oder Elektrokleingeräte entsorgen?Das Wertstoffmobil hält ganz in Ihrer Nähe …"
+  },
+  "id": "energiesparlampe",
+  "tier": 5,
+  "attrs": [
+    "borderline"
+  ],
+  "labels": {
+    "de": "Energiesparlampe",
+    "en": "Energy-saving bulb"
+  },
+  "source": {
+    "authority": "awm",
+    "key": "leuchtstoffroehren-neonroehren-uv-roehren",
+    "url": "https://www.awm-muenchen.de/abfall-entsorgen/abfalllexikon/detailansicht-lexikoneintrag/leuchtstoffroehren-neonroehren-uv-roehren",
+    "destinations_at_verification": [
+      "problemabfall",
+      "wertstoffhof",
+      "wertstoffmobil"
+    ],
+    "verified_by": "Sergei Grieg",
+    "verified_on": "2026-10-17"
+  },
+  "variants": [
+    {
+      "id": "standard",
+      "kind": "simple",
+      "labels": {
+        "de": "",
+        "en": ""
+      },
+      "destinations": [
+        "elektroschrott",
+        "giftmobil",
+        "elektro_ruecknahme"
+      ]
+    }
+  ],
+  "explanation": {
+    "de": "Energiesparlampen enthalten Quecksilber: weder Restmüll noch Altglas. Trotzdem sind sie kein Fall für die Problemstoffannahme – rechtlich sind sie Elektro-Altgeräte und kommen am Wertstoffhof zu den Elektrogeräten. Auch das Giftmobil und der Handel nehmen sie.",
+    "en": "Energy-saving bulbs contain mercury: neither residual waste nor bottle glass. Still, they are not for the hazardous-waste desk – legally they are old electrical equipment and go with the electrical devices at the recycling centre. The van and shops take them too."
+  },
+  "sources": [
+    {
+      "authority": "law",
+      "reference": "ElektroG § 17",
+      "url": "https://www.gesetze-im-internet.de/elektrog_2015/__17.html",
+      "verified_by": "Sergei Grieg",
+      "verified_on": "2026-10-17"
+    },
+    {
+      "authority": "law",
+      "reference": "ElektroG § 14",
+      "url": "https://www.gesetze-im-internet.de/elektrog_2015/__14.html",
+      "verified_by": "Sergei Grieg",
+      "verified_on": "2026-10-17"
+    }
+  ]
+}

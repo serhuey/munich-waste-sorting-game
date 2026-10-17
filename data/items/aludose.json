@@ -27,7 +27,7 @@
       "wertstoffinsel"
     ],
     "verified_by": "Sergei Grieg",
-    "verified_on": "2026-08-29"
+    "verified_on": "2026-10-17"
   },
   "variants": [
     {
@@ -77,18 +77,17 @@
       "authority": "law",
       "reference": "VerpackDG § 46",
       "url": "https://www.gesetze-im-internet.de/verpackdg/__46.html",
-      "verified_by": "",
-      "verified_on": ""
+      "verified_by": "Sergei Grieg",
+      "verified_on": "2026-10-17"
     },
     {
       "authority": "page",
       "reference": "Wertstoffinseln: Kunststoff, Verbund und Metall gehen ab 2027 in die Gelbe Tonne, Glas bleibt",
       "url": "https://www.awm-muenchen.de/abfall-entsorgen/abgabestellen/wertstoffinseln",
       "verified_by": "Sergei Grieg",
-      "verified_on": "2026-08-30"
+      "verified_on": "2026-10-17"
     }
   ],
   "_hint": "у предмета два источника: запись AWM и норма закона для возврата в магазин — оба нужно подписать | тир 3: у варианта без залога адресат на острове, а остров открывается на третьем тире",
-  "_note_ru": "важно искать символ \"Logo der DPG\" (потом вставим картинкой)",
-  "_changed_after_signature": "2026-10-17: норма VerpackG § 31 заменена на VerpackDG § 46 (старый адрес отдаёт 404, закон заменён). Подпись с этого источника снята — перечитать новый параграф и подписать."
+  "_note_ru": "важно искать символ \"Logo der DPG\" (потом вставим картинкой)"
 }

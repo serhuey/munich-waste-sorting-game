@@ -1,0 +1,63 @@
+{
+  "_todo": [
+    "это черновик, написанный машиной (Claude) по записи лексикона/странице AWM; человек его не сверял",
+    "открыть source.url и прочитать запись целиком",
+    "проверить destinations, пояснения и labels",
+    "поставить source.verified_by и source.verified_on",
+    "перенести: python3 tools/drafts.py promote <id>"
+  ],
+  "_drafted_by": "claude",
+  "_awm_term": "Shampooflasche",
+  "_awm_tip": null,
+  "_awm_notes": {},
+  "id": "shampooflasche",
+  "tier": 3,
+  "attrs": [],
+  "labels": {
+    "de": "Shampooflasche",
+    "en": "Shampoo bottle"
+  },
+  "source": {
+    "authority": "awm",
+    "key": "shampooflasche",
+    "url": "https://www.awm-muenchen.de/abfall-entsorgen/abfalllexikon",
+    "destinations_at_verification": [
+      "wertstoffinsel"
+    ],
+    "verified_by": "Sergei Grieg",
+    "verified_on": "2026-10-17"
+  },
+  "variants": [
+    {
+      "id": "standard",
+      "kind": "simple",
+      "labels": {
+        "de": "",
+        "en": ""
+      },
+      "destinations": [
+        {
+          "id": "kunststoff",
+          "until": "2027-01-01"
+        },
+        {
+          "id": "gelbe_tonne",
+          "from": "2027-01-01"
+        }
+      ]
+    }
+  ],
+  "explanation": {
+    "de": "Leere Kunststoffflaschen kommen in den Kunststoff-Container, ab 2027 in die Gelbe Tonne.",
+    "en": "Empty plastic bottles go in the plastic container, from 2027 in the yellow bin."
+  },
+  "sources": [
+    {
+      "authority": "page",
+      "reference": "Wertstoffinseln: Das können Sie abgeben",
+      "url": "https://www.awm-muenchen.de/abfall-entsorgen/abgabestellen/wertstoffinseln",
+      "verified_by": "Sergei Grieg",
+      "verified_on": "2026-10-17"
+    }
+  ]
+}

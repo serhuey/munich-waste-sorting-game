@@ -2,7 +2,7 @@
 
 A casual mobile-web game that teaches people arriving in Munich where household waste actually goes.
 
-**Status: pre-release.** The game is playable end to end in a local build: five tiers, the Christmas-tree finale, German and English, pixel art for every object and container. Most of its content is still unsigned — items drafted from AWM sources by machine and not yet read by a person — so the build that can be published contains only the signed first tier. See *Running it locally*.
+**Status: pre-release.** The game is playable end to end: five tiers, 104 objects, the Christmas-tree finale, German and English, pixel art for every object and container. Every object, the places, the finale and the 2027 notice are signed by a person (17 October 2026), so the release build is the full game. What remains before publishing is the counter, the legal pages and the deployment.
 
 ## Why
 

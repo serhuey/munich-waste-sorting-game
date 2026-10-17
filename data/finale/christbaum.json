@@ -7,38 +7,88 @@
       "authority": "page",
       "reference": "Christbäume richtig entsorgen (Stadt München)",
       "url": "https://stadt.muenchen.de/infos/christbaeume-richtig-entsorgen.html",
-      "verified_by": "",
-      "verified_on": ""
+      "verified_by": "Sergei Grieg",
+      "verified_on": "2026-10-17"
     },
     {
       "authority": "awm",
       "key": "christbaum-weihnachtsbaum",
       "url": "https://www.awm-muenchen.de/abfall-entsorgen/abfalllexikon/detailansicht-lexikoneintrag/christbaum-weihnachtsbaum",
-      "destinations_at_verification": ["wertstoffhof"],
-      "verified_by": "",
-      "verified_on": ""
+      "destinations_at_verification": [
+        "wertstoffhof"
+      ],
+      "verified_by": "Sergei Grieg",
+      "verified_on": "2026-10-17"
     }
   ],
   "more_url": "https://www.awm-muenchen.de/christbaum",
   "decorations": [
-    { "id": "stern", "labels": { "de": "Stern", "en": "Star" } },
-    { "id": "kugel", "labels": { "de": "Christbaumkugel", "en": "Bauble" } },
-    { "id": "kugel_gold", "labels": { "de": "Christbaumkugel", "en": "Bauble" } },
-    { "id": "lametta", "labels": { "de": "Lametta", "en": "Tinsel" } },
-    { "id": "lichter", "labels": { "de": "Lichterkette", "en": "Fairy lights" } },
-    { "id": "kerze", "labels": { "de": "Kerzenhalter", "en": "Candle holder" } },
-    { "id": "netz", "labels": { "de": "Plastiknetz", "en": "Plastic net" } }
+    {
+      "id": "stern",
+      "labels": {
+        "de": "Stern",
+        "en": "Star"
+      }
+    },
+    {
+      "id": "kugel",
+      "labels": {
+        "de": "Christbaumkugel",
+        "en": "Bauble"
+      }
+    },
+    {
+      "id": "kugel_gold",
+      "labels": {
+        "de": "Christbaumkugel",
+        "en": "Bauble"
+      }
+    },
+    {
+      "id": "lametta",
+      "labels": {
+        "de": "Lametta",
+        "en": "Tinsel"
+      }
+    },
+    {
+      "id": "lichter",
+      "labels": {
+        "de": "Lichterkette",
+        "en": "Fairy lights"
+      }
+    },
+    {
+      "id": "kerze",
+      "labels": {
+        "de": "Kerzenhalter",
+        "en": "Candle holder"
+      }
+    },
+    {
+      "id": "netz",
+      "labels": {
+        "de": "Plastiknetz",
+        "en": "Plastic net"
+      }
+    }
   ],
   "strip_reason": {
     "de": "Bäume mit Kugeln, Lametta und Kerzenhaltern lassen sich nicht kompostieren. Abgegeben wird nur der nackte Baum – ohne Schmuck und ohne Plastik.",
     "en": "Trees with baubles, tinsel and candle holders cannot be composted. Only the bare tree is accepted – no decorations and no plastic."
   },
-  "scenes": ["2026-01-08", "2026-02-20"],
+  "scenes": [
+    "2026-01-08",
+    "2026-02-20"
+  ],
   "routes": [
     {
       "id": "wertstoffhof",
       "year_round": true,
-      "labels": { "de": "Wertstoffhof", "en": "Recycling centre" },
+      "labels": {
+        "de": "Wertstoffhof",
+        "en": "Recycling centre"
+      },
       "rule": {
         "de": "Die elf Wertstoffhöfe nehmen Christbäume das ganze Jahr an.",
         "en": "The eleven recycling centres take Christmas trees all year round."
@@ -46,8 +96,16 @@
     },
     {
       "id": "sammelstelle",
-      "windows": [{ "from": "2026-01-07", "until": "2026-02-05" }],
-      "labels": { "de": "Christbaum-Sammelstelle", "en": "Tree collection point" },
+      "windows": [
+        {
+          "from": "2026-01-07",
+          "until": "2026-02-05"
+        }
+      ],
+      "labels": {
+        "de": "Christbaum-Sammelstelle",
+        "en": "Tree collection point"
+      },
       "rule": {
         "de": "Die öffentlichen Sammelstellen gibt es nur im Januar und Anfang Februar – dann rund um die Uhr. Nur unzerkleinerte, ganz abgeschmückte Bäume.",
         "en": "The public collection points exist only in January and early February – then around the clock. Whole, fully stripped trees only."
@@ -55,8 +113,20 @@
     },
     {
       "id": "schule",
-      "windows": [{ "from": "2026-01-07", "until": "2026-01-10" }, { "from": "2026-01-12", "until": "2026-01-14" }],
-      "labels": { "de": "Schule oder Kita", "en": "School or nursery" },
+      "windows": [
+        {
+          "from": "2026-01-07",
+          "until": "2026-01-10"
+        },
+        {
+          "from": "2026-01-12",
+          "until": "2026-01-14"
+        }
+      ],
+      "labels": {
+        "de": "Schule oder Kita",
+        "en": "School or nursery"
+      },
       "rule": {
         "de": "Ausgewählte Schulen und Kitas nehmen Bäume nur an wenigen Januartagen an, jeweils 8 bis 17 Uhr.",
         "en": "Selected schools and nurseries take trees only on a few days in January, 8 am to 5 pm."
@@ -65,7 +135,10 @@
     {
       "id": "strasse",
       "illegal": true,
-      "labels": { "de": "Straßenrand oder Wald", "en": "Roadside or woods" },
+      "labels": {
+        "de": "Straßenrand oder Wald",
+        "en": "Roadside or woods"
+      },
       "rule": {
         "de": "Christbäume dürfen ausschließlich an den ausgewiesenen Stellen abgegeben werden. Alles andere gilt als illegale Müllablagerung und kann ein Bußgeldverfahren nach sich ziehen.",
         "en": "Trees may only be left at the designated places. Anything else counts as illegal dumping and can lead to fine proceedings."

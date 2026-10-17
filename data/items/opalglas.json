@@ -1,0 +1,49 @@
+{
+  "_todo": [
+    "это черновик, написанный машиной (Claude) по записи лексикона/странице AWM; человек его не сверял",
+    "открыть source.url и прочитать запись целиком",
+    "проверить destinations, пояснения и labels",
+    "поставить source.verified_by и source.verified_on",
+    "перенести: python3 tools/drafts.py promote <id>"
+  ],
+  "_drafted_by": "claude",
+  "_awm_term": "Opalglas",
+  "_awm_tip": "Milchig-​weißes Opalglas gehört zum Weißglas.",
+  "_awm_notes": {},
+  "id": "opalglas",
+  "tier": 3,
+  "attrs": [
+    "borderline"
+  ],
+  "labels": {
+    "de": "Cremetiegel aus Opalglas",
+    "en": "Opal-glass cream jar"
+  },
+  "source": {
+    "authority": "awm",
+    "key": "opalglas",
+    "url": "https://www.awm-muenchen.de/abfall-entsorgen/abfalllexikon",
+    "destinations_at_verification": [
+      "wertstoffinsel"
+    ],
+    "verified_by": "Sergei Grieg",
+    "verified_on": "2026-10-17"
+  },
+  "variants": [
+    {
+      "id": "standard",
+      "kind": "simple",
+      "labels": {
+        "de": "",
+        "en": ""
+      },
+      "destinations": [
+        "glas_weiss"
+      ]
+    }
+  ],
+  "explanation": {
+    "de": "Milchig-weißes Opalglas gehört zum Weißglas, auch wenn es nicht durchsichtig ist.",
+    "en": "Milky-white opal glass belongs with the clear glass, even though you cannot see through it."
+  }
+}

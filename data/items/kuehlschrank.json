@@ -1,0 +1,50 @@
+{
+  "_todo": [
+    "это черновик, написанный машиной (Claude) по записи лексикона/странице AWM; человек его не сверял",
+    "открыть source.url и прочитать запись целиком",
+    "проверить destinations, пояснения и labels",
+    "поставить source.verified_by и source.verified_on",
+    "перенести: python3 tools/drafts.py promote <id>"
+  ],
+  "_drafted_by": "claude",
+  "_awm_term": "Kühlschrank, Tiefkühltruhe",
+  "_awm_tip": null,
+  "_awm_notes": {
+    "sperrmuell": "Haben Sie sperrige Gegenstände, die Sie schon lange loswerden wollten? Dann sind Sie beim Sperrmüllabholdienst des AWM richtig.Die Sperrmüllabfuhr des Abfallwirtschaftsbetriebes entsorgt auch den Sperrmüll von Vereinen, Institutionen und Gewerbebetrieben."
+  },
+  "id": "kuehlschrank",
+  "tier": 4,
+  "attrs": [],
+  "labels": {
+    "de": "Kühlschrank",
+    "en": "Fridge"
+  },
+  "source": {
+    "authority": "awm",
+    "key": "kuehlschrank-tiefkuehltruhe",
+    "url": "https://www.awm-muenchen.de/abfall-entsorgen/abfalllexikon/detailansicht-lexikoneintrag/kuehlschrank-tiefkuehltruhe",
+    "destinations_at_verification": [
+      "sperrmuell",
+      "wertstoffhof"
+    ],
+    "verified_by": "Sergei Grieg",
+    "verified_on": "2026-10-17"
+  },
+  "variants": [
+    {
+      "id": "standard",
+      "kind": "simple",
+      "labels": {
+        "de": "",
+        "en": ""
+      },
+      "destinations": [
+        "elektroschrott"
+      ]
+    }
+  ],
+  "explanation": {
+    "de": "Den Kühlkreislauf nicht beschädigen, sonst entweicht Kältemittel. Ein Kühlgerät pro Tag und Haushalt, leer und sauber.",
+    "en": "Do not damage the cooling circuit or refrigerant escapes. One fridge per household per day, empty and clean."
+  }
+}

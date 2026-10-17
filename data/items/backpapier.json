@@ -27,7 +27,7 @@
       "restmuell"
     ],
     "verified_by": "Sergei Grieg",
-    "verified_on": "2026-08-29"
+    "verified_on": "2026-10-17"
   },
   "variants": [
     {
@@ -83,9 +83,8 @@
         "papier",
         "wertstoffhof"
       ],
-      "verified_by": "",
-      "verified_on": ""
+      "verified_by": "Sergei Grieg",
+      "verified_on": "2026-10-17"
     }
-  ],
-  "_changed_after_signature": "2026-10-17: по просьбе автора предмет стал составным — коробка с втулкой (источник papier-kartonagen, не подписан) и сама бумага (подпись от 2026-08-29 покрывает её). Пока второй источник не подписан, в выпуск предмет не попадает."
+  ]
 }
