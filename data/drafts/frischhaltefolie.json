@@ -1,0 +1,97 @@
+{
+  "_todo": [
+    "это черновик, написанный машиной (Claude) по записи лексикона/странице AWM; человек его не сверял",
+    "открыть source.url и прочитать запись целиком",
+    "проверить destinations, пояснения и labels",
+    "поставить source.verified_by и source.verified_on",
+    "перенести: python3 tools/drafts.py promote <id>"
+  ],
+  "_drafted_by": "claude",
+  "_awm_term": "Frischhaltefolie",
+  "_awm_tip": null,
+  "_awm_notes": {},
+  "id": "frischhaltefolie",
+  "tier": 3,
+  "attrs": [
+    "separable",
+    "borderline"
+  ],
+  "labels": {
+    "de": "Frischhaltefolie",
+    "en": "Cling film"
+  },
+  "source": {
+    "authority": "awm",
+    "key": "frischhaltefolie",
+    "url": "https://www.awm-muenchen.de/abfall-entsorgen/abfalllexikon",
+    "destinations_at_verification": [
+      "restmuell"
+    ],
+    "verified_by": "",
+    "verified_on": ""
+  },
+  "variants": [
+    {
+      "id": "standard",
+      "kind": "composite",
+      "labels": {
+        "de": "",
+        "en": ""
+      },
+      "parts": [
+        {
+          "id": "verpackung",
+          "labels": {
+            "de": "Karton und Papprolle",
+            "en": "Box and cardboard tube"
+          },
+          "destinations": [
+            "papier"
+          ],
+          "explanation": {
+            "de": "Karton und Papprolle sind Pappe – ab ins Altpapier.",
+            "en": "The box and the cardboard tube are paperboard – into the paper bin."
+          }
+        },
+        {
+          "id": "folie",
+          "labels": {
+            "de": "Folie",
+            "en": "Film"
+          },
+          "destinations": [
+            "restmuell"
+          ],
+          "explanation": {
+            "de": "Frischhaltefolie gehört laut AWM in den Restmüll.",
+            "en": "According to AWM cling film goes in the residual bin."
+          }
+        }
+      ]
+    }
+  ],
+  "explanation": {
+    "de": "Die Folie ist Plastik, aber keine Verpackung, sondern ein Haushaltsprodukt – der Kunststoff-Container und ab 2027 die Gelbe Tonne nehmen nur Verpackungen. Also: Folie in den Restmüll, Karton und Rolle ins Altpapier.",
+    "en": "The film is plastic, but not packaging – it is a household product, and the plastic container, like the yellow bin from 2027, takes packaging only. So: film in the residual bin, box and tube in the paper bin."
+  },
+  "sources": [
+    {
+      "authority": "page",
+      "reference": "Wertstoffinseln: Das können Sie abgeben",
+      "url": "https://www.awm-muenchen.de/abfall-entsorgen/abgabestellen/wertstoffinseln",
+      "verified_by": "",
+      "verified_on": ""
+    },
+    {
+      "authority": "awm",
+      "key": "papier-kartonagen",
+      "url": "https://www.awm-muenchen.de/abfall-entsorgen/abfalllexikon/detailansicht-lexikoneintrag/papier-kartonagen",
+      "destinations_at_verification": [
+        "papier",
+        "wertstoffhof"
+      ],
+      "verified_by": "",
+      "verified_on": ""
+    }
+  ]
+}

@@ -453,6 +453,15 @@ class GateTest(unittest.TestCase):
         tiers = sorted(p["tier"] for p in places)
         self.assertEqual(tiers, list(range(1, len(places) + 1)))
 
+    def test_a_signed_item_with_an_unsigned_new_source_stays_on_the_stand(self):
+        self.item(sources=[{"authority": "law", "reference": "X § 1", "url": "https://example.invalid",
+                            "verified_by": "", "verified_on": ""}])
+        content, report = self.build()
+        self.assertEqual(content["items"], [], "в выпуск без подписи не идёт")
+        content, report = bd.build(self.repo, TODAY, today=TODAY, fixtures=True)
+        self.assertEqual([i["id"] for i in content["items"]], ["pizzakarton"])
+        self.assertTrue(content["items"][0]["unverified"])
+
     # --- языки, финал, сообщения --------------------------------------------
 
     def test_a_missing_interface_key_is_fatal(self):

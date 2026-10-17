@@ -525,6 +525,15 @@ def build(repo, date, today=None, langs=LANGS, fixtures=False):
             continue
         problems = check_item(raw, stem, containers, index, date, today, langs,
                               places=places)
+        unverified = False
+        if problems and fixtures:
+            # Подписанный предмет, который потом дополнили — новый источник ещё
+            # без подписи. В выпуск он не идёт, но стенд — это как раз место для
+            # несверенного, и пропадать из игры он не должен.
+            if not check_item(raw, stem, containers, index, date, today, langs,
+                              require_signature=False, places=places):
+                report["warnings"].append("%s: есть неподписанный источник — на стенде, в выпуск не пойдёт" % stem)
+                problems, unverified = [], True
         if problems:
             report["excluded"].append((stem, problems))
             continue
@@ -535,6 +544,8 @@ def build(repo, date, today=None, langs=LANGS, fixtures=False):
             if p not in problems and "не действует" in p:
                 report["warnings"].append("%s: после %s %s" % (stem, FUTURE_PROBE, p))
         raw = {k: v for k, v in raw.items() if not k.startswith("_")}
+        if unverified:
+            raw["unverified"] = True
         items.append(raw)
         report["included"].append(stem)
 

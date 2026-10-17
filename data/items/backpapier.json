@@ -12,7 +12,9 @@
   "_awm_notes": {},
   "id": "backpapier",
   "tier": 1,
-  "attrs": [],
+  "attrs": [
+    "separable"
+  ],
   "labels": {
     "de": "Backpapier",
     "en": "Baking paper"
@@ -30,19 +32,60 @@
   "variants": [
     {
       "id": "standard",
-      "kind": "simple",
+      "kind": "composite",
       "labels": {
         "de": "",
         "en": ""
       },
-      "destinations": [
-        "restmuell"
+      "parts": [
+        {
+          "id": "verpackung",
+          "labels": {
+            "de": "Karton und Papprolle",
+            "en": "Box and cardboard tube"
+          },
+          "destinations": [
+            "papier"
+          ],
+          "explanation": {
+            "de": "Karton und Papprolle sind Pappe – ab ins Altpapier.",
+            "en": "The box and the cardboard tube are paperboard – into the paper bin."
+          }
+        },
+        {
+          "id": "papier",
+          "labels": {
+            "de": "Backpapier",
+            "en": "Baking paper"
+          },
+          "destinations": [
+            "restmuell"
+          ],
+          "explanation": {
+            "de": "Obwohl es sich um eine Papiersorte handelt, eignet es sich nicht für das Recycling zu gewöhnlichem Papier.",
+            "en": "Although it is a type of paper, it is not suitable for recycling into ordinary paper."
+          }
+        }
       ]
     }
   ],
   "explanation": {
-    "de": "Obwohl es sich um eine Papiersorte handelt, eignet es sich nicht für das Recycling zu gewöhnlichem Papier.",
-    "en": "Although it is a type of paper, it is not suitable for recycling into ordinary paper."
+    "de": "Zwei Antworten: Karton und Rolle ins Altpapier, das Backpapier selbst in den Restmüll.",
+    "en": "Two answers: box and tube to the paper bin, the baking paper itself to the residual bin."
   },
-  "_destinations_proposed": "подставлено машиной из снимка; подтвердить, открыв source.url"
+  "_destinations_proposed": "подставлено машиной из снимка; подтвердить, открыв source.url",
+  "sources": [
+    {
+      "authority": "awm",
+      "key": "papier-kartonagen",
+      "url": "https://www.awm-muenchen.de/abfall-entsorgen/abfalllexikon/detailansicht-lexikoneintrag/papier-kartonagen",
+      "destinations_at_verification": [
+        "papier",
+        "wertstoffhof"
+      ],
+      "verified_by": "",
+      "verified_on": ""
+    }
+  ],
+  "_changed_after_signature": "2026-10-17: по просьбе автора предмет стал составным — коробка с втулкой (источник papier-kartonagen, не подписан) и сама бумага (подпись от 2026-08-29 покрывает её). Пока второй источник не подписан, в выпуск предмет не попадает."
 }
