@@ -74,6 +74,6 @@
   "unverified": "✎ Noch nicht von einem Menschen geprüft",
   "touch_hint": "Wischen: Band · Tippen aufs Ding: ansehen oder zerlegen · Tippen daneben: fallen lassen",
   "finale_later": "{n} Tage später",
-  "credit": "Gemacht von Sergei Grieg",
+  "credit": "Gemacht von {name}",
   "examine_ok": "Verstanden"
 }

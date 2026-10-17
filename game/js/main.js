@@ -128,6 +128,21 @@ function pixelHeading(text, { max = 4, width = Math.max(272, Math.min(window.inn
   return box;
 }
 
+// Who made it, with the name as a link to the author's site. The sentence comes
+// from the language file; only the name is a link, wherever the language puts it.
+function creditLine() {
+  const p = make('p', 'credit');
+  // t() fills every {placeholder}; a marker that cannot occur in text stands in
+  // for the name, and the sentence is cut there.
+  const [before, after] = t('credit', { name: '\u0000' }).split('\u0000');
+  const a = make('a', null, 'Sergei Grieg');
+  a.href = 'https://sergei-grieg.de';
+  a.target = '_blank';
+  a.rel = 'noopener';
+  p.append(before || '', a, after || '');
+  return p;
+}
+
 function currentIntro() {
   const intro = (state.content.notices && state.content.notices.intro) || [];
   const live = intro.find(n => rules.inWindow(n, state.date));
@@ -158,7 +173,7 @@ function showTitle() {
   const go = make('button', 'pbtn big', t('play'));
   go.type = 'button';
   go.onclick = () => { closeScreen(); startRun(); };
-  screen.append(how, languageSwitch(showTitle), go, make('p', 'source', t('source_note')), make('p', 'credit', t('credit')));
+  screen.append(how, languageSwitch(showTitle), go, make('p', 'source', t('source_note')), creditLine());
   go.focus({ preventScroll: true });
   // The change message opens every session inside its window and is never
   // recorded as seen (R19): closing it is the only state, and it dies with the tab.
@@ -735,7 +750,7 @@ function showEnd() {
   again.onclick = () => { closeScreen(); startRun(); };
   const buttons = make('div', 'end-buttons');
   buttons.append(shareBtn, again);
-  screen.append(buttons, languageSwitch(showEnd), make('p', 'source', t('source_note')), make('p', 'credit', t('credit')));
+  screen.append(buttons, languageSwitch(showEnd), make('p', 'source', t('source_note')), creditLine());
   shareBtn.focus({ preventScroll: true });
 }
 
