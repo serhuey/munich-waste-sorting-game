@@ -883,6 +883,57 @@ Object.assign(S, {
   }),
 });
 
+// ------------------------------------------------- rolls: box, tube, sheet
+// Cling film, foil and baking paper come on a cardboard tube in a cardboard
+// box, and the box and tube go one way, the sheet another.
+function rollBox(p, band, sheet) {
+  p.round(2, 10, 26, 11, 2, R.white);
+  p.rect(3, 13, 24, 4, band, { outline: false, shade: 'flat' });
+  p.ring(27, 15.5, 5, 2.2, R.card);
+  p.ell(27, 15.5, 2.2, 2.2, R.ink, { outline: false });
+  if (sheet) p.poly([[8, 20], [24, 20], [22, 29], [6, 28]], sheet);
+}
+function tubeAndBox(p, band) {
+  p.round(2, 6, 22, 10, 2, R.white);
+  p.rect(3, 9, 20, 3, band, { outline: false, shade: 'flat' });
+  p.poly([[4, 15], [22, 15], [20, 18], [6, 18]], R.white, { shade: 'dark' });
+  p.round(6, 21, 22, 7, 3, R.card, { shade: 'cyl' });
+  p.ring(26, 24.5, 3.5, 1.6, R.card, { shade: 'dark' });
+}
+function crumpled(p, ramp, glint) {
+  p.poly([[5, 14], [10, 8], [17, 11], [23, 6], [28, 12], [26, 19], [28, 25], [19, 28], [11, 27], [4, 22]], ramp);
+  p.path([[10, 13], [14, 18], [12, 23]], ramp.d).path([[20, 10], [19, 16], [24, 21]], ramp.d);
+  if (glint) p.path([[15, 20], [20, 23]], ramp.h || ramp.l);
+}
+Object.assign(S, {
+  frischhaltefolie: item(p => rollBox(p, R.sky, R.clear)),
+  'frischhaltefolie:verpackung': item(p => tubeAndBox(p, R.sky)),
+  'frischhaltefolie:folie': item(p => crumpled(p, R.clear, true)),
+  'alufolie:verpackung': item(p => tubeAndBox(p, R.blue)),
+  'alufolie:folie': item(p => crumpled(p, R.alu, true)),
+  'backpapier:verpackung': item(p => tubeAndBox(p, R.red)),
+  'backpapier:papier': item(p => crumpled(p, R.paper, false)),
+  gefrierbeutel: item(p => {
+    p.round(3, 9, 26, 18, 2, R.sky);
+    p.rect(4, 12, 24, 3, R.white, { outline: false, shade: 'flat' });
+    p.round(8, 17, 16, 7, 1, R.white, { shade: 'flat' });
+    p.ell(12, 20.5, 2, 2, R.blue, { outline: false });
+    p.hl(16, 20, 6, R.grey.l);
+  }),
+  'gefrierbeutel:verpackung': item(p => {
+    p.round(3, 9, 26, 18, 2, R.sky);
+    p.rect(4, 12, 24, 3, R.white, { outline: false, shade: 'flat' });
+    p.poly([[6, 9], [26, 9], [22, 4], [10, 4]], R.sky, { shade: 'light' });
+  }),
+  'gefrierbeutel:beutel': item(p => {
+    p.round(4, 5, 16, 22, 1, R.clear);
+    p.rect(5, 8, 14, 2, R.blue, { outline: false, shade: 'flat' });
+    p.round(13, 9, 16, 20, 1, R.clear);
+    p.rect(14, 12, 14, 2, R.blue, { outline: false, shade: 'flat' });
+    p.path([[16, 18], [24, 24]], R.clear.h);
+  }),
+});
+
 export const ITEMS = S;
 
 // ---------------------------------------------------------------- containers

@@ -147,7 +147,11 @@ export class Fall {
     this.leaving = true;
     cancelAnimationFrame(this.raf);
     this.onRelease();
+    let finished = false;
     const done = () => {
+      if (finished) return;
+      finished = true;
+      cancelAnimationFrame(this.raf);
       this.current = null;
       this.leaving = false;
       this.onLanded({ item, variant, el, early, remaining });
@@ -162,5 +166,10 @@ export class Fall {
       else done();
     };
     this.raf = requestAnimationFrame(step);
+    // Animation frames are not promised: a phone saving power, a window behind
+    // another, a pane that is not painting can deliver none at all, and the
+    // object would hang above the bin with its answer never counted. A timer
+    // lands it anyway, just after the flight would have ended.
+    setTimeout(done, ms + 250);
   }
 }
