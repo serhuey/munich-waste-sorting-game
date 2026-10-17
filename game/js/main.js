@@ -838,10 +838,27 @@ document.addEventListener('keydown', e => {
   else if (e.key === 'ArrowDown' || e.key === ' ') { e.preventDefault(); fall.drop(); }
 });
 
+// On the field: a tap on the object looks at it or takes it apart; a swipe
+// down, from anywhere including the object, drops it early. On a touch screen
+// a tap on empty space does nothing — a stray touch while aiming must not throw
+// the object away. With a mouse, a click beside the object still drops it.
+let press = null;
+el('field').addEventListener('pointerdown', ev => {
+  press = { x: ev.clientX, y: ev.clientY, t: performance.now(), onItem: !!ev.target.closest('.item'),
+            touch: ev.pointerType !== 'mouse' };
+  // Captured so a swipe that ends over the belt still ends here.
+  try { el('field').setPointerCapture(ev.pointerId); } catch (e) { /* no active pointer */ }
+});
+el('field').addEventListener('pointercancel', () => { press = null; });
 el('field').addEventListener('pointerup', ev => {
-  if (!el('panel').hidden || quiet()) return;
-  if (ev.target.closest('.item')) tapItem();
-  else fall.drop();
+  const p = press;
+  press = null;
+  if (!p || !el('panel').hidden || quiet()) return;
+  const dx = ev.clientX - p.x, dy = ev.clientY - p.y;
+  if (dy > 40 && dy > Math.abs(dx) * 1.2 && performance.now() - p.t < 700) return fall.drop();
+  if (Math.hypot(dx, dy) > 12) return;                 // some other gesture: ignore
+  if (p.onItem) tapItem();
+  else if (!p.touch) fall.drop();
 });
 
 // With any development handle in the URL the moving parts are reachable from the

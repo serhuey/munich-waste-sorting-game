@@ -212,9 +212,12 @@ DOM and no clock of their own; they are tested as plain functions.
    ten from earlier tiers. Objects already met in the run come last, so nothing
    repeats while the pools last.
 4. **The fall.** Duration is `5200 ms + 250 ms per tier`, ×1.35 if borderline,
-   ×1.25 if the answer is not at the place the belt shows. Tap the object to
-   examine it (costs 15 % of the fall) or take it apart; tap elsewhere to drop
-   it at once.
+   ×1.25 if the answer is not at the place the belt shows. Drag the belt or
+   tap a container to bring it under the frame. Tap the object to examine it
+   (costs 15 % of the fall) or take it apart; swipe down — from anywhere, the
+   object included — to drop it at once. On a touch screen a tap on empty space
+   does nothing, so a stray touch while aiming cannot throw the object away;
+   with a mouse a click beside the object still drops it.
 5. **Taking apart.** The object breaks, the parts spread out with their names,
    the first falls on from the same height, the others follow from the top.
 6. **Release.** The answer is fixed the instant the object is let go — the

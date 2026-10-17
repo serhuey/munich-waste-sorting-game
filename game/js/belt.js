@@ -189,22 +189,35 @@ export class Belt {
   }
 
   _bindPointer() {
-    let dragging = false, startX = 0, startOffset = 0;
+    let dragging = false, startX = 0, startOffset = 0, moved = false, tapped = null;
     this.belt.addEventListener('pointerdown', e => {
       if (this.locked) return;
       cancelAnimationFrame(this.anim);
       this.glides++;
-      dragging = true; startX = e.clientX; startOffset = this.offset;
-      this.belt.setPointerCapture(e.pointerId);
+      dragging = true; moved = false; startX = e.clientX; startOffset = this.offset;
+      // Remembered now: with the pointer captured, the release reports the belt
+      // as its target, not the container under the finger.
+      const bin = e.target.closest && e.target.closest('.bin');
+      tapped = bin ? bin.dataset.container : null;
+      try { this.belt.setPointerCapture(e.pointerId); } catch (err) { /* no active pointer */ }
     });
     this.belt.addEventListener('pointermove', e => {
       if (!dragging) return;
+      if (Math.abs(e.clientX - startX) > 6) moved = true;
       this.offset = startOffset + (e.clientX - startX);
       this.render();
     });
-    const end = () => { if (dragging) { dragging = false; this.snap(); } };
-    this.belt.addEventListener('pointerup', end);
-    this.belt.addEventListener('pointercancel', end);
+    // A drag moves the belt by hand; a tap on a container brings that container
+    // under the frame — on a phone that is quicker than dragging to it.
+    const end = cancelled => {
+      if (!dragging) return;
+      dragging = false;
+      const i = !moved && !cancelled && tapped ? this.strip.findIndex(c => c.id === tapped) : -1;
+      if (i >= 0) this.glideTo(this.offsetFor(i), 200);
+      else this.snap();
+    };
+    this.belt.addEventListener('pointerup', () => end(false));
+    this.belt.addEventListener('pointercancel', () => end(true));
 
     // ResizeObserver rather than window.resize: the belt also changes width when
     // the pane around it does, and the aim frame must keep pointing at the same
