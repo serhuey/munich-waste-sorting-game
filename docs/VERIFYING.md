@@ -94,6 +94,14 @@ deposit on single-use drinks packaging is now **VerpackDG § 46**. New drafts ci
 the new norms. Signed items that still cite `VerpackG § 31` need a person to
 re-read the new paragraph and re-sign; the build cannot see a dead link.
 
+## Everything else that needs a signature
+
+`tools/verify_ui.py` lists drafts on the left and, under **Прочее**, the
+signatures that are not drafts: the composition of places in
+`data/places.json`, items already in the game that gained an unsigned source,
+the finale and the 2027 notice. Each shows what the signature confirms, links
+the source and writes the name and date into the same fields the build checks.
+
 ## Drafts written by machine
 
 A draft with `"_drafted_by": "claude"` was written from the lexicon snapshot,

@@ -81,6 +81,7 @@ def state():
         "queue": queue,
         "in_game": len([f for f in os.listdir(ITEMS) if f.endswith(".json")
                         and not f.startswith("_")]) if os.path.isdir(ITEMS) else 0,
+        "other": [{"id": e["id"], "title": e["title"], "signed": e["signed"]} for e in other_entries()],
         "today": datetime.date.today().isoformat(),
         "fatal": fatal,
     }
@@ -94,6 +95,190 @@ def promote(item_id):
     os.makedirs(ITEMS, exist_ok=True)
     shutil.move(draft_path(item_id), os.path.join(ITEMS, item_id + ".json"))
     return {"ok": True}
+
+
+# ----------------------------------------------------------------- «Прочее»
+# Подписи вне очереди черновиков: состав мест, предметы в игре с новым
+# неподписанным источником, финал, сообщения о 2027 годе. Каждый пункт — файл и
+# список «слотов» подписи внутри него; форма показывает, что именно человек
+# подтверждает, и записывает имя и дату в те же поля, что проверяет сборка.
+
+PLACES_FILE = os.path.join(REPO, "data", "places.json")
+FINALE_FILE = os.path.join(REPO, "data", "finale", "christbaum.json")
+NOTICES_FILE = os.path.join(REPO, "data", "notices.json")
+
+
+def _write_json(path, data):
+    fd, tmp = tempfile.mkstemp(dir=os.path.dirname(path), suffix=".tmp")
+    with os.fdopen(fd, "w", encoding="utf-8") as f:
+        json.dump(data, f, ensure_ascii=False, indent=2)
+        f.write("\n")
+    os.replace(tmp, path)
+
+
+def _de(m):
+    return (m or {}).get("de") or (m or {}).get("en") or ""
+
+
+def _container_names():
+    places = bd.load_json(PLACES_FILE)["places"]
+    return {c["id"]: _de(c["labels"]) for p in places for c in p["containers"]}
+
+
+def _dests(holder, names):
+    out = []
+    for d in holder.get("destinations") or []:
+        d = d if isinstance(d, dict) else {"id": d}
+        tail = (" до %s" % d["until"]) if d.get("until") else (" с %s" % d["from"]) if d.get("from") else ""
+        out.append(names.get(d["id"], d["id"]) + tail)
+    return ", ".join(out)
+
+
+def _window(w):
+    """Окно так, как его читает человек: последний день включительно."""
+    last = (bd.iso(w["until"]) - datetime.timedelta(days=1)).isoformat() if w.get("until") else "…"
+    return "%s – %s" % (w.get("from", "…"), last)
+
+
+def other_entries():
+    """Всё, что ждёт подписи вне data/drafts/: id, заголовок, файл, слоты."""
+    out = []
+    # состав мест — одна подпись, поле confirmed_by
+    src = bd.load_json(PLACES_FILE).get("_source") or {}
+    out.append({"id": "places", "title": "Места и контейнеры", "file": PLACES_FILE,
+                "slots": [["_source"]], "signed": bool((src.get("confirmed_by") or "").strip())})
+    # предметы в игре, у которых хоть один источник без подписи
+    for name in sorted(os.listdir(ITEMS)) if os.path.isdir(ITEMS) else []:
+        if not name.endswith(".json") or name.startswith("_"):
+            continue
+        raw = bd.load_json(os.path.join(ITEMS, name))
+        slots = [["source"]] + [["sources", i] for i in range(len(raw.get("sources") or []))]
+        unsigned = [sl for sl in slots if not (_at(raw, sl).get("verified_by") or "").strip()]
+        if unsigned:
+            out.append({"id": "item:" + raw["id"], "title": "В игре: " + _de(raw.get("labels")),
+                        "file": os.path.join(ITEMS, name), "slots": slots, "signed": False})
+    for path, title in ((FINALE_FILE, "Финал: ёлка"), (NOTICES_FILE, "Сообщение о 2027 годе")):
+        if not os.path.exists(path):
+            continue
+        raw = bd.load_json(path)
+        slots = ([["sources", i] for i in range(len(raw.get("sources") or []))]
+                 if path == FINALE_FILE else [["_source"]])
+        signed = all((_at(raw, sl).get("verified_by") or "").strip() for sl in slots)
+        out.append({"id": "finale" if path == FINALE_FILE else "notices", "title": title,
+                    "file": path, "slots": slots, "signed": signed})
+    return out
+
+
+def _at(raw, slot):
+    node = raw
+    for k in slot:
+        node = node[k]
+    return node
+
+
+def other_detail(entry_id):
+    entry = next((e for e in other_entries() if e["id"] == entry_id), None)
+    if entry is None:
+        return None
+    raw = bd.load_json(entry["file"])
+    names = _container_names()
+    summary, hints = [], []
+    if entry_id == "places":
+        hints.append(raw["_source"].get("note") or "")
+        for p in raw["places"]:
+            cs = ", ".join(_de(c["labels"]) + ((" с " + c["from"]) if c.get("from") else "")
+                           + ((" до " + c["until"]) if c.get("until") else "") for c in p["containers"])
+            summary.append("Тир %s · %s: %s" % (p["tier"], _de(p["labels"]), cs))
+    elif entry_id.startswith("item:"):
+        if raw.get("_changed_after_signature"):
+            hints.append(raw["_changed_after_signature"])
+        for v in raw["variants"]:
+            for h in (v.get("parts") or [v]):
+                label = _de(h.get("labels")) or _de(raw.get("labels"))
+                summary.append("%s → %s" % (label, _dests(h, names)))
+        summary.append("Пояснение: " + _de(raw.get("explanation")))
+    elif entry_id == "finale":
+        summary.append("Сезон " + raw.get("season", ""))
+        for r in raw["routes"]:
+            when = ("круглый год" if r.get("year_round") else "так нельзя" if r.get("illegal")
+                    else "; ".join(_window(w) for w in r.get("windows") or []))
+            summary.append("%s — %s. %s" % (_de(r["labels"]), when, _de(r.get("rule"))))
+        summary.append("Сцены: " + ", ".join(raw.get("scenes") or []))
+    elif entry_id == "notices":
+        for n in raw.get("intro") or []:
+            summary.append("Вступление %s: %s" % (_window(n), _de(n["text"])))
+        for n in raw.get("notices") or []:
+            summary.append("Сообщение %s: %s" % (_window(n), _de(n["text"])))
+    sources = []
+    for sl in entry["slots"]:
+        src = _at(raw, sl)
+        if entry_id == "places":
+            sources.append({"slot": sl, "authority": "page", "reference": "Состав мест и контейнеров",
+                            "url": src.get("url"), "verified_by": src.get("confirmed_by", ""),
+                            "verified_on": src.get("confirmed_on", "")})
+        else:
+            sources.append(dict(src, slot=sl))
+    return {"id": entry_id, "title": entry["title"], "summary": summary,
+            "hints": [h for h in hints if h], "sources": sources}
+
+
+def other_save(entry_id, body):
+    entry = next((e for e in other_entries() if e["id"] == entry_id), None)
+    if entry is None:
+        return {"ok": False, "problems": ["нет такого пункта"]}
+    if entry_id == "places":
+        # places.json набран руками — по контейнеру на строку. Перезапись через
+        # json.dump переформатировала бы весь файл ради двух полей, поэтому
+        # меняем только их, прямо в тексте.
+        s = (body.get("sources") or [{}])[0]
+        with open(PLACES_FILE, encoding="utf-8") as f:
+            text = f.read()
+        text = _set_field(text, "confirmed_by", s.get("verified_by", ""))
+        text = _set_field(text, "confirmed_on", s.get("verified_on", ""), after="confirmed_by")
+        json.loads(text)                      # не записываем то, что не разбирается
+        fd, tmp = tempfile.mkstemp(dir=os.path.dirname(PLACES_FILE), suffix=".tmp")
+        with os.fdopen(fd, "w", encoding="utf-8") as f:
+            f.write(text)
+        os.replace(tmp, PLACES_FILE)
+        return {"ok": True, "problems": other_problems(entry_id)}
+    raw = bd.load_json(entry["file"])
+    for s in body.get("sources") or []:
+        src = _at(raw, s["slot"])
+        src["verified_by"], src["verified_on"] = s.get("verified_by", ""), s.get("verified_on", "")
+    _write_json(entry["file"], raw)
+    return {"ok": True, "problems": other_problems(entry_id)}
+
+
+def _set_field(text, key, value, after=None):
+    import re
+    line = re.compile(r'("%s"\s*:\s*)"[^"]*"' % key)
+    if line.search(text):
+        return line.sub(lambda m: m.group(1) + json.dumps(value, ensure_ascii=False), text, count=1)
+    anchor = re.compile(r'("%s"\s*:\s*"[^"]*")(,?)' % after)
+    m = anchor.search(text)
+    indent = text[text.rfind("\n", 0, m.start()) + 1:m.start()]
+    return text[:m.end(1)] + ',\n%s"%s": %s' % (indent, key, json.dumps(value, ensure_ascii=False)) + m.group(2) + text[m.end():]
+
+
+def other_problems(entry_id):
+    """То же, что скажет сборка: подписано ли, и не сломано ли что-то ещё."""
+    if entry_id == "places":
+        _, _, fatal = bd.load_places(REPO)
+        src = bd.load_json(PLACES_FILE).get("_source") or {}
+        return fatal + ([] if (src.get("confirmed_by") or "").strip() else ["не подтверждено"])
+    if entry_id.startswith("item:"):
+        item_id = entry_id[5:]
+        raw = bd.load_json(os.path.join(ITEMS, item_id + ".json"))
+        return validate(item_id, raw)
+    if entry_id == "finale":
+        data, problems = bd.load_finale(REPO)
+        raw = bd.load_json(FINALE_FILE)
+        return problems + ([] if bd.signed(raw.get("sources")) else ["есть неподписанный источник"])
+    if entry_id == "notices":
+        _, problems = bd.load_notices(REPO, datetime.date.today())
+        raw = bd.load_json(NOTICES_FILE)
+        return problems + ([] if bd.signed([raw.get("_source") or {}]) else ["источник не подписан"])
+    return []
 
 
 PAGE = r"""<!DOCTYPE html>
@@ -145,7 +330,8 @@ ul.problems{margin:8px 0 0;padding-left:18px;color:var(--bad);font-size:13px}
 a{color:var(--accent)}
 .empty{opacity:.6;padding:40px 0}
 </style></head><body>
-<aside><h1>Очередь <span id="counts"></span></h1><div id="queue"></div></aside>
+<aside><h1>Очередь <span id="counts"></span></h1><div id="queue"></div>
+<h1 style="margin-top:22px">Прочее</h1><div id="other"></div></aside>
 <main id="main"><div class="empty">Выберите предмет слева.</div></main>
 <script>
 let S = null, cur = null, draft = null;
@@ -175,7 +361,52 @@ const el = (t, a = {}, kids = []) => {
 
 async function boot() { S = await api('/api/state'); renderQueue(); }
 
+// «Прочее»: подписи вне очереди черновиков. Зелёная точка — всё подписано.
+function renderOther() {
+  const box = document.getElementById('other');
+  box.textContent = '';
+  for (const o of S.other || []) {
+    box.append(el('div', {
+      class: 'q' + (o.signed ? ' ready' : '') + ('other:' + o.id === cur ? ' active' : ''),
+      onclick: () => openOther(o.id)
+    }, [el('span', {class: 'dot'}), el('span', {}, o.title)]));
+  }
+}
+
+async function openOther(id) {
+  cur = 'other:' + id;
+  draft = null;
+  const d = await api('/api/other/' + id);
+  renderQueue();
+  const m = document.getElementById('main');
+  m.textContent = '';
+  m.append(el('h2', {}, d.title));
+  for (const h of d.hints) m.append(el('div', {class: 'hint'}, [el('b', {}, 'важно'), h]));
+  m.append(el('h3', {}, 'что вы подтверждаете'));
+  m.append(el('ul', {}, d.summary.map(line => el('li', {}, line))));
+  m.append(el('h3', {}, 'подпись'));
+  d.sources.forEach((src, i) => m.append(sourceBlock(src, d.sources.length > 1 ? 'источник ' + (i + 1) : 'источник', true)));
+  const msg = el('div', {class: 'msg', id: 'msg'});
+  m.append(el('div', {class: 'bar'}, [
+    el('button', {class: 'primary', onclick: async () => {
+      const r = await api('/api/other/' + id, {sources: d.sources.map(x => ({slot: x.slot, verified_by: x.verified_by || '', verified_on: x.verified_on || ''}))});
+      S = await api('/api/state'); renderQueue();
+      showProblems(r.problems);
+      flash(r.problems.length ? 'сохранено, но сборка ещё недовольна — смотрите ниже' : 'сохранено и подписано', r.problems.length > 0);
+    }}, 'сохранить подписи'), msg]));
+  m.append(el('div', {id: 'problems'}));
+  showProblems(d.problems);
+}
+
+function showProblems(list) {
+  const box = document.getElementById('problems');
+  box.textContent = '';
+  if (list.length) box.append(el('ul', {class: 'problems'}, list.map(p => el('li', {}, p))));
+  else box.append(el('div', {class: 'msg ok'}, 'проверку проходит'));
+}
+
 function renderQueue() {
+  renderOther();
   document.getElementById('counts').textContent = '· в игре ' + S.in_game;
   const q = document.getElementById('queue');
   q.textContent = '';
@@ -339,14 +570,14 @@ function variantBlock(v, i) {
 const newPart = () => ({id: '', labels: {de: '', en: ''}, destinations: []});
 const newVariant = () => ({id: '', kind: 'simple', labels: {de: '', en: ''}, destinations: []});
 
-function sourceBlock(src, title) {
+function sourceBlock(src, title, rerender) {
   const b = el('div', {class: 'box'});
   b.append(el('h3', {}, title));
   if (src.authority === 'awm') {
     b.append(el('div', {class: 'hint'}, [el('b', {}, 'запись лексикона'), src.key || '']));
   } else {
     b.append(el('div', {class: 'hint'}, [
-      el('b', {}, src.authority === 'law' ? 'норма' : 'страница AWM'), src.reference || '']));
+      el('b', {}, src.authority === 'law' ? 'норма' : 'страница'), src.reference || '']));
   }
   b.append(el('div', {}, el('a', {href: src.url, target: '_blank'}, 'открыть источник ↗')));
   const name = el('input', {type: 'text', value: src.verified_by || '',
@@ -362,7 +593,8 @@ function sourceBlock(src, title) {
     src.verified_by = name.value || localStorage.getItem('who') || '';
     src.verified_on = S.today;
     if (!src.verified_by) { flash('впишите имя — подпись без имени бессмысленна', true); return; }
-    render();
+    if (rerender) { name.value = src.verified_by; when.value = src.verified_on; flash('подпись поставлена — не забудьте сохранить'); }
+    else render();
   }}, 'прочитал, подтверждаю'));
   return b;
 }
@@ -510,6 +742,12 @@ class Handler(BaseHTTPRequestHandler):
             return self._send(200, PAGE, "text/html; charset=utf-8")
         if self.path == "/api/state":
             return self._send(200, json.dumps(state(), ensure_ascii=False))
+        if self.path.startswith("/api/other/"):
+            d = other_detail(self.path[len("/api/other/"):])
+            if d is None:
+                return self._send(404, json.dumps({"error": "нет такого пункта"}))
+            d["problems"] = other_problems(d["id"])
+            return self._send(200, json.dumps(d, ensure_ascii=False))
         if self.path.startswith("/api/draft/"):
             item_id = self.path.rsplit("/", 1)[-1]
             if item_id not in draft_names():
@@ -518,6 +756,9 @@ class Handler(BaseHTTPRequestHandler):
         return self._send(404, json.dumps({"error": "not found"}))
 
     def do_POST(self):
+        if self.path.startswith("/api/other/"):
+            return self._send(200, json.dumps(other_save(self.path[len("/api/other/"):], self._json_body()),
+                                              ensure_ascii=False))
         item_id = self.path.rsplit("/", 1)[-1]
         if self.path.startswith("/api/draft/"):
             if item_id not in draft_names():
