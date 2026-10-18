@@ -106,18 +106,22 @@ img, canvas { image-rendering: pixelated; image-rendering: crisp-edges; }
 
 /* ------------------------------------------------------------------ belt */
 /* The aim frame is fixed and the belt travels under it. */
+/* Lighter than the rest of the chrome: the black residual bin and the brown
+   organic bin are drawn dark, and on a dark belt they sank into it at middling
+   phone brightness. On this grey the ink outline of every bin stands out
+   (contrast about 3.3 : 1, up from 1.5) and white labels keep 4.6 : 1. */
 #belt { flex: 0 0 auto; height: 164px; position: relative; overflow: hidden; touch-action: none;
   background:
-    repeating-linear-gradient(90deg, #262b3d 0 12px, #2d3346 12px 24px) bottom / 100% 14px no-repeat,
-    var(--slate); }
+    repeating-linear-gradient(90deg, #4f5d78 0 12px, #56647f 12px 24px) bottom / 100% 14px no-repeat,
+    #5f6f8c; }
 #belt::before { content: ''; position: absolute; left: 50%; top: 4px; bottom: 16px; width: 104px;
   transform: translateX(-50%); border: 3px solid var(--sun); pointer-events: none; z-index: 2;
   box-shadow: 0 0 0 2px var(--ink), inset 0 0 0 2px var(--ink); }
 #track { position: absolute; bottom: 16px; display: flex; align-items: flex-end; will-change: transform; }
 .group { display: flex; flex-direction: column; align-items: flex-start; }
-.group + .group { margin-left: 20px; padding-left: 20px; border-left: 3px dotted var(--grey); }
+.group + .group { margin-left: 20px; padding-left: 20px; border-left: 3px dotted var(--mist); }
 .group-label { font-size: 12px; letter-spacing: .08em; text-transform: uppercase; font-weight: 700;
-  color: var(--mist); margin: 0 0 3px 2px; white-space: nowrap; }
+  color: #e3eaf0; margin: 0 0 3px 2px; white-space: nowrap; }
 .bins { display: flex; gap: 6px; }
 .bin { position: relative; width: 98px; display: flex; flex-direction: column; align-items: center;
   text-align: center; transition: transform .12s; padding-top: 2px; }
