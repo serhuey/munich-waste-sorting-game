@@ -12,7 +12,7 @@ import * as finale from './finale.js';
 import { createI18n, preferredLanguage } from './i18n.js';
 import { payload, share } from './share.js';
 import { itemSprite, itemSpriteByKey, containerSprite, routeSprite, treeSprite, skylineSprite,
-         decorSprite, decorSize, setArt, img, pixelText } from './pixel.js';
+         decorSprite, decorSize, setArt, prefetchArt, img, pixelText } from './pixel.js';
 
 const el = id => document.getElementById(id);
 const make = (tag, cls, text) => {
@@ -63,6 +63,7 @@ async function boot() {
   i18n = createI18n(state.content.i18n, preferredLanguage(params.get('lang'), navigator.languages, langs));
   el('sky').src = skylineSprite();
   applyLanguage();
+  prefetchArt();
   if (params.has('finale')) return startFinale();
   if (startAt) { state.run = progress.createRun(startAt); return startTier(startAt); }
   showTitle();

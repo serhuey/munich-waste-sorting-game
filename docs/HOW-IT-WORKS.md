@@ -259,6 +259,26 @@ a rule:
   in a background tab used to keep one-pixel headings for the whole session.
 - **Reduced motion** skips the break-apart, the flight and the calendar tear.
 
+### Speed
+
+- **Sprites are painted on demand.** A sprite is a size and a recipe; its pixels
+  are computed the first time something shows it, and a hand-drawn file wins
+  before the recipe is touched. Painting all 158 at load used to take about
+  400 ms on a fast laptop — most of it a coded skyline the game never shows.
+  Loading the sprite module now takes about 7 ms.
+- **Shapes scan only their bounds.** Each shape tests the pixels inside its own
+  bounding box, not the whole canvas; painting every sprite at once dropped from
+  about 400 ms to about 120 ms, pixel-identical.
+- **Pictures are fetched ahead.** The hand-drawn files (about 50 KB in 84) are
+  requested in the background once the title is up, so an object's picture is
+  there when its card starts to fall.
+- **The module graph is declared up front.** `modulepreload` links let the
+  browser fetch all twelve modules at once instead of discovering them three
+  round trips deep.
+- **Frames do little.** During a fall a frame reads the field height and moves
+  one element. During a drag the belt moves its track and touches the
+  containers' classes only when the aimed container or the place changes.
+
 ### Accessibility
 
 Colour never carries meaning alone. Every container has its own drawing and its

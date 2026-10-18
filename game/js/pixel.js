@@ -46,9 +46,11 @@ export function setArt(list, version) {
   });
 }
 const drawn = (kind, key) => art.get(kind + '/' + key);
-const has = (kind, set, key) => !!(set[key] || drawn(kind, key));
+const has = (kind, set, key) => key in set || !!drawn(kind, key);
+// A hand-drawn file wins before the code is asked for anything, so a sprite it
+// replaces is never painted at all.
 function pick(kind, set, key, prefix) {
-  return drawn(kind, key) || (set[key] ? url(prefix + key, set[key]) : url('i:?', UNKNOWN));
+  return drawn(kind, key) || (key in set ? url(prefix + key, set[key]) : url('i:?', UNKNOWN));
 }
 
 // An object's picture: a part has its own, a variant has one only where the eye
@@ -70,6 +72,15 @@ const UNKNOWN = [
 export function itemSprite(item, variant, partId) {
   const key = itemKey(item, variant, partId);
   return key ? pick('items', ITEMS, key, 'i:') : url('i:?', UNKNOWN);
+}
+// Every hand-drawn file, fetched in the background once the game is up. They
+// are small (about 50 KB together) but many, and fetched on first sight each
+// one arrived after its card had started falling.
+export function prefetchArt() {
+  const urls = [...art.values()];
+  const go = () => urls.forEach(u => { const i = new Image(); i.decoding = 'async'; i.src = u; });
+  if (typeof requestIdleCallback === 'function') requestIdleCallback(go, { timeout: 1500 });
+  else setTimeout(go, 300);
 }
 export function itemSpriteByKey(key) { return pick('items', ITEMS, key, 'i:'); }
 export function containerSprite(id) { return pick('containers', CONTAINERS, id, 'c:'); }

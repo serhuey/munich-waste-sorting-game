@@ -57,17 +57,22 @@ class Painter {
 
   // Fill a shape given as a test on pixel centres. The shape's own rim is inked,
   // its inside lit from the top left — or, for cylinders, shaded across each row.
-  paint(test, ramp, o = {}) {
+  // box: the shape's bounds, when known. Only that part of the canvas is
+  // scanned — a small shape on the 320-pixel skyline would otherwise test every
+  // one of its thirty thousand pixels.
+  paint(test, ramp, o = {}, box = null) {
     const { w, h } = this;
+    const x0 = box ? Math.max(0, Math.floor(box[0]) - 1) : 0, x1 = box ? Math.min(w, Math.ceil(box[2]) + 1) : w;
+    const y0 = box ? Math.max(0, Math.floor(box[1]) - 1) : 0, y1 = box ? Math.min(h, Math.ceil(box[3]) + 1) : h;
     const m = new Uint8Array(w * h);
-    for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) if (test(x + 0.5, y + 0.5)) m[y * w + x] = 1;
+    for (let y = y0; y < y1; y++) for (let x = x0; x < x1; x++) if (test(x + 0.5, y + 0.5)) m[y * w + x] = 1;
     const at = (x, y) => this.in(x, y) && m[y * w + x] === 1;
     const ink = o.outline === false ? null : (o.ink || INK);
     const shade = o.shade || 'auto';
-    for (let y = 0; y < h; y++) {
+    for (let y = y0; y < y1; y++) {
       let lx = -1, rx = -1;
-      for (let x = 0; x < w; x++) if (at(x, y)) { if (lx < 0) lx = x; rx = x; }
-      for (let x = 0; x < w; x++) {
+      for (let x = x0; x < x1; x++) if (at(x, y)) { if (lx < 0) lx = x; rx = x; }
+      for (let x = x0; x < x1; x++) {
         if (!at(x, y)) continue;
         const edge = !at(x - 1, y) || !at(x + 1, y) || !at(x, y - 1) || !at(x, y + 1);
         if (edge && ink) { this.set(x, y, ink); continue; }
@@ -87,19 +92,24 @@ class Painter {
     }
     return this;
   }
-  rect(x, y, w, h, ramp, o) { return this.paint((a, b) => a >= x && a < x + w && b >= y && b < y + h, ramp, o); }
+  rect(x, y, w, h, ramp, o) { return this.paint((a, b) => a >= x && a < x + w && b >= y && b < y + h, ramp, o, [x, y, x + w, y + h]); }
   round(x, y, w, h, r, ramp, o) {
     return this.paint((a, b) => {
       if (a < x || a >= x + w || b < y || b >= y + h) return false;
       const cx = Math.min(Math.max(a, x + r), x + w - r), cy = Math.min(Math.max(b, y + r), y + h - r);
       return (a - cx) ** 2 + (b - cy) ** 2 <= r * r;
-    }, ramp, o);
+    }, ramp, o, [x, y, x + w, y + h]);
   }
-  ell(cx, cy, rx, ry, ramp, o) { return this.paint((a, b) => ((a - cx) / rx) ** 2 + ((b - cy) / ry) ** 2 <= 1, ramp, o); }
+  ell(cx, cy, rx, ry, ramp, o) {
+    return this.paint((a, b) => ((a - cx) / rx) ** 2 + ((b - cy) / ry) ** 2 <= 1, ramp, o, [cx - rx, cy - ry, cx + rx, cy + ry]);
+  }
   ring(cx, cy, r1, r2, ramp, o) {
-    return this.paint((a, b) => { const d = (a - cx) ** 2 + (b - cy) ** 2; return d <= r1 * r1 && d >= r2 * r2; }, ramp, o);
+    return this.paint((a, b) => { const d = (a - cx) ** 2 + (b - cy) ** 2; return d <= r1 * r1 && d >= r2 * r2; },
+                      ramp, o, [cx - r1, cy - r1, cx + r1, cy + r1]);
   }
   poly(pts, ramp, o) {
+    const xs = pts.map(p => p[0]), ys = pts.map(p => p[1]);
+    const box = [Math.min(...xs), Math.min(...ys), Math.max(...xs), Math.max(...ys)];
     return this.paint((a, b) => {
       let inside = false;
       for (let i = 0, j = pts.length - 1; i < pts.length; j = i++) {
@@ -107,7 +117,7 @@ class Painter {
         if ((yi > b) !== (yj > b) && a < (xj - xi) * (b - yi) / (yj - yi) + xi) inside = !inside;
       }
       return inside;
-    }, ramp, o);
+    }, ramp, o, box);
   }
   line(x0, y0, x1, y1, c, wd = 1) {
     const n = Math.max(Math.abs(x1 - x0), Math.abs(y1 - y0), 1);
@@ -123,10 +133,16 @@ class Painter {
   vl(x, y, n, c) { for (let i = 0; i < n; i++) this.set(x, y + i, c); return this; }
   dot(x, y, c) { this.set(x, y, c); return this; }
   clear(test) { for (let y = 0; y < this.h; y++) for (let x = 0; x < this.w; x++) if (test(x, y)) this.px[y * this.w + x] = null; return this; }
-  out() { return { w: this.w, h: this.h, px: this.px }; }
 }
 
-const draw = (w, h, fn) => { const p = new Painter(w, h); fn(p); return p.out(); };
+// A sprite is painted the first time its pixels are asked for, not when this
+// file loads. Most objects never need it — a hand-drawn file replaces them — and
+// painting all of them up front cost about 400 ms before the first frame on a
+// fast machine, most of it on a skyline the game never shows.
+const draw = (w, h, fn) => {
+  let px = null;
+  return { w, h, get px() { if (!px) { const p = new Painter(w, h); fn(p); px = p.px; } return px; } };
+};
 const item = fn => draw(32, 32, fn);
 
 // Textures that carry a colour for anyone who cannot see it (R12, AE11):

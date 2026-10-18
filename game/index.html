@@ -6,6 +6,20 @@
 <meta name="theme-color" content="#1a1c2c">
 <title>Münchner Mülltrennung</title>
 <link rel="stylesheet" href="css/game.css">
+<!-- The whole module graph up front: otherwise each module is found only after
+     the one importing it has arrived, three round trips deep on a phone. -->
+<link rel="modulepreload" href="js/main.js">
+<link rel="modulepreload" href="js/belt.js">
+<link rel="modulepreload" href="js/fall.js">
+<link rel="modulepreload" href="js/rules.js">
+<link rel="modulepreload" href="js/score.js">
+<link rel="modulepreload" href="js/explain.js">
+<link rel="modulepreload" href="js/progress.js">
+<link rel="modulepreload" href="js/finale.js">
+<link rel="modulepreload" href="js/i18n.js">
+<link rel="modulepreload" href="js/share.js">
+<link rel="modulepreload" href="js/pixel.js">
+<link rel="modulepreload" href="js/sprites.js">
 </head>
 <body>
 <div id="app">

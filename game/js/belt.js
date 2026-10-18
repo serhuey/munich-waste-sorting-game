@@ -91,6 +91,9 @@ export class Belt {
     });
     this.tabs.hidden = groups.length < 2;
     this.groups = groups;
+    this.bins = [...this.track.querySelectorAll('.bin')];
+    this._lastAimed = -1;
+    this._lastPlace = null;
     this.index = Math.max(0, this.centreOf(0));
     this.recentre(this.index);
     // Measuring before layout settles gives centres for a width the belt does not
@@ -122,15 +125,20 @@ export class Belt {
   activeIndex() { return nearestIndex(this.centers, this.centerX() - this.offset); }
   activeContainer() { return this.strip[this.activeIndex()]; }
 
+  // Runs every frame of a drag or a glide, so it touches the DOM only when the
+  // aimed container or the place actually changes.
   render() {
     this.track.style.transform = 'translateX(' + this.offset + 'px)';
-    const active = this.activeContainer();
-    [...this.track.querySelectorAll('.bin')].forEach((el, i) => {
-      el.classList.toggle('aimed', i === this.activeIndex());
-    });
+    const ai = this.activeIndex();
+    const active = this.strip[ai];
+    if (ai !== this._lastAimed) {
+      this._lastAimed = ai;
+      if (!this.bins || this.bins[0] && !this.bins[0].isConnected) this.bins = [...this.track.querySelectorAll('.bin')];
+      this.bins.forEach((el, i) => el.classList.toggle('aimed', i === ai));
+    }
     if (active) {
-      [...this.tabs.children].forEach((t, i) => t.classList.toggle('active', i === active.placeIndex));
       if (this._lastPlace !== active.placeId) {
+        [...this.tabs.children].forEach((t, i) => t.classList.toggle('active', i === active.placeIndex));
         this._lastPlace = active.placeId;
         this.onPlaceChange(active.placeId);
       }
