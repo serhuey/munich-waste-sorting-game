@@ -5,7 +5,6 @@ body{font:13px system-ui;margin:16px;background:#e9edf1;color:#222}
 .sheet{display:flex;flex-wrap:wrap;gap:10px}
 figure{margin:0;background:#fff;padding:6px;border-radius:6px;text-align:center;min-width:104px}
 figure.dark{background:#20242a;color:#ddd}
-figure.hand{outline:3px solid #f2bf0f}
 img,canvas{image-rendering:pixelated}
 figcaption{font-size:11px;word-break:break-all}
 h2{font-size:15px;margin:18px 0 8px}
@@ -14,36 +13,30 @@ h2{font-size:15px;margin:18px 0 8px}
 <label><input type="checkbox" id="g"> greyscale</label>
 <div id="out"></div>
 <script type="module">
-import * as S from '../js/sprites.js';
 import * as P from '../js/pixel.js';
 const out = document.getElementById('out');
-// Files drawn by hand (game/art/<kind>/) replace the drawings in code; the
-// sheet shows them in their place, marked, using the list the build wrote.
-let art = new Set();
-try { art = new Set((await (await fetch('../../dist/content.json', { cache: 'no-store' })).json()).art || []); } catch (e) {}
-const KIND = { Items: 'items', Containers: 'containers', Routes: 'routes', Decorations: 'decor', Tree: 'scenery', Skyline: 'scenery' };
-function section(title, set, scale) {
-  const h = document.createElement('h2'); h.textContent = title + ' (' + Object.keys(set).length + ')'; out.append(h);
+// Every picture is a file in game/art/<kind>/; the build lists them with their
+// sizes, and this sheet shows that list.
+let art = {};
+try { art = (await (await fetch('../../dist/content.json', { cache: 'no-store' })).json()).art || {}; } catch (e) {}
+const TITLES = { items: ['Items', 3], containers: ['Containers', 2], routes: ['Routes', 2], decor: ['Decorations', 4], scenery: ['Scenery', 2] };
+for (const [kind, [title, scale]] of Object.entries(TITLES)) {
+  const files = Object.entries(art).filter(([f]) => f.startsWith(kind + '/'));
+  const h = document.createElement('h2'); h.textContent = title + ' (' + files.length + ')'; out.append(h);
   const sheet = document.createElement('div'); sheet.className = 'sheet'; out.append(sheet);
-  for (const [id, rows] of Object.entries(set)) {
+  for (const [file, [w, hgt]] of files) {
     const f = document.createElement('figure');
-    const c = P.draw(rows, scale);
-    const file = KIND[title] + '/' + (id === 'sky' ? 'skyline' : id).replace(/:/g, '--') + '.png';
-    if (art.has(file)) {
-      const im = document.createElement('img');
-      im.src = '../art/' + file; im.width = c.width; im.height = c.height;
-      f.append(im); f.classList.add('hand');
-    } else f.append(c);
-    const cap = document.createElement('figcaption'); cap.textContent = (art.has(file) ? '✎ ' : '') + id; f.append(cap);
+    const im = document.createElement('img');
+    im.src = '../art/' + file; im.width = w * scale; im.height = hgt * scale;
+    const cap = document.createElement('figcaption');
+    cap.textContent = file.slice(kind.length + 1, -4).replace(/--/g, ':');
+    f.append(im, cap);
     sheet.append(f);
   }
 }
-section('Items', S.ITEMS, 3);
-section('Containers', S.CONTAINERS, 2);
-section('Routes', S.ROUTES, 2);
-section('Tree', { tree: S.TREE }, 2);
-section('Decorations', S.DECOR, 4);
-section('Skyline', { sky: S.SKYLINE }, 2);
+if (!Object.keys(art).length) out.append('No dist/content.json — run python3 tools/build_data.py first.');
+const fb = document.createElement('h2'); fb.textContent = 'Fallback for a missing file'; out.append(fb);
+out.append(P.draw(['................', '...kkkkkkkkkk...', '..kTTTTTTTTTTk..', '..ktttttttttTk..', '..knnnnnnnnnnk..', '...kkkkkkkkkk...'], 4));
 const h = document.createElement('h2'); h.textContent = 'Type'; out.append(h);
 out.append(P.pixelText('Münchner Mülltrennung 2026', { scale: 3, shadow: '#94b0c2' }));
 out.append(document.createElement('br'));

@@ -1,94 +1,84 @@
-// Turning palette grids into pictures, and text into pixel type. Everything is
-// drawn once into a canvas and cached as a data URL; the browser scales it with
-// nearest-neighbour (image-rendering: pixelated), so a 16-pixel sprite stays
-// crisp at any size.
+// Pictures and pixel type. Every picture is a PNG in game/art/<kind>/ — drawn
+// by hand, edited in place, the only source the game reads. The browser scales
+// it with nearest-neighbour (image-rendering: pixelated), so a 32-pixel sprite
+// stays crisp at any size.
 
-import { ITEMS, CONTAINERS, ROUTES, DECOR, TREE, SKYLINE } from './sprites.js';
-
-const cache = new Map();
-
-// A sprite is { w, h, px } with one colour (or null) per pixel; the fallback box
-// below is still written as rows of letters, which this also reads.
+// A sprite given as rows of letters, painted into a canvas. Only the fallback
+// box below still lives as letters, and the sprite sheet uses this to show it.
 const LETTERS = { k: '#1a1c2c', T: '#f0d2a2', t: '#d09a5c', n: '#9a6038' };
-export function draw(sprite, scale = 1) {
-  const s = Array.isArray(sprite)
-    ? { w: sprite[0].length, h: sprite.length, px: sprite.join('').split('').map(ch => ch === '.' ? null : LETTERS[ch] || '#f0f') }
-    : sprite;
+export function draw(rows, scale = 1) {
+  const w = rows[0].length, h = rows.length;
   const canvas = document.createElement('canvas');
-  canvas.width = s.w * scale; canvas.height = s.h * scale;
+  canvas.width = w * scale; canvas.height = h * scale;
   const ctx = canvas.getContext('2d');
-  s.px.forEach((c, i) => {
-    if (!c) return;
-    ctx.fillStyle = c;
-    ctx.fillRect((i % s.w) * scale, Math.floor(i / s.w) * scale, scale, scale);
+  rows.join('').split('').forEach((ch, i) => {
+    if (ch === '.') return;
+    ctx.fillStyle = LETTERS[ch] || '#f0f';
+    ctx.fillRect((i % w) * scale, Math.floor(i / w) * scale, scale, scale);
   });
   return canvas;
 }
 
-function url(key, rows) {
-  if (!cache.has(key)) cache.set(key, draw(rows).toDataURL());
-  return cache.get(key);
-}
-
-// Hand-drawn files win over drawings in code. The build lists what lies in
-// game/art/<kind>/ so the game never asks for a file that is not there; a part
-// is written with a double dash in the file name, because a colon is not a
-// thing to put in a Mac file name.
-const art = new Map();
-export function setArt(list, version) {
-  art.clear();
-  // The build's version on every address, so a redrawn picture is fetched anew
-  // rather than served from yesterday's cache.
-  const tag = version ? '?v=' + version : '';
-  (list || []).forEach(file => {
-    const [kind, name] = file.split('/');
-    art.set(kind + '/' + name.replace(/\.png$/, '').replace(/--/g, ':'), 'art/' + file + tag);
-  });
-}
-const drawn = (kind, key) => art.get(kind + '/' + key);
-const has = (kind, set, key) => key in set || !!drawn(kind, key);
-// A hand-drawn file wins before the code is asked for anything, so a sprite it
-// replaces is never painted at all.
-function pick(kind, set, key, prefix) {
-  return drawn(kind, key) || (key in set ? url(prefix + key, set[key]) : url('i:?', UNKNOWN));
-}
-
-// An object's picture: a part has its own, a variant has one only where the eye
-// is the honest cue, and an object nobody drew falls back to a plain box rather
-// than to nothing. A variant or a part can be drawn by hand without any code.
-export function itemKey(item, variant, partId) {
-  if (partId && has('items', ITEMS, item.id + ':' + partId)) return item.id + ':' + partId;
-  if (variant && has('items', ITEMS, item.id + '.' + variant.id)) return item.id + '.' + variant.id;
-  return has('items', ITEMS, item.id) ? item.id : null;
-}
-
+// What a missing file shows: a plain box rather than nothing. The terminal tests
+// refuse a release where any object in data would come to this.
 const UNKNOWN = [
   '................', '................', '...kkkkkkkkkk...', '..kTTTTTTTTTTk..',
   '..kTkkkkkkkkTk..', '..kTTTTTTTTTTk..', '..ktttttttttTk..', '..ktttttttttTk..',
   '..ktttkkktttTk..', '..ktttttttttTk..', '..ktttttttttTk..', '..knnnnnnnnnnk..',
   '...kkkkkkkkkk...', '................', '................', '................',
 ];
+let unknown = null;
+const fallback = () => unknown || (unknown = draw(UNKNOWN).toDataURL());
 
+// The build lists what lies in game/art/<kind>/, with each file's size, so the
+// game never asks for a file that is not there and can lay a picture out before
+// it arrives. A part is written with a double dash in the file name, because a
+// colon is not a thing to put in a Mac file name.
+const art = new Map();
+const sizes = new Map();
+export function setArt(list, version) {
+  art.clear(); sizes.clear();
+  // The build's version on every address, so a redrawn picture is fetched anew
+  // rather than served from yesterday's cache.
+  const tag = version ? '?v=' + version : '';
+  Object.entries(list || {}).forEach(([file, size]) => {
+    const [kind, name] = file.split('/');
+    const key = kind + '/' + name.replace(/\.png$/, '').replace(/--/g, ':');
+    art.set(key, 'art/' + file + tag);
+    sizes.set(key, { w: size[0], h: size[1] });
+  });
+}
+const pick = (kind, key) => art.get(kind + '/' + key) || fallback();
+const has = key => art.has('items/' + key);
+
+// An object's picture: a part has its own, a variant has one only where the eye
+// is the honest cue — green glass looks green before anyone reads a label — and
+// otherwise the object's own picture stands for all its versions.
+export function itemKey(item, variant, partId) {
+  if (partId && has(item.id + ':' + partId)) return item.id + ':' + partId;
+  if (variant && has(item.id + '.' + variant.id)) return item.id + '.' + variant.id;
+  return has(item.id) ? item.id : null;
+}
 export function itemSprite(item, variant, partId) {
   const key = itemKey(item, variant, partId);
-  return key ? pick('items', ITEMS, key, 'i:') : url('i:?', UNKNOWN);
+  return key ? pick('items', key) : fallback();
 }
-// Every hand-drawn file, fetched in the background once the game is up. They
-// are small (about 50 KB together) but many, and fetched on first sight each
-// one arrived after its card had started falling.
+// Every file, fetched in the background once the game is up. They are small
+// (about 100 KB together) but many, and fetched on first sight each one arrived
+// after its card had started falling.
 export function prefetchArt() {
   const urls = [...art.values()];
   const go = () => urls.forEach(u => { const i = new Image(); i.decoding = 'async'; i.src = u; });
   if (typeof requestIdleCallback === 'function') requestIdleCallback(go, { timeout: 1500 });
   else setTimeout(go, 300);
 }
-export function itemSpriteByKey(key) { return pick('items', ITEMS, key, 'i:'); }
-export function containerSprite(id) { return pick('containers', CONTAINERS, id, 'c:'); }
-export function routeSprite(id) { return pick('routes', ROUTES, id, 'r:'); }
-export function decorSprite(id) { return pick('decor', DECOR, id, 'd:'); }
-export function decorSize(id) { const s = DECOR[id] || DECOR.kugel; return { w: s.w, h: s.h }; }
-export function treeSprite() { return pick('scenery', { tree: TREE }, 'tree', 's:'); }
-export function skylineSprite() { return pick('scenery', { skyline: SKYLINE }, 'skyline', 's:'); }
+export function itemSpriteByKey(key) { return pick('items', key); }
+export function containerSprite(id) { return pick('containers', id); }
+export function routeSprite(id) { return pick('routes', id); }
+export function decorSprite(id) { return pick('decor', id); }
+export function decorSize(id) { return sizes.get('decor/' + id) || { w: 16, h: 16 }; }
+export function treeSprite() { return pick('scenery', 'tree'); }
+export function skylineSprite() { return pick('scenery', 'skyline'); }
 
 export function img(src, cls, alt = '') {
   const el = document.createElement('img');

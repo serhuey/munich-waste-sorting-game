@@ -1,8 +1,12 @@
-// Pixel art for every object on the belt and every container under it. Objects
-// are 32×32, containers 48×48. Each picture is painted from a few shapes by a
-// tiny rasteriser — fill, a one-pixel ink outline, light from the top left, and
-// a cylinder ramp for bottles and cans — so a hundred sprites stay one coherent
-// style and the whole game's art is this one file. No request leaves the page.
+// Sketches: the code that painted the first version of every picture. The game
+// never reads this file — its art is the PNGs in game/art/, edited by hand.
+// tools/sketch_art.mjs paints a sketch from here only for something that has no
+// file yet, as a first draft to redraw; after that the file is the picture and
+// this drawing is history.
+//
+// Each sketch is a few shapes through a tiny rasteriser — fill, a one-pixel ink
+// outline, light from the top left, and a cylinder ramp for bottles and cans.
+// Objects are 32×32, containers 48×48.
 //
 // A sprite never gives away what the object's label decides: a deposit can and
 // a deposit-free can share one picture, because telling them apart is what

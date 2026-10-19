@@ -287,7 +287,7 @@ function hintFor(round) {
 
 // A variant has its own drawing only where the eye is the honest cue — green
 // glass looks green before anyone reads a label — so the drawing is shown from
-// the start; objects whose label decides share one picture (see sprites.js).
+// the start; objects whose label decides share one picture (see pixel.js).
 function spriteFor(item, variant, examined, partId) {
   return itemSprite(item, variant, partId);
 }

@@ -64,7 +64,7 @@ docs/SPEC.md          the requirements: what the product must do and why
 docs/HOW-IT-WORKS.md  how the system works, end to end
 docs/plans/           dated working history of the specification, RU and EN
 data/                 places, items, drafts, interface strings, the finale, the 2027 notice
-game/                 the engine: plain ES modules, pixel art in game/js/sprites.js
+game/                 the engine: plain ES modules, every picture a PNG in game/art/
 prototype/            playable spike of the first two places, open the HTML in a browser
 tools/                Abfalllexikon snapshot and diff, the build gate, the verification form
 ```
@@ -115,28 +115,30 @@ node game/test/run.mjs
 
 ## Drawing by hand
 
-Every picture is drawn in code (`game/js/sprites.js`), and any of them can be
-redrawn by hand in a pixel editor:
+Every picture is a PNG in `game/art/<kind>/` — the only source the game reads.
+Open one in Pixelorama, draw, save it in place (at 100 %), rebuild:
 
 ```bash
-node tools/export_art.mjs      # every sprite as a 1× PNG in art/originals/, the palette in art/palette.gpl
-node tools/collect_art.mjs     # copy what you redrew into game/art/, where it replaces the code
 python3 tools/build_data.py --fixtures
 ```
 
-Open any file in `art/originals/<kind>/` in Pixelorama, draw over it and save
-it in place — export at 100 %, keep the size: objects 32×32, containers and
-routes 48×48, the tree 64×88, the skyline 320×96. `collect_art` compares every
-file with the drawing in code pixel by pixel, so a file the editor merely
-re-saved is left alone, and copies the ones you changed into
-`game/art/<kind>/`, which is what the game reads and what is committed.
-`export_art` never overwrites a file you edited unless given `--force`.
+Keep the size: objects 32×32, containers and routes 48×48; decorations, the
+tree (64×88) and the skyline (320×96) as they are. A part is named with a double
+dash, `pizzakarton--reste.png`, a variant with a dot, `glasflasche.gruen.png`;
+a variant or a part without its own file shows the object's picture.
 
-A part is named with a double dash, `pizzakarton--reste.png`, a variant with a
-dot, `glasflasche.gruen.png`. `game/test/sprites.html` outlines hand-drawn
-sprites in yellow, and `node game/test/run.mjs` refuses a file in `game/art/`
-whose name matches no sprite or whose size is wrong. Import `art/palette.gpl`
-into Pixelorama to draw with the colours already in use.
+A new object gets a first draft painted in code:
+
+```bash
+node tools/sketch_art.mjs    # a PNG for anything with a sketch and no file; rebuilds art/palette.gpl
+```
+
+It never overwrites a file, and names every object in data that has neither a
+file nor a sketch in `tools/sketches.mjs`. `node game/test/run.mjs` refuses a
+release where something in data has no picture, a file whose name matches
+nothing in data, and a file of the wrong size. `game/test/sprites.html` shows
+every picture on one sheet. Import `art/palette.gpl` into Pixelorama to draw with
+the colours already in use.
 
 Further handles: `?finale=1` goes straight to the tree, `?lang=en` picks a
 language, `?slow=4` stretches every fall.

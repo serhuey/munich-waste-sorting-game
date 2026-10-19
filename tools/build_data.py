@@ -178,16 +178,31 @@ def stamp(text, version):
     return ASSET.sub(lambda m: m.group(1) + m.group(2) + "?v=" + version + m.group(3), text)
 
 
+def png_size(path):
+    """Ширина и высота из заголовка PNG — больше сборке ничего не нужно."""
+    import struct
+    with open(path, "rb") as f:
+        head = f.read(24)
+    if head[:8] != b"\x89PNG\r\n\x1a\n":
+        return None
+    return list(struct.unpack(">II", head[16:24]))
+
+
 def list_art(repo):
-    """Рисунки от руки: game/art/<вид>/<имя>.png заменяют нарисованное кодом.
-    Список нужен игре, чтобы не запрашивать файлы, которых нет."""
+    """Все картинки игры: game/art/<вид>/<имя>.png, с размером каждой.
+    Список нужен игре, чтобы не запрашивать файлы, которых нет, а размер — чтобы
+    разложить картинку на экране до того, как она загрузится."""
     base = os.path.join(repo, "game", "art")
-    out = []
+    out = {}
     if os.path.isdir(base):
         for kind in sorted(os.listdir(base)):
             d = os.path.join(base, kind)
             if os.path.isdir(d):
-                out += ["%s/%s" % (kind, f) for f in sorted(os.listdir(d)) if f.endswith(".png")]
+                for f in sorted(os.listdir(d)):
+                    if f.endswith(".png"):
+                        size = png_size(os.path.join(d, f))
+                        if size:
+                            out["%s/%s" % (kind, f)] = size
     return out
 
 
@@ -714,6 +729,13 @@ def main():
                     continue
                 files.append(os.path.join(base, name))
         version = version_of(sorted(files))
+        # Папки движка собираются заново: файл, удалённый из game/, иначе так и
+        # лежал бы в dist/ и уехал бы на сервер. Юридические страницы лежат в
+        # корне dist/, рядом, и их это не касается.
+        for name in os.listdir(game):
+            stale = os.path.join(out_dir, name)
+            if name != "test" and os.path.isdir(os.path.join(game, name)) and os.path.isdir(stale):
+                shutil.rmtree(stale)
         copied = 0
         for src in files:
             dst = os.path.join(out_dir, os.path.relpath(src, game))

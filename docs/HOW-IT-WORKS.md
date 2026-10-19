@@ -53,10 +53,10 @@ ships.
 | `data/finale/christbaum.json` | The Christmas-tree finale: routes, dates, decorations |
 | `data/notices.json` | The intro text and the 1 January 2027 transition notice, each with a window |
 | `data/i18n/<lang>.json` | Interface strings, one file per language |
-| `game/` | The engine: `index.html`, `css/game.css`, `js/*.js`, hand-drawn `art/` |
+| `game/` | The engine: `index.html`, `css/game.css`, `js/*.js`, every picture in `art/` |
 | `game/test/` | Engine tests (browser page and terminal runner), the sprite sheet |
 | `tools/` | The build gate, the verification form, lexicon snapshots, art tools, a dev server |
-| `art/` | Exported sprites to draw over (`originals/`, not committed) and the palette |
+| `art/` | The palette for the pixel editor (`palette.gpl`) |
 | `legal/` | Impressum and privacy templates, filled at build time from a git-ignored file |
 | `docs/` | The spec, verification guide, deployment notes, this file, dated plans |
 
@@ -175,7 +175,7 @@ stays on the test build with a warning that it will not ship.
 
 The build writes `dist/content.json` and copies the engine next to it. On the
 way it computes a hash of the engine and the art and stamps it on every module
-import, the script and style links, and every hand-drawn picture's address. A
+import, the script and style links, and every picture's address. A
 browser can therefore never mix yesterday's `fall.js` with today's `main.js`.
 
 ---
@@ -194,8 +194,7 @@ browser can therefore never mix yesterday's `fall.js` with today's `main.js`.
 | `finale.js` | Routes, windows and verdicts for the tree |
 | `i18n.js` | Language choice and string lookup |
 | `share.js` | The result to forward, stripped of anything identifying |
-| `sprites.js` | Every picture, painted in code |
-| `pixel.js` | Turns sprites into images, prefers hand-drawn files, sets pixel type |
+| `pixel.js` | Finds each picture in `game/art/`, lays it out by its size, sets pixel type |
 
 `rules`, `progress`, `score`, `explain`, `finale`, `i18n` and `share` have no
 DOM and no clock of their own; they are tested as plain functions.
@@ -261,19 +260,14 @@ a rule:
 
 ### Speed
 
-- **Sprites are painted on demand.** A sprite is a size and a recipe; its pixels
-  are computed the first time something shows it, and a hand-drawn file wins
-  before the recipe is touched. Painting all 158 at load used to take about
-  400 ms on a fast laptop — most of it a coded skyline the game never shows.
-  Loading the sprite module now takes about 7 ms.
-- **Shapes scan only their bounds.** Each shape tests the pixels inside its own
-  bounding box, not the whole canvas; painting every sprite at once dropped from
-  about 400 ms to about 120 ms, pixel-identical.
-- **Pictures are fetched ahead.** The hand-drawn files (about 50 KB in 84) are
+- **No picture is painted at load.** Every picture is a file; nothing is
+  computed in the browser. Painting all sprites in code at load once took about
+  400 ms on a fast laptop.
+- **Pictures are fetched ahead.** The files (about 70 KB in 161) are
   requested in the background once the title is up, so an object's picture is
   there when its card starts to fall.
 - **The module graph is declared up front.** `modulepreload` links let the
-  browser fetch all twelve modules at once instead of discovering them three
+  browser fetch all eleven modules at once instead of discovering them three
   round trips deep.
 - **Frames do little.** During a fall a frame reads the field height and moves
   one element. During a drag the belt moves its track and touches the
@@ -292,27 +286,34 @@ belt, Tab or 1–5 jump to a place, ↑ looks, Space drops.
 
 ## 6. The art
 
-Every picture is painted in `game/js/sprites.js` by a small rasteriser: shapes
-(rectangles, ellipses, polygons) with a one-pixel ink outline, light from the
-top left, and a cylinder ramp for bottles and cans. Objects are 32×32,
-containers and routes 48×48, the tree 64×88, the skyline 320×96.
+Every picture is a PNG in `game/art/<kind>/` — `items`, `containers`, `routes`,
+`decor`, `scenery` — and the game reads nothing else. Objects are 32×32,
+containers and routes 48×48, the tree 64×88, the skyline 320×96. The files are
+edited in place in a pixel editor; a rebuild picks them up.
 
-Any of them can be replaced by a PNG drawn by hand:
+The build lists every file with its width and height in `content.json`. The
+game asks only for files on that list, lays a picture out by its size before it
+has arrived, and stamps each address with the build version, so a redrawn file
+is never served from yesterday's cache. A part (`pizzakarton--reste.png`) or a
+variant (`glasflasche.gruen.png`) has its own picture where a file exists, and
+shows the object's picture otherwise.
+
+A new object starts from a sketch:
 
 ```bash
-node tools/export_art.mjs     # every sprite as a 1× PNG in art/originals/, palette in art/palette.gpl
-#   … redraw files in art/originals/ in any pixel editor, save in place …
-node tools/collect_art.mjs    # copies what changed into game/art/
-python3 tools/build_data.py --fixtures
+node tools/sketch_art.mjs    # a PNG for anything with a sketch and no file; rebuilds art/palette.gpl
 ```
 
-`collect_art` compares pixels, not bytes, because an editor re-encodes whatever
-it saves. `export_art` never overwrites a file someone has drawn on. A hand-drawn
-file wins over the code; a variant (`glasflasche.gruen.png`) or a part
-(`pizzakarton--reste.png`) can be drawn even where the code has no drawing. The
-terminal tests refuse a file whose name matches nothing or whose size is wrong.
-`game/test/sprites.html` shows every sprite, hand-drawn ones outlined in yellow,
-with a greyscale switch.
+`tools/sketches.mjs` is the code that painted the first version of every
+picture — shapes with a one-pixel ink outline, light from the top left, and a
+cylinder ramp for bottles and cans. The game never imports it; `sketch_art`
+paints from it only where `game/art/` has no file, and never overwrites one.
+Once a file exists, the file is the picture.
+
+The terminal tests refuse a release in which an object, container, route or
+decoration in data has no file, a file whose name matches nothing in data, and a
+file of the wrong size. `game/test/sprites.html` shows every picture on one
+sheet, with a greyscale switch.
 
 ---
 
@@ -339,7 +340,7 @@ procedure is in [`VERIFYING.md`](VERIFYING.md).
 
 ```bash
 python3 tools/build_data.py --fixtures && python3 tools/serve.py    # http://127.0.0.1:8799
-node game/test/run.mjs                 # engine tests + art coverage + hand-drawn file checks
+node game/test/run.mjs                 # engine tests + a picture for everything, names and sizes
 python3 tools/test_build_data.py       # the build gate
 ```
 
