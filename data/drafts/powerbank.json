@@ -1,0 +1,84 @@
+{
+  "_todo": [
+    "это черновик, написанный машиной (Claude); человек его не сверял",
+    "открыть Anwendungshilfe stiftung ear (стр. 1 — «Powerbank mit Zusatzfunktionen», стр. 2 — «Powerbank ohne Zusatzfunktion»)",
+    "проверить destinations обоих вариантов, пояснения и labels",
+    "поставить verified_by и verified_on во всех трёх источниках",
+    "перенести: python3 tools/drafts.py promote powerbank"
+  ],
+  "_drafted_by": "claude",
+  "_note_ru": "В лексиконе AWM пауэрбанка нет. Граница по stiftung ear: пауэрбанк без дополнительных функций — это батарея (только Batterierecht, не ElektroG), даже с индикатором заряда и несколькими разъёмами; с лампой, радио, солнечной панелью, беспроводной зарядкой, розеткой — ещё и электроприбор (ElektroG). Отсюда два варианта: простой — в батарейки, с фонариком — в электролом. Магазинный возврат: BattDG § 14 для батарей, ElektroG § 17 для приборов до 25 см.",
+  "id": "powerbank",
+  "tier": 2,
+  "attrs": [
+    "examine",
+    "borderline"
+  ],
+  "labels": {
+    "de": "Powerbank",
+    "en": "Power bank"
+  },
+  "source": {
+    "authority": "page",
+    "reference": "stiftung ear: Batterie oder Elektrogerät? Eine Anwendungshilfe (Powerbank ohne und mit Zusatzfunktion)",
+    "url": "https://www.stiftung-ear.de/fileadmin/redakteur/downloads/Anwendungshilfe_Batterie-o-Elektrogeraet.pdf",
+    "verified_by": "",
+    "verified_on": ""
+  },
+  "variants": [
+    {
+      "id": "einfach",
+      "kind": "simple",
+      "labels": {
+        "de": "Nur Akku, USB-Anschlüsse",
+        "en": "Just a battery, USB ports"
+      },
+      "destinations": [
+        "batteriebox",
+        "batterien",
+        "giftmobil"
+      ],
+      "explanation": {
+        "de": "Eine Powerbank ohne Extras ist rechtlich eine Batterie – auch mit Ladeanzeige und mehreren Anschlüssen. Sie kommt in die Batteriebox im Laden.",
+        "en": "A power bank with no extras is legally a battery – even with a charge display and several ports. It goes in the battery box at the shop."
+      }
+    },
+    {
+      "id": "mit_lampe",
+      "kind": "simple",
+      "labels": {
+        "de": "Mit Taschenlampe",
+        "en": "With a torch"
+      },
+      "destinations": [
+        "elektro_ruecknahme",
+        "elektroschrott"
+      ],
+      "explanation": {
+        "de": "Mit Lampe, Radio oder Solarpanel ist die Powerbank auch ein Elektrogerät. Sie kommt zur Elektro-Rücknahme im Laden oder zum Elektroschrott am Wertstoffhof.",
+        "en": "With a lamp, radio or solar panel the power bank is an electrical device too. It goes to the electronics take-back at the shop or the e-waste at the recycling centre."
+      }
+    }
+  ],
+  "explanation": {
+    "de": "In den Restmüll darf sie nie – der Lithium-Akku kann brennen. Ob Batterie oder Elektrogerät, entscheiden die Extras.",
+    "en": "Never in the residual bin – the lithium cell can catch fire. Whether it counts as a battery or an electrical device depends on the extras."
+  },
+  "sources": [
+    {
+      "authority": "law",
+      "reference": "BattDG § 14",
+      "url": "https://www.gesetze-im-internet.de/battdg/__14.html",
+      "verified_by": "",
+      "verified_on": ""
+    },
+    {
+      "authority": "law",
+      "reference": "ElektroG § 17",
+      "url": "https://www.gesetze-im-internet.de/elektrog_2015/__17.html",
+      "verified_by": "",
+      "verified_on": ""
+    }
+  ],
+  "_hint": "три источника: stiftung ear (граница батарея/прибор), BattDG § 14 (возврат батарей) и ElektroG § 17 (возврат приборов) — каждый подписывается отдельно"
+}

@@ -56,7 +56,7 @@
         "glas_gruen"
       ],
       "explanation": {
-        "de": "Grünes Glas in den Grünglas-Container.",
+        "de": "Grünes Glas kommt in den Grünglas-Container.",
         "en": "Green glass goes in the green-glass container."
       }
     },
@@ -71,7 +71,7 @@
         "glas_braun"
       ],
       "explanation": {
-        "de": "Braunes Glas in den Braunglas-Container.",
+        "de": "Braunes Glas kommt in den Braunglas-Container.",
         "en": "Brown glass goes in the brown-glass container."
       }
     },

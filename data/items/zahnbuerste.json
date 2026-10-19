@@ -41,8 +41,8 @@
     }
   ],
   "explanation": {
-    "de": "Wechsle deine Zahnbürste öfter — sonst sammeln sich darauf so viele Bakterien, dass sie sich fast lebendig anfühlt. Trotzdem: Restmüll, nicht Biotonne.",
-    "en": "Change your toothbrush more often — otherwise so many bacteria build up on it that it almost feels alive. Even so: Restmüll, not Biotonne."
+    "de": "Wechsle deine Zahnbürste öfter – sonst sammeln sich darauf so viele Bakterien, dass sie sich fast lebendig anfühlt. Trotzdem: Restmüll, nicht Biotonne.",
+    "en": "Change your toothbrush more often – otherwise so many bacteria build up on it that it almost feels alive. Even so: residual bin, not organic bin."
   },
   "_destinations_proposed": "подставлено машиной из снимка; подтвердить, открыв source.url"
 }

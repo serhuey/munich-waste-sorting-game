@@ -48,8 +48,8 @@
         }
       ],
       "explanation": {
-        "de": "Aluminium ist Metall.",
-        "en": "Aluminium is metal."
+        "de": "Aluminium ist Metall – ab in den Metall-Container.",
+        "en": "Aluminium is metal – into the metal container."
       }
     },
     {
@@ -70,8 +70,8 @@
         }
       ],
       "explanation": {
-        "de": "Kunststoffkapseln gehören zum Kunststoff.",
-        "en": "Plastic capsules belong with the plastic."
+        "de": "Kunststoffkapseln kommen in den Kunststoff-Container.",
+        "en": "Plastic capsules go in the plastic container."
       }
     }
   ],

@@ -72,8 +72,8 @@
             "elektroschrott"
           ],
           "explanation": {
-            "de": "Das leere Gerät ist Elektroschrott unter 25 cm.",
-            "en": "The empty device is e-waste under 25 cm."
+            "de": "Das leere Gerät ist Elektroschrott. Es ist kleiner als 25 cm, also nimmt es auch der Elektrohandel zurück.",
+            "en": "The empty device is e-waste. It is under 25 cm, so electronics shops take it back too."
           }
         }
       ]

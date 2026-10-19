@@ -1,0 +1,77 @@
+{
+  "_todo": [
+    "это черновик, написанный машиной (Claude); человек его не сверял",
+    "открыть обе записи лексикона (Batterien, Knopfzellen и Akkus) и закон",
+    "проверить destinations, пояснения и labels",
+    "поставить verified_by и verified_on во всех трёх источниках",
+    "перенести: python3 tools/drafts.py promote lithiumbatterie"
+  ],
+  "_awm_term": "Batterien, Knopfzellen",
+  "_awm_tip": null,
+  "_awm_notes": {
+    "problemabfall": "Sie können beim Giftmobil Abfälle mit problematischen Inhaltsstoffen kostenlos abgeben."
+  },
+  "id": "lithiumbatterie",
+  "tier": 2,
+  "attrs": [
+    "examine"
+  ],
+  "labels": {
+    "de": "Lithiumbatterie",
+    "en": "Lithium battery"
+  },
+  "source": {
+    "authority": "awm",
+    "key": "batterien-knopfzellen",
+    "url": "https://www.awm-muenchen.de/abfall-entsorgen/abfalllexikon/detailansicht-lexikoneintrag/batterien-knopfzellen",
+    "destinations_at_verification": [
+      "wertstoffhof",
+      "problemabfall"
+    ],
+    "verified_by": "",
+    "verified_on": ""
+  },
+  "variants": [
+    {
+      "id": "lithium",
+      "kind": "simple",
+      "labels": {
+        "de": "Lithium · Pole abkleben!",
+        "en": "Lithium · tape the poles!"
+      },
+      "destinations": [
+        "batteriebox",
+        "batterien",
+        "giftmobil"
+      ]
+    }
+  ],
+  "explanation": {
+    "de": "Lithiumbatterien entzünden sich leicht. Kleb deshalb die Pole mit Klebeband ab oder steck die Batterie zurück in ihre Verpackung – dann ab in die Sammelbox im Laden.",
+    "en": "Lithium batteries catch fire easily. So tape over the poles or put the battery back in its packaging – then into the collection box at the shop."
+  },
+  "sources": [
+    {
+      "authority": "awm",
+      "key": "akkus",
+      "url": "https://www.awm-muenchen.de/abfall-entsorgen/abfalllexikon/detailansicht-lexikoneintrag/akkus",
+      "destinations_at_verification": [
+        "wertstoffhof",
+        "problemabfall",
+        "wertstoffmobil"
+      ],
+      "verified_by": "",
+      "verified_on": ""
+    },
+    {
+      "authority": "law",
+      "reference": "BattDG § 14",
+      "url": "https://www.gesetze-im-internet.de/battdg/__14.html",
+      "verified_by": "",
+      "verified_on": ""
+    }
+  ],
+  "_hint": "три источника: запись Batterien (куда), запись Akkus (скотч на полюса) и закон (возврат в магазин) — каждый подписывается отдельно",
+  "_drafted_by": "claude",
+  "_note_ru": "Литиевая батарейка — обычная Gerätebatterie (запись Batterien, Knopfzellen прямо называет Lithium). Предупреждение про скотч взято из записи Akkus, блок Hinweise: «Lithiumbatterien bitte vor Entsorgung wieder in eine Verpackung geben oder vorsorglich die Batteriepole mit Klebestreifen isolieren, da sie leicht entzündlich sind.» Поэтому источников три. Надпись варианта видна только после осмотра — так игрок ещё раз встречает предупреждение."
+}

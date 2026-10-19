@@ -74,8 +74,8 @@
     }
   ],
   "strip_reason": {
-    "de": "Bäume mit Kugeln, Lametta und Kerzenhaltern lassen sich nicht kompostieren. Abgegeben wird nur der nackte Baum – ohne Schmuck und ohne Plastik.",
-    "en": "Trees with baubles, tinsel and candle holders cannot be composted. Only the bare tree is accepted – no decorations and no plastic."
+    "de": "Mit Kugeln, Lametta und Kerzenhaltern lässt sich ein Baum nicht kompostieren. Abgeben darfst du nur den nackten Baum – ohne Schmuck und ohne Plastik.",
+    "en": "With baubles, tinsel and candle holders a tree can’t be composted. You may only hand in the bare tree – no decorations and no plastic."
   },
   "scenes": [
     "2026-01-08",
@@ -107,7 +107,7 @@
         "en": "Tree collection point"
       },
       "rule": {
-        "de": "Die öffentlichen Sammelstellen gibt es nur im Januar und Anfang Februar – dann rund um die Uhr. Nur unzerkleinerte, ganz abgeschmückte Bäume.",
+        "de": "Die öffentlichen Sammelstellen gibt es nur im Januar und Anfang Februar – dann rund um die Uhr. Angenommen werden nur ganze, komplett abgeschmückte Bäume.",
         "en": "The public collection points exist only in January and early February – then around the clock. Whole, fully stripped trees only."
       }
     },
@@ -140,8 +140,8 @@
         "en": "Roadside or woods"
       },
       "rule": {
-        "de": "Christbäume dürfen ausschließlich an den ausgewiesenen Stellen abgegeben werden. Alles andere gilt als illegale Müllablagerung und kann ein Bußgeldverfahren nach sich ziehen.",
-        "en": "Trees may only be left at the designated places. Anything else counts as illegal dumping and can lead to fine proceedings."
+        "de": "Christbäume darfst du nur an den offiziellen Stellen abgeben. Alles andere ist wilde Müllablagerung – dafür droht ein Bußgeldverfahren.",
+        "en": "You may only leave trees at the official places. Anything else is illegal dumping – and can lead to fine proceedings."
       }
     }
   ]

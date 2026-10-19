@@ -42,8 +42,8 @@
     }
   ],
   "explanation": {
-    "de": "Rauchen ist tödlich! Wirf deine Packung weg. Aber wenn sie noch voll ist, wirf sie nicht hier hinein. Wirf die Zigaretten zuerst in die „Restmülltonne“.",
-    "en": "Smoking kills! Throw away your packet. But if it’s full, don’t put it here. First, throw the cigarettes into the ‘Restmülltonne’."
+    "de": "Rauchen ist tödlich – also weg mit der Packung: Die leere Schachtel gehört in die Papiertonne. Ist sie noch voll, kommen die Zigaretten vorher in den Restmüll.",
+    "en": "Smoking kills – so out with the pack: the empty packet goes in the paper bin. If it’s still full, the cigarettes go in the residual bin first."
   },
   "_destinations_proposed": "подставлено машиной из снимка; подтвердить, открыв source.url; не отображены: wertstoffhof"
 }

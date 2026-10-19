@@ -55,8 +55,8 @@
             }
           ],
           "explanation": {
-            "de": "Der leere Becher ist Kunststoff. Ab 2027 kommt er in die Gelbe Tonne.",
-            "en": "The empty pot is plastic. From 2027 it goes in the yellow bin."
+            "de": "Der leere Becher ist Kunststoff: in den Kunststoff-Container, ab 2027 in die Gelbe Tonne.",
+            "en": "The empty pot is plastic: into the plastic container, from 2027 into the yellow bin."
           }
         },
         {
@@ -76,8 +76,8 @@
             }
           ],
           "explanation": {
-            "de": "Der Deckel ist Aluminium – also Metall. Ab 2027 ebenfalls in die Gelbe Tonne.",
-            "en": "The lid is aluminium – so metal. From 2027 it also goes in the yellow bin."
+            "de": "Der Deckel ist Aluminium, also Metall: in den Metall-Container, ab 2027 ebenfalls in die Gelbe Tonne.",
+            "en": "The lid is aluminium, so metal: into the metal container, from 2027 into the yellow bin as well."
           }
         }
       ]

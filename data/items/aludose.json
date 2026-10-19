@@ -34,8 +34,8 @@
       "id": "einwegpfand_0_25",
       "kind": "simple",
       "labels": {
-        "de": "Einwegpfand 0,25€",
-        "en": "Disposable deposit €0.25"
+        "de": "Einwegpfand 0,25 €",
+        "en": "Single-use deposit €0.25"
       },
       "destinations": [
         "pfandautomat"
@@ -63,14 +63,14 @@
         }
       ],
       "explanation": {
-        "de": "Dosen ohne Pfandzeichen oder mit der Aufschrift „Pfandfrei“ wirfst du in den Metall-Container auf der Wertstoffinsel. Ab 2027 wandert sie mit dem Metall in die Gelbe Tonne.",
-        "en": "A can without the deposit mark, or marked ‘Pfandfrei’, goes into the metal container at the Wertstoffinsel. From 2027 it moves, with the metal, into the yellow bin."
+        "de": "Dosen ohne Pfandzeichen oder mit der Aufschrift „Pfandfrei“ wirfst du in den Metall-Container auf der Wertstoffinsel. Ab 2027 kommen sie mit dem übrigen Metall in die Gelbe Tonne.",
+        "en": "A can without the deposit mark, or marked ‘Pfandfrei’, goes into the metal container at the recycling island. From 2027 it goes, with the rest of the metal, into the yellow bin."
       }
     }
   ],
   "explanation": {
-    "de": "Entscheidend ist das DPG-Pfandlogo auf der Dose — nicht das Material.",
-    "en": "What decides is the DPG deposit logo on the can — not the material."
+    "de": "Entscheidend ist das DPG-Pfandlogo auf der Dose – nicht das Material.",
+    "en": "What decides is the DPG deposit logo on the can – not the material."
   },
   "sources": [
     {

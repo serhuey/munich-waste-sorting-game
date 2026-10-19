@@ -299,6 +299,22 @@ const S = {
   // tier 2 ------------------------------------------------------------------
   batterien: item(p => { battery(p, 6, R.yellow, 'plus'); battery(p, 18, R.yellow, 'plus'); }),
   akkus: item(p => { battery(p, 6, R.green, 'bolt'); battery(p, 18, R.green, 'bolt'); }),
+  // One fat cell with a strip of tape across its plus pole — the warning the
+  // examine label repeats.
+  lithiumbatterie: item(p => {
+    p.rect(13, 4, 6, 3, R.steel);
+    p.round(10, 6, 12, 24, 2, R.steel, { shade: 'cyl' });
+    p.rect(10, 12, 12, 11, R.purple, { shade: 'cyl' });
+    p.vl(13, 14, 4, '#ffffff').hl(13, 17, 3, '#ffffff');
+    p.dot(18, 13, '#ffffff').vl(18, 15, 3, '#ffffff');
+    p.poly([[7, 3], [25, 6], [24, 10], [6, 7]], R.duvet, { shade: 'flat' });
+  }),
+  powerbank: item(p => {
+    p.round(8, 3, 16, 27, 3, R.ink);
+    p.rect(13, 3, 6, 2, R.grey.l, { outline: false });
+    for (let i = 0; i < 4; i++) p.rect(11 + i * 3, 22, 2, 2, i < 3 ? R.sky : R.grey, { outline: false, shade: 'flat' });
+    p.vl(10, 7, 12, R.ink.l);
+  }),
   ladekabel: item(p => {
     p.rect(13, 0, 2, 4, R.steel, { outline: false });
     p.rect(17, 0, 2, 4, R.steel, { outline: false });
@@ -603,6 +619,13 @@ S['glasflasche.weiss'] = item(p => bottle(p, R.clear));
 S['glasflasche.gruen'] = item(p => bottle(p, R.gglass, 'diag'));
 S['glasflasche.braun'] = item(p => bottle(p, R.bglass, 'dots'));
 S['glasflasche.blau'] = item(p => bottle(p, R.blglass, 'bars'));
+S['powerbank.mit_lampe'] = item(p => {
+  p.round(8, 7, 16, 23, 3, R.ink);
+  p.round(10, 1, 12, 7, 2, R.yellow, { shade: 'cyl' });
+  p.ell(16, 4, 3, 2, R.white, { outline: false, shade: 'flat' });
+  for (let i = 0; i < 4; i++) p.rect(11 + i * 3, 24, 2, 2, i < 3 ? R.sky : R.grey, { outline: false, shade: 'flat' });
+  p.vl(10, 10, 11, R.ink.l);
+});
 
 // Parts are drawn as what they are once separated.
 S['fernbedienung:batterien'] = S.batterien;

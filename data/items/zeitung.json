@@ -42,8 +42,8 @@
     }
   ],
   "explanation": {
-    "de": "Liest du noch gedruckte Zeitungen? Dann bist du wahrscheinlich Deutscher.",
-    "en": "Do you still read printed newspapers? You are probably German."
+    "de": "Zeitungen und Zeitschriften kommen in die Papiertonne. Liest du sie noch gedruckt? Dann bist du wohl schon ziemlich deutsch.",
+    "en": "Newspapers and magazines go in the paper bin. Still reading them in print? Then you’re probably quite German already."
   },
   "_destinations_proposed": "подставлено машиной из снимка; подтвердить, открыв source.url; не отображены: wertstoffhof"
 }

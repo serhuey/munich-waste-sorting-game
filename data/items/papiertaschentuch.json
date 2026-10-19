@@ -41,8 +41,8 @@
     }
   ],
   "explanation": {
-    "de": "War es neu? Das ist schade, aber es gehört trotzdem hierher und nicht in die „Papiertonne“.",
-    "en": "Was it new? That’s a shame, but it still belongs here, not in the ‘Papiertonne’."
+    "de": "War es noch neu? Schade – trotzdem gehört es in den Restmüll, nicht in die Papiertonne.",
+    "en": "Was it still new? Shame – it still goes in the residual bin, not the paper bin."
   },
   "_destinations_proposed": "подставлено машиной из снимка; подтвердить, открыв source.url"
 }
