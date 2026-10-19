@@ -28,8 +28,8 @@
       "wertstoffhof",
       "problemabfall"
     ],
-    "verified_by": "",
-    "verified_on": ""
+    "verified_by": "Sergei Grieg",
+    "verified_on": "2026-10-19"
   },
   "variants": [
     {
@@ -60,15 +60,15 @@
         "problemabfall",
         "wertstoffmobil"
       ],
-      "verified_by": "",
-      "verified_on": ""
+      "verified_by": "Sergei Grieg",
+      "verified_on": "2026-10-19"
     },
     {
       "authority": "law",
       "reference": "BattDG § 14",
       "url": "https://www.gesetze-im-internet.de/battdg/__14.html",
-      "verified_by": "",
-      "verified_on": ""
+      "verified_by": "Sergei Grieg",
+      "verified_on": "2026-10-19"
     }
   ],
   "_hint": "три источника: запись Batterien (куда), запись Akkus (скотч на полюса) и закон (возврат в магазин) — каждый подписывается отдельно",

@@ -22,8 +22,8 @@
     "authority": "page",
     "reference": "stiftung ear: Batterie oder Elektrogerät? Eine Anwendungshilfe (Powerbank ohne und mit Zusatzfunktion)",
     "url": "https://www.stiftung-ear.de/fileadmin/redakteur/downloads/Anwendungshilfe_Batterie-o-Elektrogeraet.pdf",
-    "verified_by": "",
-    "verified_on": ""
+    "verified_by": "Sergei Grieg",
+    "verified_on": "2026-10-19"
   },
   "variants": [
     {
@@ -69,15 +69,15 @@
       "authority": "law",
       "reference": "BattDG § 14",
       "url": "https://www.gesetze-im-internet.de/battdg/__14.html",
-      "verified_by": "",
-      "verified_on": ""
+      "verified_by": "Sergei Grieg",
+      "verified_on": "2026-10-19"
     },
     {
       "authority": "law",
       "reference": "ElektroG § 17",
       "url": "https://www.gesetze-im-internet.de/elektrog_2015/__17.html",
-      "verified_by": "",
-      "verified_on": ""
+      "verified_by": "Sergei Grieg",
+      "verified_on": "2026-10-19"
     }
   ],
   "_hint": "три источника: stiftung ear (граница батарея/прибор), BattDG § 14 (возврат батарей) и ElektroG § 17 (возврат приборов) — каждый подписывается отдельно"
