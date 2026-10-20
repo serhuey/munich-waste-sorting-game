@@ -12,10 +12,14 @@ export function payload({ text, href }) {
 }
 
 // Web Share where the device has it, the clipboard otherwise. Returns what
-// happened so the button can say so.
-export async function share({ text, url }, nav = navigator) {
+// happened so the button can say so: 'image' when the picture went with it,
+// 'shared' when only the words did, then 'copied', 'aborted' or 'failed'.
+// nav.share is the first thing awaited: Safari allows it only while the tap
+// still counts, so the picture must be ready before the tap, never made after.
+export async function share({ text, url, files }, nav = navigator) {
   if (nav.share) {
-    try { await nav.share({ text, url }); return 'shared'; }
+    const withFiles = !!(files && files.length && nav.canShare && nav.canShare({ files }));
+    try { await nav.share(withFiles ? { files, text, url } : { text, url }); return withFiles ? 'image' : 'shared'; }
     catch (e) { if (e && e.name === 'AbortError') return 'aborted'; }
   }
   const line = text + ' ' + url;

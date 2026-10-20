@@ -214,6 +214,10 @@ img, canvas { image-rendering: pixelated; image-rendering: crisp-edges; }
 .end-tree { width: 96px; height: 132px; }
 .score { margin: 6px 0; }
 .end-buttons { display: flex; flex-direction: column; align-items: center; gap: 4px; margin-bottom: 12px; }
+/* The result card, offered to save where no share sheet takes a picture. It is
+   drawn at 1080 wide; shown smaller it stays sharp, being pixels on pixels. */
+.card-offer { margin: 4px auto 14px; display: flex; flex-direction: column; align-items: center; gap: 10px; }
+.card-preview { width: min(240px, 70vw); height: auto; border: 3px solid var(--ink); box-shadow: 4px 4px 0 var(--ink); }
 
 /* --------------------------------------------------------------- finale */
 /* The tear-off calendar. Two sheets of paper stacked behind the top one give it

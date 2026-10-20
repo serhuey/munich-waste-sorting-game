@@ -10,6 +10,7 @@ import * as progress from '../js/progress.js';
 import * as finale from '../js/finale.js';
 import { createI18n, preferredLanguage } from '../js/i18n.js';
 import { bareUrl, payload, share } from '../js/share.js';
+import { rankKey } from '../js/card.js';
 
 const results = [];
 const eq = (a, b) => JSON.stringify(a) === JSON.stringify(b);
@@ -480,6 +481,28 @@ test('without a share sheet the result goes to the clipboard', async () => {
   const nav = { clipboard: { writeText: async s => { copied = s; } } };
   same(await share({ text: 'a', url: 'b' }, nav), 'copied');
   same(copied, 'a b');
+});
+
+test('the picture goes with the words where the share sheet takes a file', async () => {
+  let sent = null;
+  const files = ['card.png'];
+  const nav = { canShare: d => !!d.files, share: async d => { sent = d; } };
+  same(await share({ text: 'a', url: 'b', files }, nav), 'image');
+  same(sent, { files, text: 'a', url: 'b' });
+});
+
+test('a share sheet that takes no file still gets the words', async () => {
+  let sent = null;
+  const nav = { canShare: d => !d.files, share: async d => { sent = d; } };
+  same(await share({ text: 'a', url: 'b', files: ['card.png'] }, nav), 'shared');
+  same(sent, { text: 'a', url: 'b' });
+});
+
+test('a card ranks the share of right answers, not the points', () => {
+  same(rankKey(9, 10), 'card_rank_top');
+  same(rankKey(7, 10), 'card_rank_mid');
+  same(rankKey(6, 10), 'card_rank_low');
+  same(rankKey(0, 0), 'card_rank_low');
 });
 
 test('the first tier plays ten of its own objects', () => {

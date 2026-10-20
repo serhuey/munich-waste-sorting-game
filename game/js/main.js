@@ -11,6 +11,7 @@ import * as progress from './progress.js';
 import * as finale from './finale.js';
 import { createI18n, preferredLanguage } from './i18n.js';
 import { payload, share } from './share.js';
+import { renderCard, rankKey, CARD_FILE } from './card.js';
 import { itemSprite, itemSpriteByKey, containerSprite, routeSprite, treeSprite, skylineSprite,
          decorSprite, decorSize, setArt, prefetchArt, img, pixelText } from './pixel.js';
 
@@ -740,19 +741,49 @@ function showEnd() {
   screen.append(big, make('p', 'lead', t('end_line', { points, right: total.right, answered: total.answered })));
   if (state.reached) screen.append(make('p', 'intro', t('end_reached', { n: state.reached })));
 
+  // The picture is drawn as the screen opens, not on the tap: by the time a
+  // file is ready after a tap, Safari no longer lets the page share it.
+  const words = payload({ text: t('share_text', { points }), href: location.href });
+  let file = null;
+  const card = renderCard({
+    title: t('title'), rank: t(rankKey(total.right, total.answered)), points: t('points_short', { points }),
+    line: t('card_line', { right: total.right, answered: total.answered }),
+    question: t('card_question'), note: t('card_note'), address: new URL(words.url).host
+  }).then(blob => { file = new File([blob], CARD_FILE, { type: 'image/png' }); return blob; }, () => null);
+
   const shareBtn = make('button', 'pbtn big', t('share'));
   shareBtn.type = 'button';
+  const buttons = make('div', 'end-buttons');
   shareBtn.onclick = async () => {
-    const result = await share(payload({ text: t('share_text', { points }), href: location.href }));
+    const result = await share({ ...words, files: file && [file] });
     if (result === 'copied') shareBtn.textContent = t('shared');
+    // No share sheet that takes a file — a desktop, mostly: the words went
+    // out, the picture is offered to save by hand.
+    if (result === 'copied' || result === 'shared' || result === 'failed') offerCard(buttons, card, words.text);
   };
   const again = make('button', 'pbtn quiet', t('again'));
   again.type = 'button';
   again.onclick = () => { closeScreen(); startRun(); };
-  const buttons = make('div', 'end-buttons');
   buttons.append(shareBtn, again);
   screen.append(buttons, languageSwitch(showEnd), make('p', 'source', t('source_note')), creditLine());
   shareBtn.focus({ preventScroll: true });
+}
+
+// The card shown under the buttons, with a link that saves it. The address is
+// a blob: in this tab's memory — nothing is uploaded to make it.
+let cardUrl = null;
+async function offerCard(after, card, alt) {
+  const blob = await card;
+  if (!blob || after.nextElementSibling?.classList.contains('card-offer')) return;
+  if (cardUrl) URL.revokeObjectURL(cardUrl);
+  cardUrl = URL.createObjectURL(blob);
+  const box = make('figure', 'card-offer');
+  box.append(img(cardUrl, 'card-preview', alt));
+  const save = make('a', 'pbtn small', t('save_image'));
+  save.href = cardUrl;
+  save.download = CARD_FILE;
+  box.append(save);
+  after.after(box);
 }
 
 // ------------------------------------------------------------- overlays
