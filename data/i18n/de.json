@@ -82,5 +82,7 @@
   "touch_hint": "Band wischen oder Behälter antippen · Gegenstand antippen: ansehen oder zerlegen · nach unten wischen: fallen lassen",
   "finale_later": "{n} Tage später",
   "credit": "Gemacht von {name}",
+  "legal_imprint": "Impressum",
+  "legal_privacy": "Datenschutz",
   "examine_ok": "Verstanden"
 }

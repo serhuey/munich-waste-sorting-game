@@ -135,6 +135,9 @@ img, canvas { image-rendering: pixelated; image-rendering: crisp-edges; }
 #hud { flex: 0 0 auto; text-align: center; font-size: 12px; color: var(--mist); background: var(--ink);
   padding: 4px 12px 8px; pointer-events: none; }
 .key-hint { display: none; }
+/* The bar takes no taps, except on the two legal links. */
+.hud-legal { margin-left: 10px; pointer-events: auto; }
+.hud-legal a { color: inherit; }
 @media (hover: hover) and (pointer: fine) { .touch-hint { display: none; } .key-hint { display: inline; } }
 
 /* ---------------------------------------------------------------- panel */

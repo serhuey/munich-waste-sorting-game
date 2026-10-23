@@ -82,5 +82,7 @@
   "touch_hint": "Swipe the belt or tap a container · Tap the object: look or take apart · Swipe down: drop",
   "finale_later": "{n} days later",
   "credit": "Made by {name}",
+  "legal_imprint": "Legal notice",
+  "legal_privacy": "Privacy",
   "examine_ok": "Got it"
 }

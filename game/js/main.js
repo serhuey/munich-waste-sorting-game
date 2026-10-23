@@ -86,6 +86,7 @@ function applyLanguage() {
   el('lbl-left').textContent = t('hud_left');
   el('hint-touch').textContent = t('touch_hint');
   el('hint-keys').textContent = t('how_keys');
+  el('hud-legal').replaceChildren(...legalLinks());
 }
 
 function languageSwitch(after) {
@@ -141,8 +142,20 @@ function creditLine() {
   a.href = 'https://sergei-grieg.de';
   a.target = '_blank';
   a.rel = 'noopener';
-  p.append(before || '', a, after || '');
+  p.append(before || '', a, after || '', ' · ', ...legalLinks());
   return p;
+}
+
+// Impressum and Datenschutz, reachable from every screen (R26). They open in a
+// new tab: the run lives only in this page's memory and must survive a look at them.
+function legalLinks() {
+  return [['impressum.html', 'legal_imprint'], ['datenschutz.html', 'legal_privacy']].flatMap(([href, key], i) => {
+    const a = make('a', null, t(key));
+    a.href = href;
+    a.target = '_blank';
+    a.rel = 'noopener';
+    return i ? [' · ', a] : [a];
+  });
 }
 
 function currentIntro() {
@@ -683,7 +696,9 @@ function startFinale() {
       b.onclick = () => choose(r.id);
       routes.append(b);
     });
-    screen.append(routes, make('p', 'edition', t('finale_edition', { season: data.season })));
+    const legal = make('p', 'credit');
+    legal.append(...legalLinks());
+    screen.append(routes, make('p', 'edition', t('finale_edition', { season: data.season })), legal);
     const first = screen.querySelector('.decor, .route:not([disabled])');
     if (first) first.focus({ preventScroll: true });
   };
