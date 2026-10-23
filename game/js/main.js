@@ -11,7 +11,7 @@ import * as progress from './progress.js';
 import * as finale from './finale.js';
 import { createI18n, preferredLanguage } from './i18n.js';
 import { payload, share } from './share.js';
-import { renderCard, rankKey, CARD_FILE } from './card.js';
+import { renderCard, rankKey, CARD_FILE, PARADE } from './card.js';
 import { itemSprite, itemSpriteByKey, containerSprite, routeSprite, treeSprite, skylineSprite,
          decorSprite, decorSize, setArt, prefetchArt, img, pixelText } from './pixel.js';
 
@@ -160,7 +160,7 @@ function liveNotices() {
 function showTitle() {
   const screen = openScreen('title');
   const art = make('div', 'title-art');
-  ['bananenschalen', 'glasflasche.gruen', 'aludose', 'getraenkekarton', 'batterien'].forEach(k => {
+  PARADE.forEach(k => {
     art.append(img(itemSpriteByKey(k), 'title-sprite'));
   });
   if (state.content.fixture) screen.append(make('p', 'fixture-note', t('fixture_banner')));
