@@ -153,6 +153,13 @@ function creditLine() {
   return p;
 }
 
+// The release number (VERSION), so a player who reports a wrong answer can say
+// which game gave it. A stand built from drafts says so after the number.
+function releaseLine() {
+  const c = state.content;
+  return make('p', 'release', 'v' + (c.release || '?') + (c.fixture ? '-dev' : ''));
+}
+
 // Impressum and Datenschutz, reachable from every screen (R26). They open in a
 // new tab: the run lives only in this page's memory and must survive a look at them.
 function legalLinks() {
@@ -195,7 +202,7 @@ function showTitle() {
   const go = make('button', 'pbtn big', t('play'));
   go.type = 'button';
   go.onclick = () => { closeScreen(); startRun(); };
-  screen.append(how, languageSwitch(showTitle), go, make('p', 'source', t('source_note')), creditLine());
+  screen.append(how, languageSwitch(showTitle), go, make('p', 'source', t('source_note')), creditLine(), releaseLine());
   go.focus({ preventScroll: true });
   // The change message opens every session inside its window and is never
   // recorded as seen (R19): closing it is the only state, and it dies with the tab.

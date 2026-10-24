@@ -53,12 +53,13 @@ ships.
 | `data/finale/christbaum.json` | The Christmas-tree finale: routes, dates, decorations |
 | `data/notices.json` | The intro text and the 1 January 2027 transition notice, each with a window |
 | `data/i18n/<lang>.json` | Interface strings, one file per language |
-| `game/` | The engine: `index.html`, `css/game.css`, `js/*.js`, every picture in `art/` |
+| `game/` | The engine: `index.html`, `css/game.css`, `js/*.js`, every picture in `art/`; `manifest.webmanifest`, `sw.js` and `icons/` for the installed app |
 | `game/test/` | Engine tests (browser page and terminal runner), the sprite sheet |
 | `tools/` | The build gate, the verification form, lexicon snapshots, art tools, a dev server |
 | `art/` | The palette for the pixel editor (`palette.gpl`) |
 | `legal/` | Impressum and privacy templates, filled at build time from a git-ignored file |
-| `docs/` | The spec, verification guide, deployment notes, this file, dated plans |
+| `docs/` | The spec, verification guide, deployment and release notes, this file, dated plans |
+| `VERSION`, `CHANGELOG.md` | The release number shown on the title screen, and what each release changed |
 
 ---
 
@@ -166,7 +167,7 @@ What it refuses, item by item, with the reason printed:
   nested parts, missing languages.
 
 Fatal for the whole build: no places, a broken ladder, no snapshot, a language
-file out of step with German.
+file out of step with German, a `VERSION` that is not `MAJOR.MINOR.PATCH`.
 
 `--fixtures` relaxes exactly one thing — signatures — and marks everything it
 let through as `unverified`. A signed item that later gained an unsigned source
@@ -177,6 +178,12 @@ The build writes `dist/content.json` and copies the engine next to it. On the
 way it computes a hash of the engine and the art and stamps it on every module
 import, the script and style links, and every picture's address. A
 browser can therefore never mix yesterday's `fall.js` with today's `main.js`.
+The same fingerprint names the installed app's offline cache in `sw.js`.
+
+Two numbers end up in `content.json`, and they are not the same thing:
+`release` is `VERSION`, chosen by a person and shown to players; `version` is
+the fingerprint, changed by any file and shown to nobody. The rules for the
+first are in [`RELEASING.md`](RELEASING.md).
 
 ---
 
@@ -193,7 +200,8 @@ browser can therefore never mix yesterday's `fall.js` with today's `main.js`.
 | `belt.js` | The conveyor of containers and the place tabs |
 | `finale.js` | Routes, windows and verdicts for the tree |
 | `i18n.js` | Language choice and string lookup |
-| `share.js` | The result to forward, stripped of anything identifying |
+| `share.js` | The result to forward, stripped of anything identifying; the address as shown on the card |
+| `card.js` | The result as a picture, drawn on the device |
 | `pixel.js` | Finds each picture in `game/art/`, lays it out by its size, sets pixel type |
 
 `rules`, `progress`, `score`, `explain`, `finale`, `i18n` and `share` have no
@@ -202,7 +210,8 @@ DOM and no clock of their own; they are tested as plain functions.
 ### A run, step by step
 
 1. **Title.** Language from `?lang=`, then the browser, then German. The intro
-   text in force today. Inside the 2027 transition window, the notice.
+   text in force today. Inside the 2027 transition window, the notice. Under
+   the credits, the release number (`v1.0.0`, `v1.0.0-dev` on a test build).
 2. **Tier intro.** The new place's containers, drawn as they will stand. After
    "Los" the belt glides to them.
 3. **The round** (`rules.roundFor`). Tier one: ten of its own objects, the first
@@ -231,10 +240,30 @@ DOM and no clock of their own; they are tested as plain functions.
 10. **Finale.** Strip the tree, choose a route on two dates shown on a tear-off
     calendar: open route +150, a legal one closed that day −50, illegal −100.
 11. **Result.** Points, share button (the share sheet or the clipboard), the
-    bare address with any `?src=` removed.
+    bare address with any `?src=` removed. The share sheet also gets a picture
+    card (`card.js`), drawn on the device from the game's own sprites, with the
+    address the game was opened at — host and path, so `sergei-grieg.de/muell`
+    stays whole.
 
-Nothing is written to the device at any point: no cookies, no localStorage, no
-IndexedDB.
+In a browser tab nothing is written to the device at any point: no cookies, no
+localStorage, no IndexedDB, no Cache Storage.
+
+### The installed app
+
+`manifest.webmanifest` and the icons in `game/icons/` (drawn from the paper bin
+by `node tools/icons.mjs`) make the game installable — "Add to Home Screen" on
+iOS, "Install app" in Chrome; neither needs a service worker. Only when the game
+runs installed (`display-mode: standalone`) does it register `sw.js`, which
+copies the page, the engine, `content.json` and every picture into Cache
+Storage, so the app starts without a network. That copy is the one thing the
+game ever writes to a device, and it is written only because the player asked
+for the app; it holds the game's own files, the same for everyone, and nothing
+about the player (Datenschutz §2).
+
+The worker asks the network first and answers from the copy only when the
+network fails, so an online player always gets the current build and the day's
+rules. Each build is a new worker with a cache named by the fingerprint; the old
+cache is deleted when it takes over. Requests to `.php` pass through untouched.
 
 ### When the browser does not cooperate
 
@@ -267,7 +296,7 @@ a rule:
   requested in the background once the title is up, so an object's picture is
   there when its card starts to fall.
 - **The module graph is declared up front.** `modulepreload` links let the
-  browser fetch all eleven modules at once instead of discovering them three
+  browser fetch all twelve modules at once instead of discovering them three
   round trips deep.
 - **Frames do little.** During a fall a frame reads the field height and moves
   one element. During a drag the belt moves its track and touches the
@@ -366,8 +395,8 @@ With any handle present, the engine's parts are reachable from the console as
 ## 9. Shipping
 
 `tools/publish.py` copies a release build (never a test build) into the
-portfolio site's repository; committing and pushing it is a person's job. Still
-open before the game can go public: an aggregate counter that stores no
-identifiers, the Impressum and privacy pages (they need the operator's postal
-address), the deployment itself, and signatures on the content. See
-[`DEPLOY.md`](DEPLOY.md) and the plan's U12–U15.
+portfolio site's repository; committing and pushing it is a person's job. It
+refuses a changed build under the release number already live. The game is on
+internal test at `sergei-grieg.de/muell/` since release 1.0.0; the public
+subdomain and the launch posts are still to come. See [`DEPLOY.md`](DEPLOY.md)
+and [`RELEASING.md`](RELEASING.md).

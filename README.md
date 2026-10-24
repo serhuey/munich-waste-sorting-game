@@ -2,7 +2,7 @@
 
 A casual mobile-web game that teaches people arriving in Munich where household waste actually goes.
 
-**Status: pre-release.** The game is playable end to end: five tiers, 104 objects, the Christmas-tree finale, German and English, pixel art for every object and container. Every object, the places, the finale and the 2027 notice are signed by a person (17 October 2026), so the release build is the full game. What remains before publishing is the counter, the legal pages and the deployment.
+**Status: internal test, release 1.0.0.** The game is playable end to end at [sergei-grieg.de/muell](https://sergei-grieg.de/muell/): five tiers, 106 objects, the Christmas-tree finale, German and English, pixel art for every object and container, a picture card to share the result, and an installable app that plays offline. Every object, the places, the finale and the 2027 notice are signed by a person. The Impressum and Datenschutz are in place; there are no statistics. What remains before the public launch is the subdomain `muell.sergei-grieg.de` and the launch posts. What changed in each release: [`CHANGELOG.md`](CHANGELOG.md).
 
 ## Why
 
@@ -62,9 +62,13 @@ This project is not affiliated with or endorsed by AWM or the city of Munich. It
 ```
 docs/SPEC.md          the requirements: what the product must do and why
 docs/HOW-IT-WORKS.md  how the system works, end to end
+docs/DEPLOY.md        how a build reaches the site
+docs/RELEASING.md     release numbers: what moves which part, the steps of a release
 docs/plans/           dated working history of the specification, RU and EN
 data/                 places, items, drafts, interface strings, the finale, the 2027 notice
-game/                 the engine: plain ES modules, every picture a PNG in game/art/
+game/                 the engine: plain ES modules, every picture a PNG in game/art/, the app manifest and icons
+VERSION               the release number, shown on the title screen
+CHANGELOG.md          what each release changed for a player
 prototype/            playable spike of the first two places, open the HTML in a browser
 tools/                Abfalllexikon snapshot and diff, the build gate, the verification form
 ```
@@ -111,6 +115,28 @@ python3 -m http.server 8081
 open http://127.0.0.1:8081/game/test/belt.test.html
 open http://127.0.0.1:8081/game/test/sprites.html    # all pixel art on one sheet
 node game/test/run.mjs
+```
+
+## Versions
+
+The release number lives in `VERSION` and appears on the title screen as
+`v1.0.0`. It follows `MAJOR.MINOR.PATCH`: major when points stop being
+comparable with earlier versions, minor when the game gains something (objects,
+places, languages, features), patch when something is corrected. Numbering
+starts at 1.0.0, the build of 24 October 2026. Each published release is a git
+tag and a GitHub release; `tools/publish.py` refuses a changed build under a
+number already live. Details in [`docs/RELEASING.md`](docs/RELEASING.md).
+
+## The app
+
+The game installs to a home screen ("Add to Home Screen" on iOS, "Install app"
+in Chrome) with its own icon, and the installed app plays without a network.
+Only the installed app keeps an offline copy of the game's files; in a browser
+tab the game writes nothing to the device. The icons are drawn from the game's
+paper bin:
+
+```bash
+node tools/icons.mjs    # writes game/icons/
 ```
 
 ## Drawing by hand

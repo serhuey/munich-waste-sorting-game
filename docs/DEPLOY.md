@@ -1,6 +1,8 @@
 # Deployment
 
-The game is published at `muell.sergei-grieg.de`. This repository is the source; the
+The game is on internal test at `sergei-grieg.de/muell/`; its public address will be
+`muell.sergei-grieg.de` once the subdomain below is set up — the same folder serves
+both, and every address inside the game is relative. This repository is the source; the
 files that get served live in the separate `portfolio-site` repository, which netcup
 deploys by pulling `main`.
 
@@ -22,8 +24,13 @@ Two properties of the target decide everything else:
 
 ## Routine release
 
+Raise the release number first — the rules, and the full sequence with the git tag
+and the GitHub release, are in [`RELEASING.md`](RELEASING.md). `publish.py` refuses a
+changed build under the number already live.
+
 ```bash
 python3 tools/build_data.py          # validate the authored layer, write dist/
+python3 tools/render_legal.py        # legal pages into dist/, from legal/values.local.json
 python3 tools/publish.py --dry-run   # see what would change in the site repo
 python3 tools/publish.py             # copy dist/ into portfolio-site/muell/
 ```
@@ -31,7 +38,7 @@ python3 tools/publish.py             # copy dist/ into portfolio-site/muell/
 Then, in `portfolio-site`, by hand:
 
 ```bash
-git add muell/ && git commit -m "muell: <what changed>"
+git add muell/ && git commit -m "muell: v<release>"
 git push origin main
 ```
 
@@ -65,4 +72,7 @@ requires the built HTML to be committed alongside its source.
 
 The previous state is the previous commit in `portfolio-site`. Reverting that commit
 and pushing restores the site within the same 30–120 seconds. Nothing in the game
-stores state on the player's device, so there is no migration to undo.
+stores state on the player's device, so there is no migration to undo. The installed
+app keeps an offline copy of the files, but it asks the network first: it picks up the
+reverted files at its next start, and the reverted `sw.js` names a different cache,
+so the copy is replaced as well.

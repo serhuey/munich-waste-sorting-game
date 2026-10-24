@@ -16,6 +16,8 @@
 import argparse, filecmp, json, os, shutil, sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
+sys.path.insert(0, HERE)
+from build_data import release_key
 REPO = os.path.dirname(HERE)
 DIST = os.path.join(REPO, "dist")
 SITE = os.environ.get("PORTFOLIO_SITE", os.path.expanduser("~/portfolio-site"))
@@ -29,6 +31,25 @@ def walk(root):
                 continue
             p = os.path.join(base, f)
             yield os.path.relpath(p, root)
+
+
+def release_problem(new, live):
+    """Почему эту сборку нельзя выложить поверх живой, или None.
+
+    Один номер выпуска — одна сборка: игрок, приславший «v1.2.0», должен
+    описывать ровно то, что лежит на сервере. Поэтому другая сборка под тем же
+    номером и номер меньше живого — отказ. live — content.json с сайта или None.
+    """
+    if not new.get("release"):
+        return "в dist/ нет номера выпуска — пересобери: python3 tools/build_data.py"
+    if not live or not live.get("release"):
+        return None
+    if release_key(new["release"]) < release_key(live["release"]):
+        return "выпуск %s меньше живого %s" % (new["release"], live["release"])
+    if new["release"] == live["release"] and new.get("version") != live.get("version"):
+        return ("сборка изменилась, а номер выпуска тот же (%s) — подними VERSION,\n"
+                "  правила в docs/RELEASING.md" % new["release"])
+    return None
 
 
 def main():
@@ -49,6 +70,11 @@ def main():
                  "  укажи путь через --site или PORTFOLIO_SITE" % a.site)
 
     target = os.path.join(a.site, TARGET_NAME)
+    live_path = os.path.join(target, "content.json")
+    live = json.load(open(live_path, encoding="utf-8")) if os.path.exists(live_path) else None
+    problem = release_problem(json.load(open(marker, encoding="utf-8")), live)
+    if problem:
+        sys.exit(problem)
     src_files = set(walk(DIST))
     dst_files = set(walk(target)) if os.path.isdir(target) else set()
 
@@ -84,9 +110,11 @@ def main():
 
     print("\nскопировано в %s" % target)
     print("дальше — руками, в репозитории сайта:")
-    print("  1. git add %s/ && git commit" % TARGET_NAME)
+    release = json.load(open(marker, encoding="utf-8"))["release"]
+    print("  1. git add %s/ && git commit -m \"muell: v%s\"" % (TARGET_NAME, release))
     print("  2. git push origin main   # это публикует на живой домен")
-    print("  3. подожди 30–120 секунд, проверь https://muell.sergei-grieg.de")
+    print("  3. подожди 30–120 секунд, проверь https://sergei-grieg.de/muell/")
+    print("и в этом репозитории, если номер новый: git tag v%s && git push origin v%s" % (release, release))
     return 0
 
 

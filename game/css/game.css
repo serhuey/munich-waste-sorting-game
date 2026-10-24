@@ -211,6 +211,7 @@ img, canvas { image-rendering: pixelated; image-rendering: crisp-edges; }
 .credit { font-size: 12px; color: var(--grey); margin: 6px 0 0; letter-spacing: .04em; }
 .credit a { color: inherit; text-decoration: underline; text-underline-offset: 2px; }
 .credit a:hover { color: var(--ink); }
+.release { font-size: 11px; color: var(--grey); margin: 4px 0 0; letter-spacing: .06em; font-variant-numeric: tabular-nums; }
 .fixture-note { font-size: 13px; color: #fff; background: var(--bad); padding: 6px 10px; margin: 0 0 14px; }
 .title-art { display: flex; justify-content: center; gap: 4px; margin-bottom: 10px; }
 .title-sprite { width: 48px; height: 48px; }

@@ -84,6 +84,8 @@ class GateTest(unittest.TestCase):
         self.write("data/verified/lexikon-2026-08-23.json", SNAPSHOT)
         self.write("data/i18n/de.json", {"play": "Spielen", "tier": "Stufe {n}"})
         self.write("data/i18n/en.json", {"play": "Play", "tier": "Level {n}"})
+        with open(os.path.join(self.repo, "VERSION"), "w") as f:
+            f.write("1.0.0\n")
 
     def tearDown(self):
         shutil.rmtree(self.repo, ignore_errors=True)
@@ -533,6 +535,52 @@ class GateTest(unittest.TestCase):
         self.assertEqual(problems, [])
         _, problems = bd.load_notices(repo, TODAY)
         self.assertEqual(problems, [])
+
+
+    # --- номер выпуска -------------------------------------------------------
+    def test_the_release_number_lands_in_content(self):
+        self.item()
+        content, _ = self.build()
+        self.assertEqual(content["release"], "1.0.0")
+
+    def test_a_malformed_or_missing_release_number_stops_the_build(self):
+        self.item()
+        path = os.path.join(self.repo, "VERSION")
+        with open(path, "w") as f:
+            f.write("v1.0\n")
+        content, report = self.build()
+        self.assertIsNone(content)
+        self.assertTrue(any("MAJOR.MINOR.PATCH" in p for p in report["fatal"]), report["fatal"])
+        os.remove(path)
+        content, report = self.build()
+        self.assertIsNone(content)
+
+    def test_the_real_release_number_holds(self):
+        release, problem = bd.read_release(os.path.dirname(HERE))
+        self.assertIsNone(problem)
+
+
+class PublishTest(unittest.TestCase):
+    def setUp(self):
+        sys.path.insert(0, HERE)
+        import publish
+        self.check = publish.release_problem
+
+    def test_a_first_release_or_an_unnumbered_live_copy_passes(self):
+        self.assertIsNone(self.check({"release": "1.0.0", "version": "a"}, None))
+        self.assertIsNone(self.check({"release": "1.0.0", "version": "a"}, {"version": "b"}))
+
+    def test_the_same_build_again_passes(self):
+        self.assertIsNone(self.check({"release": "1.0.0", "version": "a"}, {"release": "1.0.0", "version": "a"}))
+
+    def test_another_build_under_the_live_number_is_refused(self):
+        self.assertIn("подними VERSION", self.check({"release": "1.0.0", "version": "b"},
+                                                    {"release": "1.0.0", "version": "a"}))
+
+    def test_numbers_compare_as_numbers(self):
+        self.assertIsNone(self.check({"release": "1.10.0", "version": "b"}, {"release": "1.9.0", "version": "a"}))
+        self.assertIn("меньше", self.check({"release": "1.9.0", "version": "b"},
+                                           {"release": "1.10.0", "version": "a"}))
 
 
 if __name__ == "__main__":

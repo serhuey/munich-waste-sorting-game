@@ -163,6 +163,31 @@ def version_of(paths):
     return h.hexdigest()[:10]
 
 
+RELEASE = re.compile(r"^(\d+)\.(\d+)\.(\d+)$")
+
+
+def read_release(repo):
+    """Номер выпуска из файла VERSION: (номер, None) или (None, что не так).
+
+    Его видит игрок на титульном экране. Как поднимать — docs/RELEASING.md.
+    Отпечаток сборки (version_of) — другое: он меняется с любым файлом и
+    нужен кэшу, а номер выпуска меняет человек, когда выкладывает.
+    """
+    path = os.path.join(repo, "VERSION")
+    if not os.path.exists(path):
+        return None, "VERSION: файла нет — в нём номер выпуска, например 1.0.0"
+    with open(path, encoding="utf-8") as f:
+        text = f.read().strip()
+    if not RELEASE.match(text):
+        return None, "VERSION: %r — нужен номер вида MAJOR.MINOR.PATCH, например 1.0.0" % text
+    return text, None
+
+
+def release_key(text):
+    """1.10.0 больше 1.9.0: сравниваются числа, не строки."""
+    return tuple(int(n) for n in RELEASE.match(text).groups())
+
+
 IMPORT = re.compile(r"""((?:from|import)\s*\(?\s*['"])(\./[\w./-]+\.js)(['"])""")
 ASSET = re.compile(r"""((?:src|href)=")((?:js|css)/[\w./-]+\.(?:js|css))(")""")
 
@@ -653,10 +678,15 @@ def build(repo, date, today=None, langs=LANGS, fixtures=False):
     if notices is not None:
         notices.pop("_source", None)
 
+    release, problem = read_release(repo)
+    if problem:
+        report["fatal"].append(problem)
+
     if report["fatal"]:
         return None, report
 
     content = {
+        "release": release,
         "built": today.isoformat(),
         "source_snapshot": os.path.basename(snap_path),
         "fixture": bool(fixtures),
