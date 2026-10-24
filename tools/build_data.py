@@ -175,6 +175,8 @@ def stamp(text, version):
     коде. С меткой адрес каждой версии свой, и смешаться им негде.
     """
     text = IMPORT.sub(lambda m: m.group(1) + m.group(2) + "?v=" + version + m.group(3), text)
+    # Имя кэша в sw.js: новая версия — новый воркер со своим кэшем.
+    text = text.replace("__BUILD__", version)
     return ASSET.sub(lambda m: m.group(1) + m.group(2) + "?v=" + version + m.group(3), text)
 
 

@@ -9,7 +9,7 @@ import * as explain from '../js/explain.js';
 import * as progress from '../js/progress.js';
 import * as finale from '../js/finale.js';
 import { createI18n, preferredLanguage } from '../js/i18n.js';
-import { bareUrl, payload, share } from '../js/share.js';
+import { bareUrl, payload, share, shownAddress } from '../js/share.js';
 import { rankKey } from '../js/card.js';
 
 const results = [];
@@ -474,6 +474,11 @@ test('a shared link carries no source tag and no identifier', () => {
   same(bareUrl('https://muell.sergei-grieg.de/index.html?x=1#y'), 'https://muell.sergei-grieg.de/');
   const p = payload({ text: '1200 Punkte', href: 'https://muell.sergei-grieg.de/?src=toytown' });
   same(p, { text: '1200 Punkte', url: 'https://muell.sergei-grieg.de/' });
+});
+
+test('the picture names the address with its path', () => {
+  same(shownAddress('https://sergei-grieg.de/muell/'), 'sergei-grieg.de/muell');
+  same(shownAddress('https://muell.sergei-grieg.de/'), 'muell.sergei-grieg.de');
 });
 
 test('without a share sheet the result goes to the clipboard', async () => {

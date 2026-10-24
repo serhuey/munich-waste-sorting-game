@@ -37,7 +37,8 @@ const load = src => new Promise((resolve, reject) => {
 // below the last line; with bottom, y is where the last line ends and the text
 // grows upward, returning the y above the first line — a line that wraps then
 // pushes away from the frame instead of into it.
-function prose(ctx, text, x, y, width, size, color, weight = 400, bottom = false) {
+// With draw false it only measures: the y it would return, nothing painted.
+function prose(ctx, text, x, y, width, size, color, weight = 400, bottom = false, draw = true) {
   ctx.font = `${weight} ${size}px ${PROSE}`;
   ctx.fillStyle = color;
   ctx.textAlign = 'center';
@@ -52,15 +53,23 @@ function prose(ctx, text, x, y, width, size, color, weight = 400, bottom = false
   if (line) lines.push(line);
   const lh = size * 1.3;
   const top = bottom ? y - lines.length * lh : y;
-  lines.forEach((l, i) => ctx.fillText(l, x, top + i * lh));
+  if (draw) lines.forEach((l, i) => ctx.fillText(l, x, top + i * lh));
   return bottom ? top : top + lines.length * lh;
 }
 
-// Pixel type at the largest whole scale that fits the width, centred on x.
-function heading(ctx, text, x, y, maxWidth, maxScale, opts) {
+// Pixel type at the largest whole scale that fits the width.
+function fit(text, maxWidth, maxScale, opts) {
   let scale = maxScale;
   let c = pixelText(text, { ...opts, scale });
   while (scale > 1 && c.width > maxWidth) c = pixelText(text, { ...opts, scale: --scale });
+  return c;
+}
+
+// The same, drawn centred on x; returns the y below it.
+function heading(ctx, text, x, y, maxWidth, maxScale, opts) {
+  return place(ctx, fit(text, maxWidth, maxScale, opts), x, y);
+}
+function place(ctx, c, x, y) {
   ctx.drawImage(c, Math.round(x - c.width / 2), y);
   return y + c.height;
 }
@@ -94,22 +103,29 @@ export async function renderCard(texts) {
   ctx.fillRect(px - 6, py - 6, pw + 12, ph + 12);
   ctx.fillStyle = C.cream; ctx.fillRect(px, py, pw, ph);
 
-  // Downward from the top: the objects, the rank, the points, the count.
+  // Upward from the frame: the note, the question above it.
+  let y = prose(ctx, texts.note, mid, py + ph - 32, pw - 80, 26, C.grey, 400, true) - 28;
+  const free = prose(ctx, texts.question, mid, y, pw - 120, 38, C.ink, 400, true);
+
+  // The score — the objects, the rank, the points, the count — as one block,
+  // centred between the sheet's top and the question. Measured before it is
+  // drawn, so a rank or a count that wraps moves the block, not into the question.
   const is = 3, gap = 40;
   const rowW = items.reduce((s, i) => s + i.width * is, 0) + gap * (items.length - 1);
   const rowH = Math.max(...items.map(i => i.height)) * is;
+  const rank = fit(texts.rank, pw - 80, 6, { color: C.navy, shadow: C.sun });
+  const points = fit(texts.points, pw - 80, 12, { color: C.ok, shadow: C.okShadow });
+  const lineH = prose(ctx, texts.line, mid, 0, pw - 100, 40, C.ink, 700, false, false);
+  const blockH = rowH + 34 + rank.height + 30 + points.height + 26 + lineH;
+  y = Math.max(py + 40, Math.round(py + (free - py - blockH) / 2));
   let x = Math.round(mid - rowW / 2);
   items.forEach(i => {
-    ctx.drawImage(i, x, py + 40 + rowH - i.height * is, i.width * is, i.height * is);
+    ctx.drawImage(i, x, y + rowH - i.height * is, i.width * is, i.height * is);
     x += i.width * is + gap;
   });
-  let y = py + 40 + rowH + 34;
-  y = heading(ctx, texts.rank, mid, y, pw - 80, 6, { color: C.navy, shadow: C.sun }) + 30;
-  y = heading(ctx, texts.points, mid, y, pw - 80, 12, { color: C.ok, shadow: C.okShadow }) + 26;
+  y = place(ctx, rank, mid, y + rowH + 34) + 30;
+  y = place(ctx, points, mid, y) + 26;
   prose(ctx, texts.line, mid, y, pw - 100, 40, C.ink, 700);
-  // Upward from the frame: the note, the question above it.
-  y = prose(ctx, texts.note, mid, py + ph - 32, pw - 80, 26, C.grey, 400, true) - 28;
-  prose(ctx, texts.question, mid, y, pw - 120, 38, C.ink, 400, true);
 
   // Where to play, as type in the picture: several apps drop the text and the
   // link when a file comes with them, and the address must survive that.

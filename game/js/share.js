@@ -7,6 +7,14 @@ export function bareUrl(href) {
   return u.origin + u.pathname.replace(/index\.html$/, '');
 }
 
+// The address as people type it, for the picture: the host alone drops the path,
+// and the game also lives in a folder (sergei-grieg.de/muell), not only on its
+// own subdomain.
+export function shownAddress(url) {
+  const u = new URL(url);
+  return u.host + u.pathname.replace(/\/$/, '');
+}
+
 export function payload({ text, href }) {
   return { text, url: bareUrl(href) };
 }

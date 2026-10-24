@@ -10,7 +10,7 @@ import * as explain from './explain.js';
 import * as progress from './progress.js';
 import * as finale from './finale.js';
 import { createI18n, preferredLanguage } from './i18n.js';
-import { payload, share } from './share.js';
+import { payload, share, shownAddress } from './share.js';
 import { renderCard, rankKey, CARD_FILE, PARADE } from './card.js';
 import { itemSprite, itemSpriteByKey, containerSprite, routeSprite, treeSprite, skylineSprite,
          decorSprite, decorSize, setArt, prefetchArt, img, pixelText } from './pixel.js';
@@ -65,6 +65,13 @@ async function boot() {
   el('sky').src = skylineSprite();
   applyLanguage();
   prefetchArt();
+  // Offline play (sw.js) only in the installed app. Its copy of the game's files
+  // is written to the device, and in a browser tab the game writes nothing
+  // there (Datenschutz §2); installing is the player asking for the app, and
+  // the copy is what makes it start without a network. Installing itself
+  // needs only the manifest. A secure origin: https, or localhost.
+  const installed = matchMedia('(display-mode: standalone)').matches || navigator.standalone === true;
+  if (installed && 'serviceWorker' in navigator && window.isSecureContext) navigator.serviceWorker.register('sw.js').catch(() => {});
   if (params.has('finale')) return startFinale();
   if (startAt) { state.run = progress.createRun(startAt); return startTier(startAt); }
   showTitle();
@@ -763,7 +770,7 @@ function showEnd() {
   const card = renderCard({
     title: t('title'), rank: t(rankKey(total.right, total.answered)), points: t('points_short', { points }),
     line: t('card_line', { right: total.right, answered: total.answered }),
-    question: t('card_question'), note: t('card_note'), address: new URL(words.url).host
+    question: t('card_question'), note: t('card_note'), address: shownAddress(words.url)
   }).then(blob => { file = new File([blob], CARD_FILE, { type: 'image/png' }); return blob; }, () => null);
 
   const shareBtn = make('button', 'pbtn big', t('share'));
