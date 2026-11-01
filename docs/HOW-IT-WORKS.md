@@ -4,8 +4,7 @@ This is a walk through the whole system: where the rules come from, how they
 get into the game, how the game plays them, and what holds it together when a
 browser does something unexpected. It is written for anyone who wants to change
 the game, check its content or just understand it. The *why* of the product
-lives in [`SPEC.md`](SPEC.md); the dated history of decisions in
-[`plans/`](plans/). This file describes the system as it stands.
+lives in [`SPEC.md`](SPEC.md). This file describes the system as it stands.
 
 The project has three layers and no runtime dependencies:
 
@@ -58,7 +57,7 @@ ships.
 | `tools/` | The build gate, the verification form, lexicon snapshots, art tools, a dev server |
 | `art/` | The palette for the pixel editor (`palette.gpl`) |
 | `legal/` | Impressum and privacy templates, filled at build time from a git-ignored file |
-| `docs/` | The spec, verification guide, deployment and release notes, this file, dated plans |
+| `docs/` | The spec, verification guide, deployment and release notes, this file |
 | `VERSION`, `CHANGELOG.md` | The release number shown on the title screen, and what each release changed |
 
 ---
@@ -396,7 +395,7 @@ With any handle present, the engine's parts are reachable from the console as
 
 `tools/publish.py` copies a release build (never a test build) into the
 portfolio site's repository; committing and pushing it is a person's job. It
-refuses a changed build under the release number already live. The game is on
-internal test at `sergei-grieg.de/muell/` since release 1.0.0; the public
-subdomain and the launch posts are still to come. See [`DEPLOY.md`](DEPLOY.md)
+refuses a changed build under the release number already live. The game is live
+at `sergei-grieg.de/muell/` since release 1.0.0; the subdomain
+`muell.sergei-grieg.de` is still to come. See [`DEPLOY.md`](DEPLOY.md)
 and [`RELEASING.md`](RELEASING.md).

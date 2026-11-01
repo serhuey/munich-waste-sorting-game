@@ -11,13 +11,13 @@ license: MIT
 
 A casual mobile-web game that teaches newcomers to Munich where household waste actually goes.
 
-This is the requirements document: what the product must do and why, not how it is built. Requirement IDs match the Russian edition in `docs/plans/` one-for-one — edit both or neither.
+This is the requirements document: what the product must do and why, not how it is built.
 
 ## Goal Capsule
 
 - **Objective.** A mobile-web game that teaches people arriving in Munich not *which bin* but *where to carry it*, and keeps teaching it correctly through the city's Gelbe Tonne switch on 1 January 2027 — the moment the whole city has to relearn the answer.
-- **Product authority.** This document covers the autumn 2026 release and the January 2027 release as one product. The act of publishing is inside the first release; partnership with AWM and other-city editions are not.
-- **Open blockers.** Two, both under Resolve Before Planning: how many items the author is willing to verify by hand before the target date, and which Munich entry points the launch publishes to.
+- **Product authority.** This document covers the autumn 2026 release and the January 2027 release as one product.
+- **Open blockers.** One, under Resolve Before Planning: how many items the author is willing to verify by hand.
 
 ---
 
@@ -51,7 +51,7 @@ Munich does not work like the rest of Germany, and some of those differences wil
 - KD6. **Fall speed depends on the item, and dropping early is rewarded.** Time becomes a resource spent only on doubt, and the score measures not recall but knowing what you know. Governs R3, R10.
 - KD7. **Data is split into a verified layer and an authored layer.** The verified layer comes from AWM and is diffed automatically; the authored layer is the hand-picked game items that reference it. Without the split the diff is decorative and the content is unprovable. Governs R13, R14, R15.
 - KD8. **Rules, the set of places and the contents of each place live as data, separate from game logic.** It is the only way to survive 1 January 2027 without a rewrite — and that switch moves a container between places rather than merely changing addresses. Governs R13, R18, R21.
-- KD9. **Architectural generality never surfaces in the product** (session-settled: user-approved — chosen over an explicit city picker: generic things do not get forwarded to friends). Governs R13.
+- KD9. **Architectural generality never surfaces in the product** (session-settled: user-approved — chosen over an explicit city picker). Governs R13.
 - KD10. **German and English at launch; Ukrainian and Turkish in a later language beat** (session-settled: user-directed — chosen over all four at once: proofreading Turkish and Ukrainian needs native speakers, which is an external dependency on the critical path). Governs R21.
 - KD11. **The game neither inflates penalties nor narrows correct routes.** A false threat of a fine on a correct answer destroys trust faster than any other error. Governs R7, R17.
 - KD12. **Accessibility never relies on colour.** Glass sorted by colour is the one place in the system where colour carries the address, and green-versus-brown is the pair colour-blind players distinguish worst. Governs R12.
@@ -94,11 +94,10 @@ Munich does not work like the rest of Germany, and some of those differences wil
 - R21. Interface strings and rule content are separate; adding a language requires no code change. The first release ships German and English.
 - R22. Interface labels — place tabs, container names, explanations — are legible on a phone held at arm's length. This constraint is verified together with localisation: long German place names and a minimum type size compete for the same screen width. It does not apply to the labels on items under R4, whose illegibility in flight is deliberate.
 
-**Reach, legal minimum, observability**
+**Sharing, legal minimum, observability**
 
 - R23. A completed run produces a result that can be forwarded in one action without registration; the result carries no identifier of sender, session or device.
-- R24. The first release counts as shipped only after it has been published to a named list of Munich entry points. Each point is published as its own link carrying a source tag; for moderated channels, publication counts on submission rather than approval.
-- R25. Events collected: reach per tier, errors per item distinguishing place errors from container errors, share of early drops and error rate among them, referral source, finale completion, and invocation of the forward action. Client code stores nothing on the player's device and reads nothing already stored — no cookie, no localStorage, sessionStorage or IndexedDB, no fingerprint derived from device or browser characteristics; only what the browser sends in the request itself is collected, and the IP is truncated on receipt. The one thing the game ever writes to a device is the installed app's offline copy of its own files — identical for everyone, nothing about the player, and only after the player installed the app (TDDDG §25(2) no. 2). The processor is EU-based under a data-processing agreement. Referral source comes from the tag in R24 with referrer domain as fallback; neither the tag nor the forward event carries a player, session or device identifier, and the act of forwarding is never linked to the act of opening. Raw events are retained no longer than 90 days; aggregates indefinitely.
+- R25. Events collected: reach per tier, errors per item distinguishing place errors from container errors, share of early drops and error rate among them, finale completion, and invocation of the forward action. Client code stores nothing on the player's device and reads nothing already stored — no cookie, no localStorage, sessionStorage or IndexedDB, no fingerprint derived from device or browser characteristics; only what the browser sends in the request itself is collected, and the IP is truncated on receipt. The one thing the game ever writes to a device is the installed app's offline copy of its own files — identical for everyone, nothing about the player, and only after the player installed the app (TDDDG §25(2) no. 2). The processor is EU-based under a data-processing agreement. The forward event carries no player, session or device identifier, and the act of forwarding is never linked to the act of opening. Raw events are retained no longer than 90 days; aggregates indefinitely.
 - R26. The product publishes a Datenschutzerklärung and an Impressum reachable from any screen. The privacy notice is no narrower than Art. 13 GDPR requires — controller and contact, purposes and legal basis, categories of recipients, retention period, data-subject rights and the right to lodge a complaint — and on top of that minimum it names the concrete event list and the retention period from R25.
 
 ### Progression ladder
@@ -189,15 +188,12 @@ Worked example: a pizza box is one item with two variants. Clean is a simple var
 - AE10. **Covers R18, R19.** Given: the player opens the game during the transition period after 1 January 2027. Then the session opens with a message stating the current rule first, then what changed into what, and what to do until the bin arrives; the yellow bin is at home and both packaging containers are gone from the island. Opening a new session shows the message again.
 - AE11. **Covers R12, R22.** Given: a colour-blind player holds the phone at arm's length. Then both the glass containers and the falling bottles are distinguishable by a non-colour signal, and tab and container labels are readable without zooming.
 - AE12. **Covers R21.** Given: a third language is added. Then only text and rule-data files change; the game-logic build is untouched.
-- AE13. **Covers R24.** Given: the game has been published to the list of entry points. Then every published link carries its own source tag, and for a moderated channel publication counted at the moment of submission.
 - AE14. **Covers R25, R26.** Given: the player completes a run and forwards the result. Then nothing is stored on the device; the forward event is recorded as an aggregate counter with no identifier; the Datenschutzerklärung and Impressum open from any screen, and the event list in the notice matches the list in R25.
 
 ### Success Criteria
 
-- The public launch happened inside the Oktoberfest 2026 window: 19 September is the target date, 4 October the outer edge of the attention window.
 - The game keeps working after 1 January 2027 with no edit to game logic when the rules switch and a container moves between places.
 - The switch is documented publicly, so players and contributors can see exactly what changed and when: before and after are visible in screenshots of *home* and *Wertstoffinsel*.
-- Reach is measurable: inbound referrals distinguishable by entry point, share of players who finish, share who forward the result.
 - Every game item traces to an AWM entry and carries a manual-verification flag with a date.
 - The share of early drops among correct answers rises from a player's first run to their second — the signal that they have started knowing rather than guessing.
 
@@ -205,7 +201,6 @@ Worked example: a pizza box is one item with two variants. Clean is a simple var
 
 **Deferred for later**
 
-- A Wordle-style daily item as a distribution channel.
 - Ukrainian and Turkish.
 - Coverage beyond five places and one finale.
 - A separate practice mode for separable items outside a normal run.
@@ -214,25 +209,25 @@ Worked example: a pizza box is one item with two variants. Clean is a simple var
 
 **Outside this product's identity**
 
-- Accounts, leaderboards, monetisation.
+- Accounts, leaderboards.
 - One flat belt holding every container: place is part of the answer, not a layout detail.
-- A mirror of the Abfalllexikon: the game runs on a curated set, while the full snapshot serves verification and material discovery. AWM already publishes a reference and theirs is better.
+- A mirror of the Abfalllexikon: the game runs on a curated set, while the full snapshot serves verification and material discovery. AWM already publishes a reference.
 - An Oktoberfest finale: returning reusable tableware is not a decision a Wiesn visitor faces, and an event ground is not one of the places in the model.
 - An explicit city picker: parameterisation lives in the data; from the outside this is a product about Munich.
-- Measuring an individual player's learning outcome: there are no pre/post tests, and product success is measured by reach. That is about *measurement*, not *design* — where mechanics conflict, learning wins, per KD1.
+- Measuring an individual player's learning outcome: there are no pre/post tests. That is about *measurement*, not *design* — where mechanics conflict, learning wins, per KD1.
 
 ### Dependencies / Assumptions
 
 - Shop take-back rests on federal law rather than on AWM, so it needs its own source: the Batteriegesetz obliges every retailer selling batteries to accept them back free of charge, and the ElektroG obliges retailers above a sales-floor threshold — 400 m² generally, 800 m² for food retailers selling electrical goods — to accept old lamps and small electronics up to 25 cm without a purchase. These are the two rules behind the shop as a place, and they are verified against legislation, not against the Abfalllexikon.
 - AWM remains a publicly available source of truth. The Abfalllexikon index page is served without JavaScript and holds roughly 700–1000 entries of the form "term → destinations"; some entries have their own detail pages.
-- The Abfalllexikon is a database, and databases enjoy separate protection in Germany (§87a UrhG): individual facts are not protected, systematic extraction of a substantial part may be. The snapshot stores classification and links rather than AWM's prose. Asking AWM for permission before wide publication is worth doing on its own merits — it is also the first contact with an organisation that could amplify the result.
+- The Abfalllexikon is a database, and databases enjoy separate protection in Germany (§87a UrhG): individual facts are not protected, systematic extraction of a substantial part may be. The snapshot stores classification and links rather than AWM's prose. Asking AWM for permission before wide publication is worth doing on its own merits.
 - The Christmas tree has several disposal routes. 2026 edition: Wertstoffhöfe accept up to 20 shredded trees free of charge year-round and are named the first address; open Sammelstellen accept a whole stripped tree from 7 January to 4 February; collection arranged by a building manager is chargeable and runs 19 January to 27 February on request.
 - AWM's seasonal tree page is published only in season, so the first release ships the 2026 edition labelled per R16, and the next edition is verified in December 2026.
 - The Gelbe Tonne arrives on 1 January 2027 as announced. Bins are distributed in waves from November 2026, outer districts before dense central blocks, and the yellow bin is not mandatory.
 - AWM will publish the final list of items whose place changes before December 2026. The mechanism in R18 does not depend on that list.
 - Native Ukrainian and Turkish proofreaders are available by December 2026; otherwise the language beat slips. This does not affect the January release.
 - An Impressum under §5 DDG requires a ladungsfähige Anschrift; a PO box does not qualify. The address is chosen and arranged in advance so it never blocks publication.
-- **Implementation is expected to be delegated to an agent, which makes content — not code — the project's binding constraint.** Mechanics, layout, data layers and localisation delegate well. Verifying each item against AWM does not delegate at all: an agent will confidently invent a sorting rule, and municipal accuracy is the only thing separating this product from a dozen existing ones. R15 exists precisely as that barrier. Tuning feel — fall speeds, the weight of an early drop, the reward curve — also stays with a human: it is dialled in by playing, not by specifying.
+- **Implementation is expected to be delegated to an agent, which makes content — not code — the project's binding constraint.** Mechanics, layout, data layers and localisation delegate well. Verifying each item against AWM does not delegate at all: an agent will confidently invent a sorting rule, and municipal accuracy is the whole point of this product. R15 exists precisely as that barrier. Tuning feel — fall speeds, the weight of an early drop, the reward curve — also stays with a human: it is dialled in by playing, not by specifying.
 - A spike covering the first two places has been built and played: the loop holds attention, the continuous belt with place tabs works one-handed, and the fall speeds and reward numbers were set arbitrarily and need tuning. It lives at `prototype/spike-belt.html`.
 
 ## Contributing
@@ -245,8 +240,7 @@ Corrections to existing items are equally welcome, especially with a source link
 
 **Resolve Before Planning**
 
-- How many game items the author is willing to verify by hand before the target date. This, not build speed, decides whether 19 September is reachable: mechanics delegate, reading sources does not. The number determines both the content volume and how many tiers make the first release.
-- Which Munich entry points make up the list in R24. The requirement makes publication a condition of shipping, but no channels are named, and both moderation lag and the source tags in R25 depend on them.
+- How many game items the author is willing to verify by hand before the target date. Mechanics delegate, reading sources does not. The number determines both the content volume and how many tiers make the first release.
 
 **Deferred to Planning**
 
@@ -273,6 +267,5 @@ Corrections to existing items are equally welcome, especially with a source link
 - Christmas tree disposal routes, sites and windows: `https://www.awm-muenchen.de/abfall-entsorgen/abgabestellen/christbaumentsorgung`
 - Wertstoffinseln and Wertstoffhöfe as open datasets with coordinates: `https://opendata.muenchen.de/dataset/awm_container_opendata` and `https://opendata.muenchen.de/dataset/awm_wertstoffhoefe_opendata`
 - Fine ranges in waste management: `https://www.bussgeld-info.de/muell-muellentsorgung/`
-- Competitive field of waste-sorting games: #wirfuerbio Sortierspiel, Die Müll AG (Karlsruhe), browser sorting games on plays.org — all aimed at children and at a generic Germany, with no city specificity.
 - Spike, first two places on the continuous belt: `prototype/spike-belt.html`
 - Lexicon snapshot and diff tool: `tools/awm_lexikon.py`

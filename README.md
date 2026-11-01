@@ -2,7 +2,7 @@
 
 A casual mobile-web game that teaches people arriving in Munich where household waste actually goes.
 
-**Status: internal test, release 1.0.0.** The game is playable end to end at [sergei-grieg.de/muell](https://sergei-grieg.de/muell/): five tiers, 106 objects, the Christmas-tree finale, German and English, pixel art for every object and container, a picture card to share the result, and an installable app that plays offline. Every object, the places, the finale and the 2027 notice are signed by a person. The Impressum and Datenschutz are in place; there are no statistics. What remains before the public launch is the subdomain `muell.sergei-grieg.de` and the launch posts. What changed in each release: [`CHANGELOG.md`](CHANGELOG.md).
+**Status: release 1.0.0.** The game is playable end to end at [sergei-grieg.de/muell](https://sergei-grieg.de/muell/): five tiers, 106 objects, the Christmas-tree finale, German and English, pixel art for every object and container, a picture card to share the result, and an installable app that plays offline. Every object, the places, the finale and the 2027 notice are signed by a person. The Impressum and Datenschutz are in place; there are no statistics. The subdomain `muell.sergei-grieg.de` is still to come. What changed in each release: [`CHANGELOG.md`](CHANGELOG.md).
 
 ## Why
 
@@ -64,7 +64,6 @@ docs/SPEC.md          the requirements: what the product must do and why
 docs/HOW-IT-WORKS.md  how the system works, end to end
 docs/DEPLOY.md        how a build reaches the site
 docs/RELEASING.md     release numbers: what moves which part, the steps of a release
-docs/plans/           dated working history of the specification, RU and EN
 data/                 places, items, drafts, interface strings, the finale, the 2027 notice
 game/                 the engine: plain ES modules, every picture a PNG in game/art/, the app manifest and icons
 VERSION               the release number, shown on the title screen

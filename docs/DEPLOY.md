@@ -61,13 +61,6 @@ If `PORTFOLIO_SITE` is not `~/portfolio-site`, pass `--site` or set the variable
    the same PHP as the other apps on the host. It writes aggregate counters only — no
    IP, no cookie, no identifier — so it needs no configuration file and no secret.
 
-## The case page
-
-The portfolio case for this project is written at launch, not before: prose in
-`src/projects/muell.njk`, metadata in `src/_data/projects.json`, and `npm run build`
-before committing, because the server has no build step and the site repository
-requires the built HTML to be committed alongside its source.
-
 ## Rollback
 
 The previous state is the previous commit in `portfolio-site`. Reverting that commit
