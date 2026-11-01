@@ -55,7 +55,7 @@ Munich does not work like the rest of Germany, and some of those differences wil
 - KD10. **German and English at launch; Ukrainian and Turkish in a later language beat** (session-settled: user-directed — chosen over all four at once: proofreading Turkish and Ukrainian needs native speakers, which is an external dependency on the critical path). Governs R21.
 - KD11. **The game neither inflates penalties nor narrows correct routes.** A false threat of a fine on a correct answer destroys trust faster than any other error. Governs R7, R17.
 - KD12. **Accessibility never relies on colour.** Glass sorted by colour is the one place in the system where colour carries the address, and green-versus-brown is the pair colour-blind players distinguish worst. Governs R12.
-- KD13. **The mandatory legal minimum is unconditionally in the release; analytics is not.** Publishing without an Impressum and a Datenschutzerklärung is unlawful whether or not anything is measured; analytics, by contrast, is the only release obligation with an external counterparty and the first candidate to defer. Governs R25, R26.
+- KD13. **The mandatory legal minimum is unconditionally in the release; there is no analytics.** Publishing without an Impressum and a Datenschutzerklärung is unlawful whether or not anything is measured, and nothing is measured. Governs R26.
 - KD14. **Stale seasonal data is shown with its date rather than hidden.** AWM's seasonal pages are not published year-round, and silence is worse than an honest label. Governs R16.
 
 ### Requirements
@@ -94,11 +94,10 @@ Munich does not work like the rest of Germany, and some of those differences wil
 - R21. Interface strings and rule content are separate; adding a language requires no code change. The first release ships German and English.
 - R22. Interface labels — place tabs, container names, explanations — are legible on a phone held at arm's length. This constraint is verified together with localisation: long German place names and a minimum type size compete for the same screen width. It does not apply to the labels on items under R4, whose illegibility in flight is deliberate.
 
-**Sharing, legal minimum, observability**
+**Sharing and legal minimum**
 
 - R23. A completed run produces a result that can be forwarded in one action without registration; the result carries no identifier of sender, session or device.
-- R25. Events collected: reach per tier, errors per item distinguishing place errors from container errors, share of early drops and error rate among them, finale completion, and invocation of the forward action. Client code stores nothing on the player's device and reads nothing already stored — no cookie, no localStorage, sessionStorage or IndexedDB, no fingerprint derived from device or browser characteristics; only what the browser sends in the request itself is collected, and the IP is truncated on receipt. The one thing the game ever writes to a device is the installed app's offline copy of its own files — identical for everyone, nothing about the player, and only after the player installed the app (TDDDG §25(2) no. 2). The processor is EU-based under a data-processing agreement. The forward event carries no player, session or device identifier, and the act of forwarding is never linked to the act of opening. Raw events are retained no longer than 90 days; aggregates indefinitely.
-- R26. The product publishes a Datenschutzerklärung and an Impressum reachable from any screen. The privacy notice is no narrower than Art. 13 GDPR requires — controller and contact, purposes and legal basis, categories of recipients, retention period, data-subject rights and the right to lodge a complaint — and on top of that minimum it names the concrete event list and the retention period from R25.
+- R26. The product publishes a Datenschutzerklärung and an Impressum reachable from any screen. The privacy notice is no narrower than Art. 13 GDPR requires — controller and contact, purposes and legal basis, categories of recipients, retention period, data-subject rights and the right to lodge a complaint — even though the game collects nothing. The one thing the game ever writes to a device is the installed app's offline copy of its own files — identical for everyone, nothing about the player, and only after the player installed the app (TDDDG §25(2) no. 2).
 
 ### Progression ladder
 
@@ -188,7 +187,7 @@ Worked example: a pizza box is one item with two variants. Clean is a simple var
 - AE10. **Covers R18, R19.** Given: the player opens the game during the transition period after 1 January 2027. Then the session opens with a message stating the current rule first, then what changed into what, and what to do until the bin arrives; the yellow bin is at home and both packaging containers are gone from the island. Opening a new session shows the message again.
 - AE11. **Covers R12, R22.** Given: a colour-blind player holds the phone at arm's length. Then both the glass containers and the falling bottles are distinguishable by a non-colour signal, and tab and container labels are readable without zooming.
 - AE12. **Covers R21.** Given: a third language is added. Then only text and rule-data files change; the game-logic build is untouched.
-- AE14. **Covers R25, R26.** Given: the player completes a run and forwards the result. Then nothing is stored on the device; the forward event is recorded as an aggregate counter with no identifier; the Datenschutzerklärung and Impressum open from any screen, and the event list in the notice matches the list in R25.
+- AE14. **Covers R23, R26.** Given: the player completes a run and forwards the result. Then nothing is stored on the device and nothing is recorded about the forward; the Datenschutzerklärung and Impressum open from any screen.
 
 ### Success Criteria
 
@@ -251,7 +250,6 @@ Corrections to existing items are equally welcome, especially with a source link
 - How places and containers are identified visually — icon, label or both — at minimum type size across four languages.
 - Technical stack and storage format for the authored data layer.
 - The form of the forwarded result, and whether it creates a server-side record of an individual forward.
-- Which EU analytics processor is chosen, and confirmation that its client code reads nothing about the browser beyond what the request already carries.
 - Who acts as the GDPR controller — the author as a natural person, or a legal entity.
 - How the start and end of the transition period are determined, and against which time source.
 - How often the reverification run in F6 fires, and who triggers it.

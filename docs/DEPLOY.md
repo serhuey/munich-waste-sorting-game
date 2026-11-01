@@ -57,9 +57,6 @@ If `PORTFOLIO_SITE` is not `~/portfolio-site`, pass `--site` or set the variable
    panel. The game is served over HTTPS only.
 3. **`muell.s-grieg.eu` needs nothing.** The site's `.htaccess` already redirects every
    `*.s-grieg.eu` host to the matching `*.sergei-grieg.de` one.
-4. **`server/count.php`.** Copy it into `muell/` with the rest of `dist/`; it runs under
-   the same PHP as the other apps on the host. It writes aggregate counters only — no
-   IP, no cookie, no identifier — so it needs no configuration file and no secret.
 
 ## Rollback
 
